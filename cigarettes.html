@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Cigarettes &#xC9;lectroniques &#x2014; J&amp;S Sun Shop</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c27;
+  --border: rgba(255,255,255,0.07);
+  --accent: #c9a84c;
+  --accent2: #ff6b6b;
+  --accent3: #7eb8f7;
+  --text: #e8e8f0;
+  --text-dim: #a2a2bd;
+  --text-dimmer: #6a6a86;
+  --tr: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  background:rgba(10,10,15,0.94);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 40px;
+  display:flex; align-items:center;
+  height:68px;
+}
+
+.nav-logo {
+  height:50px; width:auto; flex-shrink:0; margin-right:28px;
+  filter:drop-shadow(0 0 8px rgba(201,168,76,0.25));
+  transition:filter 0.3s;
+}
+.nav-logo:hover { filter:drop-shadow(0 0 16px rgba(201,168,76,0.55)); }
+
+.nav-links { display:flex; align-items:center; gap:2px; flex:1; flex-wrap:wrap; }
+
+.nav-link {
+  text-decoration:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.72rem; font-weight:600; letter-spacing:0.07em;
+  color:var(--text-dim);
+  padding:6px 13px; border-radius:5px;
+  border:1px solid transparent;
+  transition:all var(--tr); white-space:nowrap;
+}
+.nav-link:hover { color:var(--text); border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.06); }
+.nav-link.active { color:var(--accent); border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.07); }
+
+.nav-burger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; margin-left:auto; }
+.nav-burger span { display:block; width:22px; height:2px; background:var(--accent); border-radius:2px; }
+.nav-mobile {
+  display:none; position:fixed; top:68px; left:0; right:0;
+  background:rgba(10,10,15,0.98); border-bottom:1px solid var(--border);
+  padding:14px; flex-direction:column; gap:4px; z-index:199;
+  backdrop-filter:blur(20px);
+}
+.nav-mobile.open { display:flex; }
+.nav-mobile .nav-link { font-size:0.9rem; padding:10px 16px; }
+
+.page { padding-top:68px; min-height:100vh; }
+
+@media(max-width:880px) {
+  nav { padding:0 16px; }
+  .nav-links { display:none; }
+  .nav-burger { display:flex; }
+}
+
+/* Global search bar */
+.global-search-section{width:100%;max-width:600px;margin:28px auto 0;padding:0 20px;position:relative;z-index:1;}
+.global-search-wrap{position:relative;}
+.global-search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-dimmer);pointer-events:none;}
+.global-search-input{
+  width:100%;background:var(--surface);border:2px solid var(--border);
+  border-radius:50px;padding:14px 20px 14px 48px;
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;
+  outline:none;transition:all .25s;box-sizing:border-box;
+}
+.global-search-input:focus{border-color:var(--accent);background:rgba(201,168,76,.04);box-shadow:0 0 0 4px rgba(201,168,76,.1);}
+.global-search-input::placeholder{color:var(--text-dimmer);}
+.global-search-results{
+  display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  max-height:360px;overflow-y:auto;z-index:200;
+  box-shadow:0 20px 40px rgba(0,0,0,.5);
+}
+.global-search-results.open{display:block;}
+.search-result-item{
+  padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);
+  transition:background .15s;display:flex;align-items:center;gap:12px;
+}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:rgba(201,168,76,.06);}
+.sri-label{font-size:0.72rem;color:var(--text-dimmer);margin-bottom:2px;text-transform:uppercase;letter-spacing:.08em;}
+.sri-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:#fff;}
+.sri-brand{font-size:0.75rem;color:var(--text-dim);}
+.sri-cat{font-size:0.65rem;padding:2px 7px;border-radius:5px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--accent);font-weight:600;white-space:nowrap;}
+.search-no-result{padding:20px;text-align:center;color:var(--text-dimmer);font-size:0.9rem;}
+
+.gs-section{width:100%;max-width:560px;position:relative;z-index:1;margin-top:24px;}
+.gs-outer{position:relative;}
+.gs-outer svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-dimmer);pointer-events:none;}
+.gs-main{width:100%;background:var(--surface);border:2px solid var(--border);border-radius:50px;padding:13px 20px 13px 50px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;transition:all .25s;box-sizing:border-box;}
+.gs-main:focus{border-color:var(--accent);background:rgba(201,168,76,.04);box-shadow:0 0 0 4px rgba(201,168,76,.08);}
+.gs-main::placeholder{color:var(--text-dimmer);}
+.gs-drop{display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;max-height:300px;overflow-y:auto;z-index:200;box-shadow:0 16px 40px rgba(0,0,0,.5);}
+.gs-drop.open{display:block;}
+.gs-item{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.gs-item:last-child{border-bottom:none;}
+.gs-item:hover{background:rgba(201,168,76,.06);}
+.gs-item-left .gs-lbl{font-size:0.7rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+.gs-item-left .gs-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#fff;}
+.gs-item-left .gs-brand{font-size:0.74rem;color:var(--text-dim);}
+.gs-cat{font-size:0.62rem;padding:2px 7px;border-radius:5px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--accent);font-weight:600;white-space:nowrap;}
+
+.home-section{min-height:calc(100vh - 68px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 40px 60px;position:relative;overflow:hidden;}
+.home-bg-glow{position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% 30%,rgba(201,168,76,0.07),transparent 65%);pointer-events:none;}
+.home-logo{height:130px;width:auto;margin-bottom:32px;filter:drop-shadow(0 0 24px rgba(201,168,76,.35));animation:logoPulse 3s ease-in-out infinite;position:relative;z-index:1;}
+@keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 18px rgba(201,168,76,.3));}50%{filter:drop-shadow(0 0 38px rgba(201,168,76,.6));}}
+.home-location{font-size:0.78rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-top:24px;position:relative;z-index:1;}
+
+/* Cards */
+.nav-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:780px;width:100%;position:relative;z-index:1;}
+.nav-card{text-decoration:none;aspect-ratio:2/3;border-radius:14px;background:var(--surface);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px 12px;transition:all .22s;box-shadow:0 4px 14px rgba(0,0,0,.3);}
+.nav-card:hover{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.06);transform:translateY(-5px) scale(1.02);box-shadow:0 12px 28px rgba(0,0,0,.45);}
+.nav-card-icon{width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));transition:transform .22s;}
+.nav-card:hover .nav-card-icon{transform:scale(1.08);}
+.nav-card-label{font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);text-align:center;line-height:1.4;}
+
+/* Search bar */
+.gs-section{width:100%;max-width:560px;position:relative;z-index:1;margin-top:20px;}
+.gs-outer{position:relative;}
+.gs-outer svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--text-dimmer);pointer-events:none;}
+.gs-main{width:100%;background:var(--surface);border:2px solid var(--border);border-radius:50px;padding:13px 20px 13px 50px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;transition:all .25s;box-sizing:border-box;}
+.gs-main:focus{border-color:var(--accent);background:rgba(201,168,76,.04);box-shadow:0 0 0 4px rgba(201,168,76,.08);}
+.gs-main::placeholder{color:var(--text-dimmer);}
+.gs-drop{display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;max-height:300px;overflow-y:auto;z-index:200;box-shadow:0 16px 40px rgba(0,0,0,.5);}
+.gs-drop.open{display:block;}
+.gs-item{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.gs-item:last-child{border-bottom:none;}
+.gs-item:hover{background:rgba(201,168,76,.06);}
+.gs-lbl{font-size:0.7rem;color:var(--text-dimmer);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+.gs-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:#fff;}
+.gs-cat{font-size:0.62rem;padding:2px 7px;border-radius:5px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--accent);font-weight:600;white-space:nowrap;}
+
+@media(max-width:600px){.nav-cards{grid-template-columns:repeat(2,1fr);gap:12px;max-width:420px;}.home-section{padding:32px 20px 48px;}.nav-card-icon{width:60px;height:60px;}}
+
+/* Optimisé format A4 vertical */
+.page-wrap { max-width:900px; margin:0 auto; padding:28px 32px 80px; }
+.page-heading { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(1.4rem,3vw,2rem); color:#fff; margin-bottom:4px; letter-spacing:-.02em; }
+.page-heading span { color:var(--accent); }
+.page-sub { font-size:0.85rem; color:var(--text-dim); margin-bottom:20px; }
+
+/* Gamme tabs */
+.gamme-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+.gamme-tab { padding:8px 18px; border-radius:20px; font-size:0.78rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text-dim); transition:all .2s; font-family:'DM Sans',sans-serif; white-space:nowrap; }
+.gamme-tab:hover { border-color:rgba(201,168,76,.35); color:var(--text); }
+.gamme-tab.active { background:var(--accent); border-color:var(--accent); color:#0a0a0f; font-weight:700; }
+
+.gamme-panel { display:none; }
+.gamme-panel.active { display:block; }
+.gamme-desc { font-size:0.82rem; color:var(--text-dimmer); margin-bottom:16px; font-style:italic; }
+
+/* Grid — 4 cols */
+.prod-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+
+/* Product card — PDF style: image top, name + specs below, NO borders */
+.prod-card {
+  display:flex; flex-direction:column; align-items:center;
+  padding:14px 10px 16px;
+  background:var(--surface);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.05);
+  transition:all .2s;
+}
+.prod-card:hover { background:rgba(201,168,76,.05); border-color:rgba(201,168,76,.2); transform:translateY(-2px); }
+
+/* Image zone — uniform height, padding so all bottles same visual size */
+.prod-img-zone {
+  width:100%; aspect-ratio:3/4;
+  display:flex; align-items:center; justify-content:center;
+  padding:8% 12%;  box-sizing:border-box; margin-bottom:10px;
+}
+.prod-img-zone img { width:100%; height:100%; object-fit:contain; }
+.prod-ph { font-size:2.5rem; opacity:.4; }
+
+.prod-info { width:100%; }
+.prod-name {
+  font-family:'Syne',sans-serif; font-weight:700; font-size:0.82rem;
+  color:#fff; text-align:center; margin-bottom:10px; line-height:1.2;
+}
+
+/* Specs — PDF style: label bold above, value below, no lines between */
+.prod-specs { display:flex; flex-direction:column; gap:5px; }
+.spec-row { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.spec-label {
+  font-size:0.62rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--text-dimmer);
+}
+.spec-value {
+  font-size:0.78rem; color:var(--text);
+  text-align:center; font-weight:500;
+}
+.spec-value.highlight { color:var(--accent); font-weight:700; }
+
+/* Separator between specs (subtle dot) */
+.spec-row + .spec-row { border-top:1px solid rgba(255,255,255,.04); padding-top:5px; }
+
+@media(max-width:768px) {
+  .prod-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
+  .page-wrap { padding:20px 16px 60px; }
+}
+@media(max-width:400px) {
+  .prod-grid { grid-template-columns:repeat(1,1fr); }
+}
+</style>
+</head>
+<body data-page="cigarettes">
+<nav>
+  <a href="index.html"><img src="imgs/logo.webp" class="nav-logo" alt="J&S Sun Shop"></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link" data-page="accueil">Accueil</a>
+    <a href="cbd.html" class="nav-link" data-page="cbd">Fleurs &amp; Résines</a>
+    <a href="aromes.html" class="nav-link" data-page="aromes">Arômes E-liquides</a>
+    <a href="concentres.html" class="nav-link" data-page="concentres">Concentrés</a>
+    <a href="cigarettes.html" class="nav-link" data-page="cigarettes">Cigarettes Élec.</a>
+    <a href="box.html" class="nav-link" data-page="box">Box &amp; Clearos</a>
+    <a href="actus.html" class="nav-link" data-page="actus">Actus</a>
+  </div>
+  <div class="nav-burger" onclick="document.getElementById('nm').classList.toggle('open')"><span></span><span></span><span></span></div>
+</nav>
+<div class="nav-mobile" id="nm">
+  <a href="index.html" class="nav-link" data-page="accueil">Accueil</a>
+  <a href="cbd.html" class="nav-link" data-page="cbd">Fleurs &amp; Résines</a>
+  <a href="aromes.html" class="nav-link" data-page="aromes">Arômes E-liquides</a>
+  <a href="concentres.html" class="nav-link" data-page="concentres">Concentrés</a>
+  <a href="cigarettes.html" class="nav-link" data-page="cigarettes">Cigarettes Élec.</a>
+  <a href="box.html" class="nav-link" data-page="box">Box &amp; Clearos</a>
+  <a href="actus.html" class="nav-link" data-page="actus">Actus</a>
+</div>
+<div class="page">
+  <div class="page-wrap">
+    <h1 class="page-heading">Cigarettes <span>&#xC9;lectroniques</span></h1>
+    <p class="page-sub">S&#xe9;lectionnez une gamme pour d&#xe9;couvrir les mod&#xe8;les disponibles</p>
+    <div class="gamme-tabs"><button class="gamme-tab active" data-target="stylos" onclick="switchGamme(this)">✒️ Stylos</button><button class="gamme-tab" data-target="ultracompact" onclick="switchGamme(this)">📦 Ultra Compact</button><button class="gamme-tab" data-target="compact" onclick="switchGamme(this)">🔋 Compact</button><button class="gamme-tab" data-target="performance" onclick="switchGamme(this)">⚡ Performance</button><button class="gamme-tab" data-target="puissance" onclick="switchGamme(this)">💥 Puissance</button></div>
+    <div class="gamme-panel active" id="panel-stylos"><div class="gamme-desc">Type cigarette — tirage serré, cigarette classique</div><div class="prod-grid"><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/wenax-m2.webp" alt="Wenax M1" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Wenax M1</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">16W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">400 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/wenax_m2.webp" alt="Wenax M2" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Wenax M2</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">16W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 200 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/wenax_s3.webp" alt="Wenax S3" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Wenax S3</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">16W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 200 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/wenax_s3_evo.webp" alt="Wenax S3 EVO" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Wenax S3 EVO</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">18W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 100 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Semi-serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/nevoks_feelin_2.webp" alt="Airpen" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Airpen</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">25W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 100 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div></div></div><div class="gamme-panel" id="panel-ultracompact"><div class="gamme-desc">Nomade, discret, facile à emporter</div><div class="prod-grid"><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/images__24_-removebg-preview.webp" alt="Yooz Zero V5" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Yooz Zero V5</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/pod-aegis-hero-3-Lavender-geekvape-removebg-preview.webp" alt="Geekvape Hero Q" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Geekvape Hero Q</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">18W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">3 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/Kit-Aegis-H45-Classic-GeekVape-e-liquide-fr01-removebg-preview.webp" alt="Geekvape H45 Classic" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Geekvape H45 Classic</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">45W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2 500 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré/Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">4 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/dotpod-max-v1-5__2_-removebg-preview.webp" alt="Dotpod Max" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Dotpod Max</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">25W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 500 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">3.5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div></div></div><div class="gamme-panel" id="panel-compact"><div class="gamme-desc">Bonne autonomie, polyvalent</div><div class="prod-grid"><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/pod-avocado-baby-1100mah-vaptio-removebg-preview.webp" alt="Avocado Baby" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Avocado Baby</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">25W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 100 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/kit-avocado-baby-pro-vaptio-removebg-preview.webp" alt="Avocado Baby Pro" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Avocado Baby Pro</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">25W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 100 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/kit-klypse-innokin-removebg-preview.webp" alt="Innokin Klypse" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Innokin Klypse</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">17W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/31cRQvvwqQL-removebg-preview.webp" alt="Oxva XLIM Pro 2" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Oxva XLIM Pro 2</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">30W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré/Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/vaptio-kit-cosmo-2-new-color-vaptio-removebg-preview.webp" alt="Vaptio Cosmo 2" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Vaptio Cosmo 2</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">25W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 500 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/IMG_9740-removebg-preview.webp" alt="Geekvape Wenax Q" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Geekvape Wenax Q</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">20W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">3 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/wenax-q2-geekvape-removebg-preview.webp" alt="Geekvape Wenax Q2" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Geekvape Wenax Q2</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">20W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">3 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/thelema_mini.webp" alt="Nevoks Feelin 2" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Nevoks Feelin 2</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">20W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 100 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">2 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/kit-cosmo-2-plus-3ml-3000mah-vaptio--removebg-preview.webp" alt="Vaptio Cosmo 2+" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Vaptio Cosmo 2+</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">25W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">3 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">3 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Non</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/Kit-coolfire-z60-purple-innokin-min-1-removebg-preview.webp" alt="Innokin Coolfire Z60" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Innokin Coolfire Z60</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">60W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">3 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/vaporesso_gen_200_itank_2.webp" alt="Thelema Mini" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Thelema Mini</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">45W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">1 800 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré/Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">3 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/thelema-elite-dm45-lost-vape-2__1_-removebg-preview.webp" alt="Thelema Elite DM45" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Thelema Elite DM45</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">45W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré/Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">4 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div></div></div><div class="gamme-panel" id="panel-performance"><div class="gamme-desc">Puissance et autonomie, pod avancé</div><div class="prod-grid"><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/armour-g-mtl-vaporesso-removebg-preview.webp" alt="Vaporesso Armour G" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Vaporesso Armour G</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">45W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/armour-gs-vaporesso-removebg-preview.webp" alt="Vaporesso Armour GS" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Vaporesso Armour GS</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">45W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2 600 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Serré/Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/Kit-Centaurus-M100-Lost-Vape-New-Colors-100W-sw-removebg-preview.webp" alt="Centaurus M100" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Centaurus M100</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">100W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">3 000 mAh</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><div class="prod-ph">📱</div></div><div class="prod-info"><h3 class="prod-name">Vaporesso Gen 200 Itank 2</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">200W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2×18650</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">8 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div></div></div><div class="gamme-panel" id="panel-puissance"><div class="gamme-desc">Box haute puissance, usage expert</div><div class="prod-grid"><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/kit-centaurus-m200-lost-vape-removebg-preview.webp" alt="Centaurus M200" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Centaurus M200</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">200W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2×18650</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/kit-aegis-l200-classic-rainbow-geekvape-removebg-preview.webp" alt="Aegis Legend 2 (L200 Classic)" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Aegis Legend 2 (L200 Classic)</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">200W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2×18650</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">5.5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/kit-aegis-legend-3-geekvape-removebg-preview.webp" alt="Aegis Legend 3" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Aegis Legend 3</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">200W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2×18650</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">5.5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div><div class="prod-card"><div class="prod-img-zone"><img src="imgs/cig/kit-aegis-legend-5-geekvape-removebg-preview.webp" alt="Aegis Legend 5" loading="lazy"></div><div class="prod-info"><h3 class="prod-name">Aegis Legend 5</h3><div class="prod-specs"><div class="spec-row"><span class="spec-label">Puissance</span><span class="spec-value">200W</span></div><div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">2×18650</span></div><div class="spec-row"><span class="spec-label">Tirage</span><span class="spec-value">Direct</span></div><div class="spec-row"><span class="spec-label">Contenance</span><span class="spec-value">5.5 ml</span></div><div class="spec-row"><span class="spec-label">Écran</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Réglages</span><span class="spec-value">Oui</span></div><div class="spec-row"><span class="spec-label">Port</span><span class="spec-value">USB-C</span></div></div></div></div></div></div>
+  </div>
+</div>
+<script>
+function switchGamme(btn){
+  document.querySelectorAll('.gamme-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.gamme-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+btn.dataset.target).classList.add('active');
+}
+document.querySelectorAll('.nav-link').forEach(a=>{
+  if(a.dataset.page===document.body.dataset.page)a.classList.add('active');
+});
+</script>
+<script src="standby.js"></script>
+</body>
+</html>
