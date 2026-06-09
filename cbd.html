@@ -320,6 +320,114 @@ const FLEURS_GRAMS      = [1, 3, 5, 10, 25, 50, 100];
 const RESINES_GRAMS     = [2, 5, 10, 25, 50, 100];
 
 const RESINES_CATS = ['Résines naturelles','Résines Molécule','Résine molécule','Isolats'];
+
+/* ── Couleurs par catégorie ── */
+function catColor(cat){
+  const m = {
+    'Small Buds':'#C5A84C','Greenhouse':'#5C9068','Hydro':'#4C7FB5',
+    'Indoor':'#B87D4A','Résines naturelles':'#9C8260','Isolats':'#7090A8',
+    'Fleurs Molécule':'#8A6BB5','Résines Molécule':'#6A4E94'
+  };
+  return m[cat]||'#c9a84c';
+}
+
+/* ── État ── */
+let currentStore = 'barberey';
+let currentCat   = null;
+
+function getData(){ return currentStore==='barberey' ? DEFAULT_BARBEREY : DEFAULT_ROMILLY; }
+
+/* ── Sidebar ── */
+function buildSB(){
+  const data = getData();
+  const sb = document.getElementById('cbd-sb');
+  sb.innerHTML = '<div class="cbd-sb-title">Catégories</div>';
+  Object.keys(data).forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (cat===currentCat?' active':'');
+    btn.style.setProperty('--cc', catColor(cat));
+    const emoji = {
+      'Small Buds':'🌿','Greenhouse':'🏡','Hydro':'💧','Indoor':'🪴',
+      'Résines naturelles':'🍯','Isolats':'⭐','Fleurs Molécule':'🔬','Résines Molécule':'🧪'
+    }[cat]||'🌱';
+    btn.innerHTML = `<div class="cat-ic">${emoji}</div><div class="cat-nm">${cat}</div>`;
+    btn.onclick = () => { currentCat=cat; buildSB(); renderCat(); };
+    sb.appendChild(btn);
+  });
+}
+
+/* ── Tableau prix ── */
+function renderCat(){
+  const data = getData();
+  const content = document.getElementById('cbd-content');
+  if(!currentCat || !data[currentCat]){ content.innerHTML='<p style="color:var(--text-dimmer);padding:40px;text-align:center;">Sélectionnez une catégorie</p>'; return; }
+  const cat = data[currentCat];
+  const grams = cat.grams;
+  const isResine = RESINES_CATS.includes(currentCat);
+  const color = catColor(currentCat);
+
+  let html = `<div class="cat-heading" style="color:${color}">${currentCat}</div>`;
+
+  cat.matrices.forEach(matrix => {
+    const prices = matrix.prices;
+    html += `<table class="price-table">
+      <thead>
+        <tr>
+          <th class="cn">Produits</th>
+          ${grams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<th class="cg">${g}g</th>` : '').join('')}
+        </tr>
+      </thead>
+      <tbody>`;
+
+    // Prix row
+    html += `<tr class="pr">
+      <td class="cn" style="color:${color};font-weight:700;font-size:0.78rem;letter-spacing:.05em;text-transform:uppercase;">Prix</td>
+      ${grams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td class="pc" style="color:${color}">${prices[i]}€</td>` : '').join('')}
+    </tr>`;
+
+    // Prix au gramme row
+    html += `<tr class="ppg">
+      <td class="cn">prix/g</td>
+      ${grams.map((g,i) => {
+        if(prices[i]===null||prices[i]===undefined) return '';
+        const ppg = (prices[i]/g).toFixed(2);
+        return `<td>${ppg}€</td>`;
+      }).join('')}
+    </tr>`;
+
+    // Products rows
+    matrix.products.forEach(prod => {
+      html += `<tr>
+        <td class="cn">${prod}</td>
+        ${grams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td></td>` : '').join('')}
+      </tr>`;
+    });
+
+    html += `</tbody></table><div style="margin-bottom:20px"></div>`;
+  });
+
+  content.innerHTML = html;
+}
+
+/* ── Switch boutique ── */
+function switchStore(store, btn){
+  currentStore = store;
+  document.querySelectorAll('.store-btn-b').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildSB();
+  renderCat();
+}
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const data = getData();
+  currentCat = Object.keys(data)[0];
+  buildSB();
+  renderCat();
+  document.querySelectorAll('.nav-link').forEach(a=>{
+    if(a.dataset.page===document.body.dataset.page) a.classList.add('active');
+  });
+});
 </script>
 <script src="standby.js"></script>
 </body>
