@@ -101,6 +101,20 @@ main{flex:1;padding:32px;max-width:900px;}
   .form-grid{grid-template-columns:1fr;}
   main{padding:16px;}
 }
+
+/* Tags */
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.tag-btn{padding:5px 12px;border-radius:16px;font-size:0.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);transition:all .15s;font-family:'DM Sans',sans-serif;}
+.tag-btn.sel{background:rgba(201,168,76,.15);border-color:var(--accent);color:var(--accent);}
+.tags-search{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;width:100%;margin-bottom:8px;}
+.tags-search:focus{border-color:rgba(201,168,76,.4);}
+/* Matrice CBD */
+.mat-select{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.mat-select label{font-size:0.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dimmer);}
+.mat-select select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;flex:1;}
+.mat-preview{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.8rem;color:var(--text-dim);line-height:1.8;}
+.mat-preview strong{color:var(--accent);}
+
 </style>
 </head>
 <body>
@@ -155,6 +169,11 @@ main{flex:1;padding:32px;max-width:900px;}
             <div class="field field-full"><label>Arômes</label><textarea id="ar-aromes" placeholder="ex: Grenade, fraises des bois, kiwi, frais"></textarea></div>
             <div class="field"><label>ML (volume)</label><input type="text" id="ar-ml" placeholder="ex: 50"></div>
             <div class="field"><label>PG/VG</label><input type="text" id="ar-pgvg" placeholder="ex: 30/70"></div>
+            <div class="field field-full">
+              <label>Catégories / Tags</label>
+              <input type="text" class="tags-search" id="ar-tag-search" placeholder="Rechercher une catégorie..." oninput="filterTags('ar')">
+              <div class="tags-wrap" id="ar-tags-wrap"></div>
+            </div>
             <div class="field"><label>Prix (€)</label><input type="number" id="ar-prix" placeholder="ex: 8.90" step="0.01" min="0"></div>
             <div class="field">
               <label>Frais ?</label>
@@ -197,6 +216,11 @@ main{flex:1;padding:32px;max-width:900px;}
             <div class="field field-full"><label>Arômes</label><textarea id="co-aromes" placeholder="ex: Grenade, fraises des bois, kiwi"></textarea></div>
             <div class="field"><label>ML (volume)</label><input type="text" id="co-ml" placeholder="ex: 30"></div>
             <div class="field"><label>Prix (€)</label><input type="number" id="co-prix" placeholder="ex: 8.90" step="0.01" min="0"></div>
+            <div class="field field-full">
+              <label>Catégories / Tags</label>
+              <input type="text" class="tags-search" id="co-tag-search" placeholder="Rechercher une catégorie..." oninput="filterTags('co')">
+              <div class="tags-wrap" id="co-tags-wrap"></div>
+            </div>
             <div class="field">
               <label>Frais ?</label>
               <div class="toggle-row">
@@ -235,14 +259,21 @@ main{flex:1;padding:32px;max-width:900px;}
           <div class="form-grid">
             <div class="field"><label>Nom du produit</label><input type="text" id="cbd-nom" placeholder="ex: OG KUSH"></div>
             <div class="field"><label>Catégorie</label>
-              <select id="cbd-cat">
+              <select id="cbd-cat" onchange="updateMatPreview()">
                 <option>Small Buds</option><option>Greenhouse</option><option>Hydro</option>
                 <option>Indoor</option><option>Résines naturelles</option><option>Isolats</option>
                 <option>Fleurs Molécule</option><option>Résines Molécule</option>
               </select>
             </div>
-            <div class="field"><label>Prix boutique 1 (Romilly)</label><input type="text" id="cbd-prix1" placeholder="ex: 6.00€/g"></div>
-            <div class="field"><label>Prix boutique 2 (Barberey)</label><input type="text" id="cbd-prix2" placeholder="ex: 6.00€/g"></div>
+            <div class="field field-full">
+              <div class="mat-select">
+                <label>Matrice de prix (€/10g)</label>
+                <select id="cbd-mat" onchange="updateMatPreview()">
+                  <option value="">-- Choisir une matrice --</option>
+                </select>
+              </div>
+              <div class="mat-preview" id="cbd-mat-preview">Sélectionnez une matrice pour voir les prix.</div>
+            </div>
             <div class="field field-full">
               <label>Image produit</label>
               <div class="img-drop" onclick="document.getElementById('cbd-img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleImgDrop(event,'cbd')">
@@ -398,6 +429,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById('app').style.display = 'block';
     document.getElementById('hd-user').textContent = user.email;
     initListeners();
+    initAdminExtras();
   } else {
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
@@ -495,7 +527,7 @@ window.addProd = async (section) => {
       prix: prixRaw ? parseFloat(prixRaw).toFixed(2)+' €' : '',
       frais: window._toggles['ar-frais'],
       img: document.getElementById('ar-img-url').value,
-      themes: [], _admin: true, createdAt: Date.now()
+      themes: window._selectedTags['ar'] || [], _admin: true, createdAt: Date.now()
     };
     msgId = 'ar-msg';
   } else if(section === 'concentres') {
@@ -510,17 +542,19 @@ window.addProd = async (section) => {
       prix: prixRaw ? parseFloat(prixRaw).toFixed(2)+'€' : '',
       frais: window._toggles['co-frais'],
       img: document.getElementById('co-img-url').value,
-      familles: [], _admin: true, createdAt: Date.now()
+      familles: window._selectedTags['co'] || [], _admin: true, createdAt: Date.now()
     };
     msgId = 'co-msg';
   } else if(section === 'cbd') {
     const nom = document.getElementById('cbd-nom').value.trim();
     if(!nom) { showMsg('cbd-msg','⚠ Nom requis.','err'); return; }
+    const matKey = document.getElementById('cbd-mat').value;
+    const matData = window._currentMat || null;
     data = {
       nom,
       cat: document.getElementById('cbd-cat').value,
-      prix_romilly: document.getElementById('cbd-prix1').value.trim(),
-      prix_barberey: document.getElementById('cbd-prix2').value.trim(),
+      matrice_key: matKey,
+      matrice: matData,
       img: document.getElementById('cbd-img-url').value,
       _admin: true, createdAt: Date.now()
     };
@@ -577,6 +611,82 @@ function showMsg(id, txt, type) {
   if(!el) return;
   el.textContent = txt; el.className = 'msg '+type; el.style.display = 'block';
   setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+
+/* ── TAGS ── */
+const ALL_THEMES = ["Abricot","Alcool / cocktails","Ananas","Baies","Banane","Biscuit","Boisson énergisante","Bonbon","Cacahuète","Cactus","Café","Canelle","Caramel","Cassis","Cerise","Chantilly","Chocolat","Citron","Cola","Concombre","Corossol","Céréales","Fleurs","Fraise","Framboise","Fruit de la passion","Fruit du dragon","Fruit du jacquier","Fruit du serpent","Fruits rouges","Goyave","Grenade","Groseille","Kiwi","Lait","Litchi","Macadamia","Madeleine","Mandarine","Mangoustan","Mangue","Manioc","Melon","Menthe / Chlorophylle","Myrtille","Mûre","Nectarine","Noisette","Noix de coco","Noix de pécan","Nougat","Orange","Pamplemousse","Papaye","Pastèque","Pistache","Poire","Pomme","Pop corn","Praliné","Pâtisserie","Pêche","Raisin","Réglisse","Speculoos","Tabac","Thé","Vanille"];
+
+window._selectedTags = { ar: [], co: [] };
+
+function renderTags(prefix, filter=''){
+  const wrap = document.getElementById(prefix+'-tags-wrap');
+  if(!wrap) return;
+  const sel = window._selectedTags[prefix] || [];
+  const list = filter ? ALL_THEMES.filter(t=>t.toLowerCase().includes(filter.toLowerCase())) : ALL_THEMES;
+  wrap.innerHTML = list.map(t => `<button type="button" class="tag-btn${sel.includes(t)?' sel':''}" onclick="toggleTag('${prefix}','${t}')">${t}</button>`).join('');
+}
+
+function toggleTag(prefix, tag){
+  const arr = window._selectedTags[prefix] || [];
+  const idx = arr.indexOf(tag);
+  if(idx>=0) arr.splice(idx,1); else arr.push(tag);
+  window._selectedTags[prefix] = arr;
+  const search = document.getElementById(prefix+'-tag-search');
+  renderTags(prefix, search ? search.value : '');
+}
+
+window.filterTags = (prefix) => {
+  const val = document.getElementById(prefix+'-tag-search')?.value || '';
+  renderTags(prefix, val);
+};
+
+/* ── MATRICE CBD ── */
+const FLEURS_MATRICES = {"10":{"label":"Prix A (10€/10g)","grams":[1,3,5,10,25,50,100],"prices":[1.25,3.6,5.5,10,23,42,75]},"12.5":{"label":"Prix B (12.5€/10g)","grams":[1,3,5,10,25,50,100],"prices":[1.5,4.5,7,12.5,28,52,95]},"15":{"label":"Prix C (15€/10g)","grams":[1,3,5,10,25,50,100],"prices":[2,5,8,15,35,60,110]},"17.5":{"label":"Prix D (17.5€/10g)","grams":[1,3,5,10,25,50,100],"prices":[2.25,6.3,10,17.5,40,75,130]},"20":{"label":"Prix E (20€/10g)","grams":[1,3,5,10,25,50,100],"prices":[2.5,7,11,20,45,82,150]},"22.5":{"label":"Prix F (22.5€/10g)","grams":[1,3,5,10,25,50,100],"prices":[2.75,8,12,22.5,50,95,170]},"25":{"label":"Prix G (25€/10g)","grams":[1,3,5,10,25,50,100],"prices":[3,9,14,25,58,105,185]},"27.5":{"label":"Prix H (27.5€/10g)","grams":[1,3,5,10,25,50,100],"prices":[3.5,10,15,27.5,63,115,200]},"30":{"label":"Prix I (30€/10g)","grams":[1,3,5,10,25,50,100],"prices":[3.75,10.5,16,30,69,125,230]},"32.5":{"label":"Prix J (32.5€/10g)","grams":[1,3,5,10,25,50,100],"prices":[4,12,18,32.5,75,137,245]},"35":{"label":"Prix K (35€/10g)","grams":[1,3,5,10,25,50,100],"prices":[4.5,13,20,35,80,150,260]},"40":{"label":"Prix M (40€/10g)","grams":[1,3,5,10,25,50,100],"prices":[5,14.5,22,40,92,170,310]},"45":{"label":"Prix O (45€/10g)","grams":[1,3,5,10,25,50,100],"prices":[5.7,17,25,45,105,190,340]},"50":{"label":"Prix Q (50€/10g)","grams":[1,3,5,10,25,50,100],"prices":[6.3,18,27.5,50,115,210,375]},"55":{"label":"Prix S (55€/10g)","grams":[1,3,5,10,25,50,100],"prices":[6.7,20,32,55,125,230,420]},"60":{"label":"Prix U (60€/10g)","grams":[1,3,5,10,25,50,100],"prices":[7.5,22.5,35,60,140,250,450]},"65":{"label":"Prix W (65€/10g)","grams":[1,3,5,10,25,50,100],"prices":[8,23.5,38,65,150,275,490]},"70":{"label":"Prix Y (70€/10g)","grams":[1,3,5,10,25,50,100],"prices":[8.7,26,42,70,165,300,550]},"72.5":{"label":"Prix Z (72.5€/10g)","grams":[1,3,5,10,25,50,100],"prices":[10,28.5,45,72.5,179,326,626]},"80":{"label":"Prix A2 (80€/10g)","grams":[1,3,5,10,25,50,100],"prices":[11,31.5,49.5,80,197,359.5,691]}};
+const RESINES_MATRICES = {"33":{"label":"Prix A (33€/10g)","grams":[2,5,10,25,50,100],"prices":[8,18,33,75,140,250]},"45.5":{"label":"Prix B (45.5€/10g)","grams":[2,5,10,25,50,100],"prices":[11,25,45.5,108,196,375]},"55":{"label":"Prix C (55€/10g)","grams":[2,5,10,25,50,100],"prices":[14,32,55,130,250,455]},"60":{"label":"Prix D (60€/10g)","grams":[2,5,10,25,50,100],"prices":[15,35,60,140,270,490]},"65":{"label":"Prix E (65€/10g)","grams":[2,5,10,25,50,100],"prices":[16.5,38,65,151.5,292.5,531]},"70":{"label":"Prix F (70€/10g)","grams":[2,5,10,25,50,100],"prices":[17,40,70,165,300,550]},"72.5":{"label":"Prix G (72.5€/10g)","grams":[2,5,10,25,50,100],"prices":[17.5,42,72.5,179,326,626]},"75":{"label":"Prix H (75€/10g)","grams":[2,5,10,25,50,100],"prices":[18,43,75,179,326,647]}};
+const RESINES_CATS_ADMIN = ['Résines naturelles','Résines Molécule','Isolats'];
+window._currentMat = null;
+
+function populateMatSelect(){
+  const cat = document.getElementById('cbd-cat')?.value || '';
+  const sel = document.getElementById('cbd-mat');
+  if(!sel) return;
+  const isResine = RESINES_CATS_ADMIN.includes(cat);
+  const mats = isResine ? RESINES_MATRICES : FLEURS_MATRICES;
+  sel.innerHTML = '<option value="">-- Choisir une matrice --</option>';
+  Object.entries(mats).forEach(([k,v]) => {
+    sel.innerHTML += `<option value="${k}">${v.label}</option>`;
+  });
+  updateMatPreview();
+}
+
+window.updateMatPreview = () => {
+  const cat = document.getElementById('cbd-cat')?.value || '';
+  const key = document.getElementById('cbd-mat')?.value || '';
+  const prev = document.getElementById('cbd-mat-preview');
+  const isResine = RESINES_CATS_ADMIN.includes(cat);
+  const mats = isResine ? RESINES_MATRICES : FLEURS_MATRICES;
+  populateMatSelect();
+  if(!key || !mats[key]){ window._currentMat=null; if(prev) prev.innerHTML='Sélectionnez une matrice pour voir les prix.'; return; }
+  const m = mats[key];
+  window._currentMat = m;
+  if(prev) prev.innerHTML = '<strong>'+m.label+'</strong><br>' + m.grams.map((g,i)=>`${g}g : <strong>${m.prices[i]}€</strong>`).join(' &nbsp;·&nbsp; ');
+};
+
+// Init tags quand section visible
+const _origShowSection = window.showSection;
+window.showSection = (name) => {
+  _origShowSection(name);
+  if(name==='aromes'){ window._selectedTags.ar=[]; renderTags('ar'); }
+  if(name==='concentres'){ window._selectedTags.co=[]; renderTags('co'); }
+  if(name==='cbd'){ populateMatSelect(); }
+};
+
+// Init au chargement
+function initAdminExtras(){
+  renderTags('ar');
+  renderTags('co');
+  populateMatSelect();
 }
 
 // Listeners
