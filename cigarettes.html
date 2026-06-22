@@ -188,12 +188,21 @@ nav {
 
 /* Image zone — uniform height, padding so all bottles same visual size */
 .prod-img-zone {
-  width:100%; aspect-ratio:3/4;
+  width:100%; position:relative; padding-top:133.33%; /* fallback 3:4 ratio for old browsers */
   display:flex; align-items:center; justify-content:center;
-  padding:8% 12%;  box-sizing:border-box; margin-bottom:10px;
-  flex-shrink:0;
+  box-sizing:border-box; margin-bottom:10px;
+  flex-shrink:0; overflow:hidden;
 }
-.prod-img-zone img { width:100%; height:100%; object-fit:contain; }
+@supports (aspect-ratio: 3/4) {
+  .prod-img-zone { aspect-ratio:3/4; padding-top:0; padding:8% 12%; }
+}
+.prod-img-zone img {
+  position:absolute; top:8%; left:12%; right:12%; bottom:8%;
+  width:76%; height:84%; object-fit:contain;
+}
+@supports (aspect-ratio: 3/4) {
+  .prod-img-zone img { position:static; width:100%; height:100%; }
+}
 .prod-ph { font-size:2.5rem; opacity:.4; }
 
 .prod-info { width:100%; display:flex; flex-direction:column; flex:1; }
