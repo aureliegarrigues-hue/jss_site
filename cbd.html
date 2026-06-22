@@ -334,8 +334,49 @@ function catColor(cat){
 /* ── État ── */
 let currentStore = 'barberey';
 let currentCat   = null;
+const FLEURS_GRAMS_DEFAULT = [1,3,5,10,25,50,100];
+window.firebaseCbdProducts = [];
 
 function getData(){ return currentStore==='barberey' ? DEFAULT_BARBEREY : DEFAULT_ROMILLY; }
+
+/* Construit la liste plate {nom, prices, grams, _admin, key} pour une catégorie,
+   en fusionnant données statiques + produits Firebase, triée par prix au 10g croissant */
+function getFlatProductsForCat(cat){
+  const data = getData();
+  const grams = data[cat] ? data[cat].grams : (RESINES_CATS.includes(cat) ? RESINES_GRAMS : FLEURS_GRAMS_DEFAULT);
+  const idx10 = grams.indexOf(10);
+  let list = [];
+
+  // Produits statiques
+  if(data[cat]){
+    data[cat].matrices.forEach(matrix => {
+      matrix.products.forEach(prod => {
+        list.push({ nom: prod, prices: matrix.prices, grams: data[cat].grams });
+      });
+    });
+  }
+
+  // Produits Firebase de cette catégorie (et de la boutique courante si applicable)
+  (window.firebaseCbdProducts||[]).forEach(p => {
+    if(p.cat === cat){
+      list.push({ nom: p.nom, prices: p.prices, grams: p.grams || grams, _admin: true });
+    }
+  });
+
+  // Tri par prix au 10g croissant (produits sans prix au 10g vont en fin de liste)
+  list.sort((a, b) => {
+    const ia = a.grams.indexOf(10), ib = b.grams.indexOf(10);
+    const pa = ia>=0 ? a.prices[ia] : null;
+    const pb = ib>=0 ? b.prices[ib] : null;
+    if(pa===null && pb===null) return 0;
+    if(pa===null) return 1;
+    if(pb===null) return -1;
+    return pa - pb;
+  });
+
+  return { grams, list };
+}
+
 
 /* ── Sidebar ── */
 function buildSB(){
@@ -371,17 +412,16 @@ function renderCat(){
     content.innerHTML = '<p style="color:var(--text-dimmer);padding:60px;text-align:center;font-size:1.1rem;">Page en construction</p>';
     return;
   }
-  if(!currentCat || !data[currentCat]){ content.innerHTML='<p style="color:var(--text-dimmer);padding:40px;text-align:center;">Sélectionnez une catégorie</p>'; return; }
-  const cat = data[currentCat];
-  const allGrams = cat.grams;
+  if(!currentCat){ content.innerHTML='<p style="color:var(--text-dimmer);padding:40px;text-align:center;">Sélectionnez une catégorie</p>'; return; }
+
   const isResine = RESINES_CATS.includes(currentCat);
   const isIsolat = currentCat === 'Isolats';
   const color = catColor(currentCat);
-
   const label = isIsolat ? 'Isolat' : (isResine ? 'Résine' : 'Fleur');
 
-  // Grammages globaux (union de tous les grammages utilisés, dans l'ordre standard)
-  const usedGrams = allGrams;
+  const { grams: usedGrams, list } = getFlatProductsForCat(currentCat);
+
+  if(!list.length){ content.innerHTML = `<div class="cat-heading" style="color:${color}">${currentCat}</div><p style="color:var(--text-dimmer);padding:40px;text-align:center;">Aucun produit dans cette catégorie.</p>`; return; }
 
   let html = `<div class="cat-heading" style="color:${color}">${currentCat}</div>`;
 
@@ -394,25 +434,30 @@ function renderCat(){
     </thead>
     <tbody>`;
 
-  cat.matrices.forEach(matrix => {
-    const prices = matrix.prices;
-
-    matrix.products.forEach(prod => {
-      // Ligne nom produit
-      html += `<tr class="pr">
-        <td class="cn" style="color:${color};font-weight:700;">${prod}</td>
-        ${usedGrams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td class="pc" style="color:${color}">${prices[i]}&nbsp;€</td>` : '<td></td>').join('')}
-      </tr>`;
-      // Ligne prix/g sous le nom
-      html += `<tr class="ppg">
-        <td class="cn">prix/g</td>
-        ${usedGrams.map((g,i) => {
-          if(prices[i]===null||prices[i]===undefined) return '<td></td>';
-          const ppg = (prices[i]/g).toFixed(2);
-          return `<td>${ppg}&nbsp;€</td>`;
-        }).join('')}
-      </tr>`;
+  list.forEach(item => {
+    const prices = usedGrams.map(g => {
+      const gi = item.grams.indexOf(g);
+      const val = gi>=0 ? item.prices[gi] : null;
+      // Masquer les prix < 5€
+      if(val !== null && val !== undefined && val < 5) return null;
+      return val;
     });
+
+    // Ligne nom produit
+    html += `<tr class="pr">
+      <td class="cn" style="color:${color};font-weight:700;">${item.nom}</td>
+      ${prices.map(p => p!==null&&p!==undefined ? `<td class="pc" style="color:${color}">${p}&nbsp;€</td>` : '<td></td>').join('')}
+    </tr>`;
+    // Ligne prix/g sous le nom
+    html += `<tr class="ppg">
+      <td class="cn">prix/g</td>
+      ${usedGrams.map((g,i) => {
+        const p = prices[i];
+        if(p===null||p===undefined) return '<td></td>';
+        const ppg = (p/g).toFixed(2);
+        return `<td>${ppg}&nbsp;€</td>`;
+      }).join('')}
+    </tr>`;
   });
 
   html += `</tbody></table>`;
@@ -438,6 +483,37 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.nav-link').forEach(a=>{
     if(a.dataset.page===document.body.dataset.page) a.classList.add('active');
   });
+});
+</script>
+
+<!-- ── Firebase : synchronisation temps réel produits CBD ── -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyARHxSNh_452vXWeUC133wosXHl0S3QOp0",
+  authDomain: "jss-sunshop.firebaseapp.com",
+  databaseURL: "https://jss-sunshop-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "jss-sunshop",
+  storageBucket: "jss-sunshop.firebasestorage.app",
+  messagingSenderId: "50204504264",
+  appId: "1:50204504264:web:63cc0bbe736b062ff835fd"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+onValue(ref(db, 'cbd'), (snap) => {
+  const arr = [];
+  if (snap.exists()) {
+    snap.forEach(child => {
+      const v = child.val();
+      v._key = child.key;
+      arr.push(v);
+    });
+  }
+  window.firebaseCbdProducts = arr;
+  if (typeof renderCat === 'function') renderCat();
 });
 </script>
 <script src="standby.js"></script>
