@@ -362,49 +362,49 @@ function renderCat(){
   const content = document.getElementById('cbd-content');
   if(!currentCat || !data[currentCat]){ content.innerHTML='<p style="color:var(--text-dimmer);padding:40px;text-align:center;">Sélectionnez une catégorie</p>'; return; }
   const cat = data[currentCat];
-  const grams = cat.grams;
+  const allGrams = cat.grams;
   const isResine = RESINES_CATS.includes(currentCat);
+  const isIsolat = currentCat === 'Isolats';
   const color = catColor(currentCat);
+
+  const label = isIsolat ? 'Isolat' : (isResine ? 'Résine' : 'Fleur');
+
+  // Grammages globaux (union de tous les grammages utilisés, dans l'ordre standard)
+  const usedGrams = allGrams;
 
   let html = `<div class="cat-heading" style="color:${color}">${currentCat}</div>`;
 
+  html += `<table class="price-table">
+    <thead>
+      <tr>
+        <th class="cn">${label}</th>
+        ${usedGrams.map(g => `<th class="cg">${g}g</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>`;
+
   cat.matrices.forEach(matrix => {
     const prices = matrix.prices;
-    html += `<table class="price-table">
-      <thead>
-        <tr>
-          <th class="cn">Produits</th>
-          ${grams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<th class="cg">${g}g</th>` : '').join('')}
-        </tr>
-      </thead>
-      <tbody>`;
 
-    // Prix row
-    html += `<tr class="pr">
-      <td class="cn" style="color:${color};font-weight:700;font-size:0.78rem;letter-spacing:.05em;text-transform:uppercase;">Prix</td>
-      ${grams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td class="pc" style="color:${color}">${prices[i]}€</td>` : '').join('')}
-    </tr>`;
-
-    // Prix au gramme row
-    html += `<tr class="ppg">
-      <td class="cn">prix/g</td>
-      ${grams.map((g,i) => {
-        if(prices[i]===null||prices[i]===undefined) return '';
-        const ppg = (prices[i]/g).toFixed(2);
-        return `<td>${ppg}€</td>`;
-      }).join('')}
-    </tr>`;
-
-    // Products rows
     matrix.products.forEach(prod => {
-      html += `<tr>
-        <td class="cn">${prod}</td>
-        ${grams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td></td>` : '').join('')}
+      // Ligne nom produit
+      html += `<tr class="pr">
+        <td class="cn" style="color:${color};font-weight:700;">${prod}</td>
+        ${usedGrams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td class="pc" style="color:${color}">${prices[i]}€</td>` : '<td></td>').join('')}
+      </tr>`;
+      // Ligne prix/g sous le nom
+      html += `<tr class="ppg">
+        <td class="cn">prix/g</td>
+        ${usedGrams.map((g,i) => {
+          if(prices[i]===null||prices[i]===undefined) return '<td></td>';
+          const ppg = (prices[i]/g).toFixed(2);
+          return `<td>${ppg}€</td>`;
+        }).join('')}
       </tr>`;
     });
-
-    html += `</tbody></table><div style="margin-bottom:20px"></div>`;
   });
+
+  html += `</tbody></table>`;
 
   content.innerHTML = html;
 }
