@@ -379,7 +379,7 @@ main{flex:1;padding:32px;max-width:900px;}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, remove, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyARHxSNh_452vXWeUC133wosXHl0S3QOp0",
@@ -510,6 +510,8 @@ window.uploadActu = async (input) => {
 };
 
 // Add product
+window._editKey = { aromes: null, concentres: null, cbd: null, cigarettes: null };
+
 window.addProd = async (section) => {
   let data = {};
   let msgId = '';
@@ -581,14 +583,114 @@ window.addProd = async (section) => {
     msgId = 'ci-msg';
   }
 
+  const editKey = window._editKey[section];
+
   try {
-    await push(ref(db, section), data);
-    showMsg(msgId, '✓ Produit ajouté ! Visible sur tous les écrans.', 'ok');
+    if(editKey) {
+      await update(ref(db, section+'/'+editKey), data);
+      showMsg(msgId, '✓ Produit modifié ! Visible sur tous les écrans.', 'ok');
+      window._editKey[section] = null;
+      setFormModeAdd(section);
+    } else {
+      await push(ref(db, section), data);
+      showMsg(msgId, '✓ Produit ajouté ! Visible sur tous les écrans.', 'ok');
+    }
     resetFormBySection(section);
   } catch(e) {
     showMsg(msgId, '⚠ Erreur Firebase : ' + e.message, 'err');
   }
 };
+
+// Edit product: prefill form with existing data
+window.editProd = (section, key, dataStr) => {
+  const p = JSON.parse(decodeURIComponent(dataStr));
+  window._editKey[section] = key;
+
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  const prefix = map[section];
+
+  if(section === 'aromes') {
+    document.getElementById('ar-marque').value = p.marque || '';
+    document.getElementById('ar-nom').value = p.nom || '';
+    document.getElementById('ar-aromes').value = p.aromes || '';
+    document.getElementById('ar-ml').value = p.ml || '';
+    document.getElementById('ar-pgvg').value = p.pg_vg || '';
+    document.getElementById('ar-prix').value = (p.prix||'').replace(/[^\d.,]/g,'').replace(',','.');
+    window._toggles['ar-frais'] = !!p.frais;
+    setToggle('ar-frais', !!p.frais);
+    window._selectedTags['ar'] = p.themes || [];
+    renderTags('ar');
+    if(p.img){ document.getElementById('ar-img-url').value = p.img; document.getElementById('ar-drop').innerHTML = `<img class="img-preview" src="${p.img}"> Image actuelle`; }
+  } else if(section === 'concentres') {
+    document.getElementById('co-marque').value = p.marque || '';
+    document.getElementById('co-nom').value = p.nom || '';
+    document.getElementById('co-aromes').value = p.aromes || '';
+    document.getElementById('co-ml').value = p.ml || '';
+    document.getElementById('co-prix').value = (p.prix||'').replace(/[^\d.,]/g,'').replace(',','.');
+    window._toggles['co-frais'] = !!p.frais;
+    setToggle('co-frais', !!p.frais);
+    window._selectedTags['co'] = p.familles || [];
+    renderTags('co');
+    if(p.img){ document.getElementById('co-img-url').value = p.img; document.getElementById('co-drop').innerHTML = `<img class="img-preview" src="${p.img}"> Image actuelle`; }
+  } else if(section === 'cbd') {
+    document.getElementById('cbd-nom').value = p.nom || '';
+    document.getElementById('cbd-cat').value = p.cat || 'Small Buds';
+    populateMatSelect();
+    if(p.matrice_key) document.getElementById('cbd-mat').value = p.matrice_key;
+    updateMatPreview();
+    if(p.img){ document.getElementById('cbd-img-url').value = p.img; }
+  } else if(section === 'cigarettes') {
+    document.getElementById('ci-marque').value = p.marque || '';
+    document.getElementById('ci-nom').value = p.nom || '';
+    document.getElementById('ci-puissance').value = p.puissance || '';
+    document.getElementById('ci-autonomie').value = p.autonomie || '';
+    document.getElementById('ci-tirage').value = p.tirage || '';
+    document.getElementById('ci-ml').value = p.ml || '';
+    document.getElementById('ci-port').value = p.port || '';
+    document.getElementById('ci-resistance').value = p.resistance || '';
+    document.getElementById('ci-prix').value = (p.prix||'').replace(/[^\d.,]/g,'').replace(',','.');
+    window._toggles['ci-ecran'] = !!p.ecran;
+    setToggle('ci-ecran', !!p.ecran);
+    window._toggles['ci-reglages'] = !!p.reglages;
+    setToggle('ci-reglages', !!p.reglages);
+    if(p.img){ document.getElementById('ci-img-url').value = p.img; }
+  }
+
+  setFormModeEdit(section);
+  document.getElementById(prefix === 'cbd' ? 'sec-cbd' : 'sec-'+section)?.scrollIntoView({behavior:'smooth'});
+};
+
+window.cancelEdit = (section) => {
+  window._editKey[section] = null;
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  resetForm(map[section]);
+  setFormModeAdd(section);
+};
+
+function setFormModeEdit(section) {
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  const prefix = map[section];
+  const btn = document.querySelector(`#sec-${section} .btn-primary`);
+  if(btn) btn.textContent = '✓ Enregistrer les modifications';
+  let cancelBtn = document.getElementById(prefix+'-cancel-edit');
+  if(!cancelBtn && btn) {
+    cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-secondary';
+    cancelBtn.id = prefix+'-cancel-edit';
+    cancelBtn.textContent = '✕ Annuler la modification';
+    cancelBtn.onclick = () => window.cancelEdit(section);
+    btn.parentNode.appendChild(cancelBtn);
+  }
+}
+
+function setFormModeAdd(section) {
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  const prefix = map[section];
+  const btn = document.querySelector(`#sec-${section} .btn-primary`);
+  if(btn) btn.textContent = '✓ Ajouter';
+  const cancelBtn = document.getElementById(prefix+'-cancel-edit');
+  if(cancelBtn) cancelBtn.remove();
+}
 
 // Reset forms
 window.resetForm = (prefix) => {
@@ -774,6 +876,7 @@ function makeProdItem(p, key, section) {
   const name = p.nom || p.name || '—';
   const brand = p.marque || p.cat || '';
   const prix = p.prix || p.prix_romilly || '';
+  const encoded = encodeURIComponent(JSON.stringify(p));
   div.innerHTML = `
     ${p.img ? `<img src="${p.img}" alt="${name}">` : '<div style="width:40px;height:40px;background:var(--surface);border-radius:4px;flex-shrink:0"></div>'}
     <div class="pi-info">
@@ -781,6 +884,7 @@ function makeProdItem(p, key, section) {
       <div class="pi-meta">${brand}${prix ? ' · '+prix : ''}</div>
     </div>
     ${prix ? `<span class="pi-badge">${prix}</span>` : ''}
+    <button class="btn-secondary" style="padding:5px 12px;font-size:0.75rem;" onclick="editProd('${section}','${key}','${encoded}')">✎ Modifier</button>
     <button class="btn-del" onclick="delProd('${section}','${key}')">Supprimer</button>`;
   return div;
 }

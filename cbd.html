@@ -199,7 +199,7 @@ nav {
 
 /* Table — smooth, borderless */
 .price-table{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:24px;}
-.price-table thead th{font-size:0.7rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:rgba(170,170,190,.8);padding:9px 6px 11px;text-align:center;border:none;border-bottom:1px solid rgba(255,255,255,.1);background:var(--bg);position:sticky;top:0;z-index:5;}
+.price-table thead th{font-size:0.92rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(170,170,190,.9);padding:9px 6px 11px;text-align:center;border:none;border-bottom:1px solid rgba(255,255,255,.1);background:var(--bg);position:sticky;top:0;z-index:5;}
 .price-table th.hl,.price-table td.hl{background:rgba(201,168,76,.07);box-shadow:inset 1px 0 rgba(201,168,76,.16),inset -1px 0 rgba(201,168,76,.16);}
 .price-table thead th.hl{background:rgba(201,168,76,.12);color:var(--accent);}
 .price-table thead th.cn{text-align:left;width:130px;}
@@ -354,12 +354,23 @@ function buildSB(){
     btn.onclick = () => { currentCat=cat; buildSB(); renderCat(); };
     sb.appendChild(btn);
   });
+  // Onglet Pré-rolls (page en construction)
+  const prBtn = document.createElement('button');
+  prBtn.className = 'cat-btn' + (currentCat==='Pré-rolls' ? ' active' : '');
+  prBtn.style.setProperty('--cc', '#9a9aae');
+  prBtn.innerHTML = `<div class="cat-ic">🚬</div><div class="cat-nm">Pré-rolls</div>`;
+  prBtn.onclick = () => { currentCat='Pré-rolls'; buildSB(); renderCat(); };
+  sb.appendChild(prBtn);
 }
 
 /* ── Tableau prix ── */
 function renderCat(){
   const data = getData();
   const content = document.getElementById('cbd-content');
+  if(currentCat === 'Pré-rolls'){
+    content.innerHTML = '<p style="color:var(--text-dimmer);padding:60px;text-align:center;font-size:1.1rem;">Page en construction</p>';
+    return;
+  }
   if(!currentCat || !data[currentCat]){ content.innerHTML='<p style="color:var(--text-dimmer);padding:40px;text-align:center;">Sélectionnez une catégorie</p>'; return; }
   const cat = data[currentCat];
   const allGrams = cat.grams;
@@ -390,7 +401,7 @@ function renderCat(){
       // Ligne nom produit
       html += `<tr class="pr">
         <td class="cn" style="color:${color};font-weight:700;">${prod}</td>
-        ${usedGrams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td class="pc" style="color:${color}">${prices[i]}€</td>` : '<td></td>').join('')}
+        ${usedGrams.map((g,i) => prices[i]!==null&&prices[i]!==undefined ? `<td class="pc" style="color:${color}">${prices[i]}&nbsp;€</td>` : '<td></td>').join('')}
       </tr>`;
       // Ligne prix/g sous le nom
       html += `<tr class="ppg">
@@ -398,7 +409,7 @@ function renderCat(){
         ${usedGrams.map((g,i) => {
           if(prices[i]===null||prices[i]===undefined) return '<td></td>';
           const ppg = (prices[i]/g).toFixed(2);
-          return `<td>${ppg}€</td>`;
+          return `<td>${ppg}&nbsp;€</td>`;
         }).join('')}
       </tr>`;
     });
