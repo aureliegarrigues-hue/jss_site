@@ -148,9 +148,17 @@ spawnBubbles(22);
 
 /* -- Seaweed (SVG) -- */
 function weedSVG(color, h){
-  return `<svg width="40" height="${h}" viewBox="0 0 40 ${h}">
-    <path d="M20 ${h} C8 ${h*0.7} 30 ${h*0.45} 14 ${h*0.2} C26 ${h*0.05} 12 0 20 0"
-      stroke="${color}" stroke-width="7" fill="none" stroke-linecap="round"/>
+  const leaves = [];
+  const n = Math.floor(h/22);
+  for(let i=0;i<n;i++){
+    const y = h - i*22 - 10;
+    const side = i % 2 === 0 ? 1 : -1;
+    leaves.push(`<path d="M20 ${y} Q${20+side*16} ${y-8} ${20+side*4} ${y-20}" stroke="${color}" stroke-width="5.5" fill="none" stroke-linecap="round"/>`);
+  }
+  return `<svg width="56" height="${h}" viewBox="0 0 56 ${h}">
+    <path d="M20 ${h} C10 ${h*0.7} 32 ${h*0.45} 16 ${h*0.2} C28 ${h*0.05} 14 0 20 0"
+      stroke="${color}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    ${leaves.join('')}
   </svg>`;
 }
 const weedSpots = [
@@ -168,96 +176,188 @@ weedSpots.forEach(w=>{
 
 /* -- Coral -- */
 function coralSVG(){
-  return `<svg width="90" height="80" viewBox="0 0 90 80">
-    <g fill="#e0567c">
-      <path d="M45 80 L45 50 Q35 40 38 25 Q40 15 45 5 Q50 15 52 25 Q55 40 45 50"/>
-      <path d="M45 50 Q25 45 18 30 Q12 20 18 10 Q28 15 32 28 Q35 38 45 50"/>
-      <path d="M45 50 Q65 45 72 30 Q78 20 72 10 Q62 15 58 28 Q55 38 45 50"/>
+  return `<svg width="110" height="95" viewBox="0 0 110 95">
+    <g fill="#e8527e">
+      <path d="M55 95 L55 58 Q44 48 47 32 Q49 20 55 8 Q61 20 63 32 Q66 48 55 58"/>
+      <path d="M55 58 Q32 52 23 36 Q16 24 23 12 Q35 18 40 33 Q43 45 55 58"/>
+      <path d="M55 58 Q78 52 87 36 Q94 24 87 12 Q75 18 70 33 Q67 45 55 58"/>
+      <path d="M40 33 Q30 26 28 14" stroke="#e8527e" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M70 33 Q80 26 82 14" stroke="#e8527e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </g>
+    <g fill="#fff" opacity="0.55">
+      <circle cx="52" cy="22" r="1.8"/><circle cx="60" cy="30" r="1.6"/><circle cx="48" cy="38" r="1.6"/>
+      <circle cx="30" cy="22" r="1.6"/><circle cx="36" cy="32" r="1.4"/>
+      <circle cx="80" cy="22" r="1.6"/><circle cx="74" cy="32" r="1.4"/>
+    </g>
+  </svg>`;
+}
+function coralSmallSVG(color){
+  return `<svg width="60" height="50" viewBox="0 0 60 50">
+    <g fill="${color}">
+      <path d="M30 50 Q22 38 26 26 Q28 16 32 8 Q36 16 34 26 Q38 38 30 50"/>
+      <path d="M30 30 Q18 26 14 16 Q22 16 26 24"/>
+      <path d="M30 30 Q42 26 46 16 Q38 16 34 24"/>
     </g>
   </svg>`;
 }
 const coral1 = el('<div class="coral" style="left:60%;"></div>');
 coral1.innerHTML = coralSVG();
 root.appendChild(coral1);
-const coral2 = el('<div class="coral" style="left:78%;transform:scale(0.7);"></div>');
+const coral2 = el('<div class="coral" style="left:80%;transform:scale(0.65);"></div>');
 coral2.innerHTML = coralSVG();
 root.appendChild(coral2);
+const coral3 = el('<div class="coral" style="left:6%;"></div>');
+coral3.innerHTML = coralSmallSVG('#6b4ea8');
+root.appendChild(coral3);
+const coral4 = el('<div class="coral" style="left:14%;transform:scale(0.7);"></div>');
+coral4.innerHTML = coralSmallSVG('#2fb8a8');
+root.appendChild(coral4);
 
 /* -- Sand -- */
 root.appendChild(el('<div class="sand"></div>'));
 
 /* -- Fish (simple SVG shapes, varied colors) -- */
-function fishSVG(body, fin){
-  return `<svg width="46" height="26" viewBox="0 0 46 26">
-    <path d="M4 13 Q14 2 32 6 Q40 8 44 13 Q40 18 32 20 Q14 24 4 13 Z" fill="${body}"/>
-    <path d="M4 13 L-6 4 L-6 22 Z" fill="${fin}"/>
-    <circle cx="33" cy="11" r="1.6" fill="#0a0a0f"/>
+function fishSVG(body, fin, accent){
+  return `<svg width="56" height="34" viewBox="0 0 56 34">
+    <path d="M6 17 Q10 6 24 5 Q40 4 48 12 Q52 14 52 17 Q52 20 48 22 Q40 30 24 29 Q10 28 6 17 Z" fill="${body}"/>
+    <path d="M6 17 L-8 5 Q-4 17 -8 29 Z" fill="${fin}"/>
+    <path d="M22 6 Q26 -2 32 2 Q28 6 28 10 Z" fill="${fin}"/>
+    <path d="M22 28 Q26 36 32 32 Q28 28 28 24 Z" fill="${fin}"/>
+    <path d="M16 10 Q22 17 16 24" stroke="${accent}" stroke-width="2.4" fill="none" opacity="0.55" stroke-linecap="round"/>
+    <path d="M26 9 Q32 17 26 25" stroke="${accent}" stroke-width="2.4" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <circle cx="40" cy="14" r="2.6" fill="#1a1a22"/>
+    <circle cx="40.8" cy="13" r="0.8" fill="#fff" opacity="0.9"/>
   </svg>`;
 }
 const fishPalette = [
-  ['#ff8a3d','#e8651a'], ['#ffd23d','#e0ad1a'], ['#4cc9f0','#2f9bd1'],
-  ['#ff6b9d','#e0457f'], ['#7ee8a0','#4cc97e'], ['#ffb347','#e08c1f']
+  ['#ff8a3d','#e8651a','#ffd9a8'], ['#ffd23d','#e0ad1a','#fff3c0'], ['#4cc9f0','#2f9bd1','#cdf0ff'],
+  ['#ff6b9d','#e0457f','#ffd6e6'], ['#7ee8a0','#4cc97e','#d6ffe4'], ['#ffb347','#e08c1f','#ffe4b8']
 ];
 function spawnFish(count){
   for(let i=0;i<count;i++){
-    const [body,fin] = fishPalette[i % fishPalette.length];
+    const [body,fin,accent] = fishPalette[i % fishPalette.length];
     const top = 15 + Math.random()*55;
     const scale = 0.7 + Math.random()*0.9;
     const dur = 18 + Math.random()*22;
     const delay = Math.random()*-dur;
     const reverse = Math.random() > 0.5;
     const f = el(`<div class="fish" style="top:${top}%;transform:scale(${scale});animation-name:${reverse?'swim-rev':'swim'};animation-duration:${dur}s;animation-delay:${delay}s;"></div>`);
-    f.innerHTML = fishSVG(body, fin);
+    f.innerHTML = fishSVG(body, fin, accent);
     root.appendChild(f);
   }
 }
 spawnFish(9);
 
 /* ════════════════ MERMAIDS (3 designs, SVG, hand-drawn) ════════════════ */
-function mermaid1(){ // blonde, queue bleue
-  return `<svg width="170" height="140" viewBox="0 0 170 140">
-    <path d="M70 95 Q40 110 25 135 Q55 132 78 112 Q95 122 130 118 Q150 110 160 90 Q140 75 110 80 Q105 60 85 55 Q95 75 78 90 Z" fill="#2a8fc4"/>
-    <path d="M130 118 Q150 122 162 108 Q155 118 138 124 Z" fill="#1f6f9c"/>
-    <ellipse cx="60" cy="78" rx="13" ry="15" fill="#ffcb9a"/>
-    <path d="M48 68 Q44 50 60 44 Q78 40 84 56 Q88 68 76 78 Q80 60 64 58 Q52 58 52 70 Z" fill="#ffc94a"/>
-    <path d="M76 78 Q86 84 88 96 Q92 84 84 72 Z" fill="#ffc94a"/>
+function mermaid1(){ // blonde, queue bleue — style illustration détaillé
+  return `<svg width="210" height="170" viewBox="0 0 210 170">
+    <defs>
+      <linearGradient id="tailBlue" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#3aa8e0"/><stop offset="1" stop-color="#1c6fa8"/>
+      </linearGradient>
+    </defs>
+    <!-- queue arrière (sous le corps) -->
+    <path d="M95 110 Q60 130 45 158 Q72 152 92 132 Q88 145 98 156 Q108 144 100 128 Z" fill="url(#tailBlue)"/>
+    <!-- nageoire caudale -->
+    <path d="M150 96 Q172 78 196 70 Q186 92 164 104 Q188 100 200 86 Q198 112 168 118 Q178 122 188 120 Q166 134 142 116 Z" fill="url(#tailBlue)"/>
+    <path d="M150 96 Q172 78 196 70 Q186 92 164 104 Z" fill="#2a8fc8" opacity="0.55"/>
+    <!-- corps / écailles -->
+    <path d="M95 110 Q120 122 150 96 Q158 80 140 66 Q124 58 110 70 Q118 84 100 96 Z" fill="url(#tailBlue)"/>
+    <path d="M108 76 Q116 80 122 76 M114 86 Q122 90 128 86 M120 96 Q128 100 134 96" stroke="#bfe8fb" stroke-width="1.6" fill="none" opacity="0.7" stroke-linecap="round"/>
+    <!-- buste -->
+    <path d="M68 90 Q58 78 64 64 Q70 54 84 56 Q96 60 96 74 Q98 84 86 92 Q76 96 68 90 Z" fill="#ffd2a8"/>
+    <!-- haut de bikini -->
+    <path d="M64 64 Q70 70 78 68 Q86 70 90 64 Q86 76 76 76 Q66 76 64 64 Z" fill="#e8633f"/>
+    <!-- bras levé qui salue -->
     <g class="mermaid-wave">
-      <path d="M50 80 Q35 70 30 55" stroke="#ffcb9a" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M68 70 Q50 62 42 42 Q38 32 44 26" stroke="#ffd2a8" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <circle cx="44" cy="25" r="7" fill="#ffd2a8"/>
     </g>
-    <path d="M64 84 Q70 88 76 84" stroke="#c4773f" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="58" cy="74" r="1.6" fill="#2a2a35"/>
-    <circle cx="68" cy="76" r="1.6" fill="#2a2a35"/>
+    <!-- bras posé -->
+    <path d="M88 88 Q104 92 112 104" stroke="#ffd2a8" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <!-- tête -->
+    <circle cx="56" cy="46" r="22" fill="#ffd2a8"/>
+    <!-- cheveux derrière -->
+    <path d="M36 38 Q24 48 28 66 Q32 84 50 92 Q42 78 46 64 Q40 52 36 38 Z" fill="#f4b53d"/>
+    <path d="M76 38 Q92 50 90 70 Q88 88 70 96 Q80 80 74 64 Q80 52 76 38 Z" fill="#f4b53d"/>
+    <!-- mèches devant -->
+    <path d="M38 32 Q34 18 50 14 Q68 10 78 24 Q82 32 76 40 Q72 26 58 24 Q44 22 42 36 Z" fill="#ffce4a"/>
+    <path d="M70 30 Q78 36 78 46" stroke="#f4b53d" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <!-- étoile dans les cheveux -->
+    <path d="M40 30 l2.4 5 5.4 0.6 -4 3.7 1.2 5.3 -4.6 -2.9 -4.6 2.9 1.2 -5.3 -4 -3.7 5.4 -0.6 Z" fill="#2a8fc8"/>
+    <!-- visage -->
+    <path d="M44 48 Q48 52 53 48" stroke="#3a2a1a" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M59 48 Q63 52 67 48" stroke="#3a2a1a" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M42 44 Q46 41 50 43" stroke="#3a2a1a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M58 43 Q62 41 66 44" stroke="#3a2a1a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="62" cy="58" rx="4.5" ry="3" fill="#f0866a" opacity="0.7"/>
+    <path d="M52 60 Q57 64 62 60" stroke="#c4673f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
   </svg>`;
 }
-function mermaid2(){ // cheveux verts, queue rose
-  return `<svg width="170" height="140" viewBox="0 0 170 140">
-    <path d="M70 95 Q40 112 28 134 Q56 130 78 110 Q96 120 130 116 Q150 108 158 88 Q138 74 110 80 Q103 58 84 54 Q94 74 78 90 Z" fill="#e0568f"/>
-    <path d="M130 116 Q150 120 160 106 Q152 116 136 122 Z" fill="#c43f74"/>
-    <ellipse cx="60" cy="78" rx="13" ry="15" fill="#e8a36b"/>
-    <path d="M46 64 Q40 44 58 38 Q78 34 86 52 Q90 66 76 78 Q82 56 62 54 Q48 54 50 68 Z" fill="#1f6b58"/>
-    <path d="M76 78 Q88 86 90 100 Q94 86 84 70 Z" fill="#1f6b58"/>
+function mermaid2(){ // cheveux verts foncés, queue rose — style illustration détaillé
+  return `<svg width="210" height="170" viewBox="0 0 210 170">
+    <defs>
+      <linearGradient id="tailPink" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ec6ba0"/><stop offset="1" stop-color="#c43f74"/>
+      </linearGradient>
+    </defs>
+    <path d="M95 112 Q60 132 44 160 Q72 154 92 134 Q88 147 98 158 Q108 146 100 130 Z" fill="url(#tailPink)"/>
+    <path d="M150 98 Q174 80 198 72 Q188 94 166 106 Q190 102 202 88 Q200 114 170 120 Q180 124 190 122 Q168 136 144 118 Z" fill="url(#tailPink)"/>
+    <path d="M150 98 Q174 80 198 72 Q188 94 166 106 Z" fill="#d4548a" opacity="0.55"/>
+    <path d="M95 112 Q120 124 150 98 Q158 82 140 68 Q124 60 110 72 Q118 86 100 98 Z" fill="url(#tailPink)"/>
+    <path d="M108 78 Q116 82 122 78 M114 88 Q122 92 128 88 M120 98 Q128 102 134 98" stroke="#ffd6e8" stroke-width="1.6" fill="none" opacity="0.7" stroke-linecap="round"/>
+    <path d="M68 92 Q58 80 64 66 Q70 56 84 58 Q96 62 96 76 Q98 86 86 94 Q76 98 68 92 Z" fill="#e0a878"/>
+    <path d="M64 66 Q70 72 78 70 Q86 72 90 66 Q86 78 76 78 Q66 78 64 66 Z" fill="#f4c84a"/>
     <g class="mermaid-wave">
-      <path d="M50 80 Q35 70 30 55" stroke="#e8a36b" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M68 72 Q50 64 42 44 Q38 34 44 28" stroke="#e0a878" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <circle cx="44" cy="27" r="7" fill="#e0a878"/>
     </g>
-    <path d="M64 84 Q70 88 76 84" stroke="#9c5a30" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="58" cy="74" r="1.6" fill="#2a2a35"/>
-    <circle cx="68" cy="76" r="1.6" fill="#2a2a35"/>
-    <path d="M52 50 l5 6 l-7 2 Z" fill="#e0568f"/>
+    <path d="M88 90 Q104 94 112 106" stroke="#e0a878" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="56" cy="48" r="22" fill="#e0a878"/>
+    <path d="M34 40 Q18 54 24 78 Q28 98 48 106 Q38 90 42 72 Q34 58 34 40 Z" fill="#1f5c4a"/>
+    <path d="M78 40 Q98 52 94 76 Q90 96 68 104 Q80 88 74 72 Q82 58 78 40 Z" fill="#1f5c4a"/>
+    <path d="M36 34 Q32 20 48 16 Q68 12 78 26 Q82 34 76 42 Q72 28 58 26 Q44 24 42 38 Z" fill="#256b56"/>
+    <path d="M68 32 Q76 38 76 48" stroke="#1f5c4a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M40 32 l5.6 -1.4 1.6 -5.6 3 5 5.8 0.8 -4.2 4 1 5.7 -5.2 -2.8 -5 3.2 0.6 -5.8 Z" fill="#ec6ba0"/>
+    <path d="M44 50 Q48 54 53 50" stroke="#241a10" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M59 50 Q63 54 67 50" stroke="#241a10" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M42 46 Q46 43 50 45" stroke="#241a10" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M58 45 Q62 43 66 46" stroke="#241a10" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="62" cy="60" rx="4.5" ry="3" fill="#e09858" opacity="0.6"/>
+    <path d="M52 62 Q57 66 62 62" stroke="#a86038" stroke-width="2.2" fill="none" stroke-linecap="round"/>
   </svg>`;
 }
-function mermaid3(){ // rousse, queue jaune
-  return `<svg width="170" height="140" viewBox="0 0 170 140">
-    <path d="M70 95 Q40 110 26 133 Q55 130 78 111 Q96 121 130 117 Q150 109 159 89 Q139 75 110 80 Q104 59 84 55 Q94 75 78 90 Z" fill="#f0b429"/>
-    <path d="M130 117 Q150 121 161 107 Q153 117 137 123 Z" fill="#d49417"/>
-    <ellipse cx="60" cy="78" rx="13" ry="15" fill="#8a5a32"/>
-    <path d="M46 66 Q38 44 58 38 Q80 33 88 54 Q92 68 76 78 Q84 56 62 56 Q47 56 50 70 Z" fill="#e0612a"/>
-    <path d="M76 78 Q90 86 92 102 Q96 86 86 70 Z" fill="#e0612a"/>
+function mermaid3(){ // rousse, queue jaune — style illustration détaillé
+  return `<svg width="210" height="170" viewBox="0 0 210 170">
+    <defs>
+      <linearGradient id="tailYellow" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ffce42"/><stop offset="1" stop-color="#e09a17"/>
+      </linearGradient>
+    </defs>
+    <path d="M95 112 Q60 132 43 161 Q72 155 92 135 Q88 148 98 159 Q108 147 100 131 Z" fill="url(#tailYellow)"/>
+    <path d="M150 98 Q175 80 199 72 Q189 95 167 107 Q191 103 203 89 Q201 115 171 121 Q181 125 191 123 Q169 137 145 119 Z" fill="url(#tailYellow)"/>
+    <path d="M150 98 Q175 80 199 72 Q189 95 167 107 Z" fill="#d4940f" opacity="0.55"/>
+    <path d="M95 112 Q120 124 150 98 Q158 82 140 68 Q124 60 110 72 Q118 86 100 98 Z" fill="url(#tailYellow)"/>
+    <path d="M108 78 Q116 82 122 78 M114 88 Q122 92 128 88 M120 98 Q128 102 134 98" stroke="#fff0c0" stroke-width="1.6" fill="none" opacity="0.7" stroke-linecap="round"/>
+    <path d="M68 92 Q58 80 64 66 Q70 56 84 58 Q96 62 96 76 Q98 86 86 94 Q76 98 68 92 Z" fill="#9c6840"/>
+    <path d="M64 66 Q70 72 78 70 Q86 72 90 66 Q86 78 76 78 Q66 78 64 66 Z" fill="#1f6b58"/>
     <g class="mermaid-wave">
-      <path d="M50 80 Q35 70 30 55" stroke="#8a5a32" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M68 72 Q50 64 42 44 Q38 34 44 28" stroke="#9c6840" stroke-width="11" fill="none" stroke-linecap="round"/>
+      <circle cx="44" cy="27" r="7" fill="#9c6840"/>
     </g>
-    <path d="M64 84 Q70 88 76 84" stroke="#3c2414" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <circle cx="58" cy="74" r="1.6" fill="#2a2a35"/>
-    <circle cx="68" cy="76" r="1.6" fill="#2a2a35"/>
+    <path d="M88 90 Q104 94 112 106" stroke="#9c6840" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="56" cy="48" r="22" fill="#9c6840"/>
+    <path d="M32 38 Q14 54 22 80 Q26 102 48 110 Q36 92 40 72 Q30 58 32 38 Z" fill="#e0612a"/>
+    <path d="M80 38 Q100 52 96 78 Q92 100 68 108 Q82 90 76 72 Q86 58 80 38 Z" fill="#e0612a"/>
+    <path d="M34 32 Q30 18 48 14 Q68 10 78 26 Q82 34 76 42 Q72 28 58 26 Q44 24 42 38 Z" fill="#f0763a"/>
+    <path d="M68 32 Q76 38 76 48" stroke="#e0612a" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M40 32 l5.6 -1.4 1.6 -5.6 3 5 5.8 0.8 -4.2 4 1 5.7 -5.2 -2.8 -5 3.2 0.6 -5.8 Z" fill="#ffce42"/>
+    <path d="M44 50 Q48 54 53 50" stroke="#2a1810" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M59 50 Q63 54 67 50" stroke="#2a1810" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M42 46 Q46 43 50 45" stroke="#2a1810" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M58 45 Q62 43 66 46" stroke="#2a1810" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="62" cy="60" rx="4.5" ry="3" fill="#c47840" opacity="0.6"/>
+    <path d="M52 62 Q57 66 62 62" stroke="#7c4422" stroke-width="2.2" fill="none" stroke-linecap="round"/>
   </svg>`;
 }
 const mermaidSVGs = [mermaid1, mermaid2, mermaid3];
