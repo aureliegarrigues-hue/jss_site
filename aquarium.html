@@ -24,10 +24,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;ove
 
 /* ── Aquarium viewport (the "video") ── */
 .player-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
-.aquarium-frame{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#0d3b54 0%,#0a2a3d 45%,#061c2b 100%);cursor:pointer;}
+.aquarium-frame{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#7fd4e8 0%,#4fb8d4 35%,#2a93b8 65%,#1c6f94 100%);cursor:pointer;}
 
 /* Light rays */
-.light-ray{position:absolute;top:-10%;width:120px;height:140%;background:linear-gradient(180deg,rgba(180,230,255,.18),rgba(180,230,255,0));transform:rotate(8deg);pointer-events:none;}
+.light-ray{position:absolute;top:-10%;width:120px;height:140%;background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0));transform:rotate(8deg);pointer-events:none;}
 .light-ray.r2{left:30%;width:80px;transform:rotate(-6deg);opacity:.6;}
 .light-ray.r3{left:65%;width:100px;transform:rotate(10deg);opacity:.5;}
 
@@ -52,7 +52,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;ove
 .coral{position:absolute;bottom:0;}
 
 /* Sand */
-.sand{position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(180deg,#3a2e1a,#241a0e);border-radius:50% 50% 0 0 / 100% 100% 0 0;}
+.sand{position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(180deg,#f0d9a0,#dcc080 60%,#c8a868);border-radius:50% 50% 0 0 / 100% 100% 0 0;}
+.rock{position:absolute;bottom:0;z-index:2;}
+.starfish{position:absolute;bottom:6px;z-index:3;animation:starfish-wiggle ease-in-out infinite;}
+@keyframes starfish-wiggle{
+  0%,100%{transform:rotate(-3deg);}
+  50%{transform:rotate(3deg);}
+}
 
 /* Fish swim */
 .fish{position:absolute;animation:swim linear infinite;}
@@ -88,7 +94,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;ove
 }
 
 /* Loading veil */
-.loading-veil{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#061c2b;z-index:40;transition:opacity .6s;}
+.loading-veil{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#2a93b8;z-index:40;transition:opacity .6s;}
 .loading-veil.hide{opacity:0;pointer-events:none;}
 .loading-veil span{font-family:'Syne',sans-serif;color:var(--accent);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;}
 
@@ -167,6 +173,10 @@ const weedSpots = [
   {left:'90%', h:170, color:'#1f6b4a', dur:'5.2s'},
   {left:'95%', h:110, color:'#28825c', dur:'4s'},
   {left:'48%', h:90, color:'#1f6b4a', dur:'4.2s'},
+  {left:'27%', h:120, color:'#28825c', dur:'4.8s'},
+  {left:'42%', h:75, color:'#34a06e', dur:'3.6s'},
+  {left:'64%', h:105, color:'#1f6b4a', dur:'4.4s'},
+  {left:'76%', h:85, color:'#28825c', dur:'3.9s'},
 ];
 weedSpots.forEach(w=>{
   const wrap = el(`<div class="weed" style="left:${w.left};animation-duration:${w.dur};"></div>`);
@@ -216,6 +226,45 @@ root.appendChild(coral4);
 /* -- Sand -- */
 root.appendChild(el('<div class="sand"></div>'));
 
+/* -- Rocks -- */
+function rockSVG(w, h, color){
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+    <path d="M2 ${h} Q0 ${h*0.5} ${w*0.18} ${h*0.35} Q${w*0.12} ${h*0.15} ${w*0.4} ${h*0.08}
+      Q${w*0.6} -2 ${w*0.82} ${h*0.2} Q${w*0.98} ${h*0.4} ${w-2} ${h}
+      Z" fill="${color}"/>
+    <path d="M${w*0.25} ${h*0.5} Q${w*0.4} ${h*0.35} ${w*0.55} ${h*0.48}" stroke="#000" stroke-width="1.5" opacity="0.12" fill="none" stroke-linecap="round"/>
+    <path d="M${w*0.35} ${h*0.7} Q${w*0.5} ${h*0.6} ${w*0.65} ${h*0.7}" stroke="#000" stroke-width="1.5" opacity="0.1" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+const rockSpots = [
+  {left:'1%', w:120, h:55, color:'#8a8a98'},
+  {left:'22%', w:80, h:38, color:'#9c9ca8'},
+  {left:'70%', w:100, h:46, color:'#82828f'},
+  {left:'88%', w:90, h:42, color:'#9c9ca8'},
+];
+rockSpots.forEach(r=>{
+  const wrap = el(`<div class="rock" style="left:${r.left};"></div>`);
+  wrap.innerHTML = rockSVG(r.w, r.h, r.color);
+  root.appendChild(wrap);
+});
+
+/* -- Starfish -- */
+function starfishSVG(color, size){
+  return `<svg width="${size}" height="${size}" viewBox="0 0 40 40">
+    <path d="M20 2 L25 15 L38 15 L27 23 L31 36 L20 28 L9 36 L13 23 L2 15 L15 15 Z" fill="${color}"/>
+    <circle cx="20" cy="20" r="2.4" fill="#000" opacity="0.15"/>
+  </svg>`;
+}
+const starfishSpots = [
+  {left:'34%', color:'#ff7a5c', size:34, dur:'4.6s'},
+  {left:'58%', color:'#ff9d3d', size:26, dur:'3.9s'},
+];
+starfishSpots.forEach(s=>{
+  const wrap = el(`<div class="starfish" style="left:${s.left};animation-duration:${s.dur};"></div>`);
+  wrap.innerHTML = starfishSVG(s.color, s.size);
+  root.appendChild(wrap);
+});
+
 /* -- Fish (simple SVG shapes, varied colors) -- */
 function fishSVG(body, fin, accent){
   return `<svg width="56" height="34" viewBox="0 0 56 34">
@@ -234,19 +283,25 @@ const fishPalette = [
   ['#ff6b9d','#e0457f','#ffd6e6'], ['#7ee8a0','#4cc97e','#d6ffe4'], ['#ffb347','#e08c1f','#ffe4b8']
 ];
 function spawnFish(count){
+  const sizeCategories = [
+    {scaleMin:0.45, scaleMax:0.65}, // petits
+    {scaleMin:0.8, scaleMax:1.05},  // moyens
+    {scaleMin:1.3, scaleMax:1.7},   // gros
+  ];
   for(let i=0;i<count;i++){
     const [body,fin,accent] = fishPalette[i % fishPalette.length];
+    const cat = sizeCategories[i % sizeCategories.length];
+    const scale = cat.scaleMin + Math.random()*(cat.scaleMax - cat.scaleMin);
     const top = 15 + Math.random()*55;
-    const scale = 0.7 + Math.random()*0.9;
-    const dur = 18 + Math.random()*22;
+    const dur = (cat.scaleMax > 1.2 ? 26 : 18) + Math.random()*18; // les gros nagent plus lentement
     const delay = Math.random()*-dur;
     const reverse = Math.random() > 0.5;
-    const f = el(`<div class="fish" style="top:${top}%;transform:scale(${scale});animation-name:${reverse?'swim-rev':'swim'};animation-duration:${dur}s;animation-delay:${delay}s;"></div>`);
+    const f = el(`<div class="fish" style="top:${top}%;transform:scale(${scale.toFixed(2)});animation-name:${reverse?'swim-rev':'swim'};animation-duration:${dur}s;animation-delay:${delay}s;"></div>`);
     f.innerHTML = fishSVG(body, fin, accent);
     root.appendChild(f);
   }
 }
-spawnFish(9);
+spawnFish(13);
 
 /* ════════════════ MERMAIDS (3 designs, SVG, hand-drawn) ════════════════ */
 function mermaid1(){ // blonde, queue bleue — style illustration détaillé
@@ -380,19 +435,14 @@ function getNextMermaidIndex(){
   return idx;
 }
 
-/* ════════════════ PERSISTENT 15-MIN TIMER ════════════════ */
-/* Secret timer: counts active time only; pauses when leaving this page.
-   Stored in localStorage so it survives navigation back to home and returning here. */
-const INTERVAL_MS = 15 * 60 * 1000;
-const STORE_KEY = 'jss_aquarium_timer_elapsed_ms';
-const LAST_TICK_KEY = 'jss_aquarium_timer_last_tick';
+/* ════════════════ TIMER 5 MIN — REPART À ZÉRO À CHAQUE SORTIE ════════════════ */
+/* Secret timer: counts active time only while this page is visible.
+   It is NOT persisted — leaving the page (visibility hidden, navigation away,
+   or closing) resets it. Coming back always starts fresh from 0. */
+const INTERVAL_MS = 5 * 60 * 1000;
 
-let elapsed = parseFloat(localStorage.getItem(STORE_KEY) || '0');
+let elapsed = 0;
 let tickHandle = null;
-
-function persistElapsed(){
-  localStorage.setItem(STORE_KEY, String(elapsed));
-}
 
 function tick(){
   elapsed += 1000;
@@ -400,7 +450,6 @@ function tick(){
     elapsed = 0;
     showMermaid();
   }
-  persistElapsed();
 }
 
 function startTimer(){
@@ -409,15 +458,19 @@ function startTimer(){
 }
 function stopTimer(){
   if(tickHandle){ clearInterval(tickHandle); tickHandle = null; }
-  persistElapsed();
+}
+function resetTimer(){
+  stopTimer();
+  elapsed = 0;
 }
 
-/* Start when page visible/active, pause when hidden or leaving */
+/* Pause while tab hidden, resume (without resetting) when visible again.
+   Full reset only happens when actually leaving this page. */
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){ stopTimer(); } else { startTimer(); }
 });
-window.addEventListener('beforeunload', stopTimer);
-window.addEventListener('pagehide', stopTimer);
+window.addEventListener('beforeunload', resetTimer);
+window.addEventListener('pagehide', resetTimer);
 
 startTimer();
 
