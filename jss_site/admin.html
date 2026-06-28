@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin — J&S Sun Shop</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+:root {
+  --bg:#0a0a0f; --surface:#13131a; --surface2:#1c1c27;
+  --border:rgba(255,255,255,0.07); --accent:#c9a84c;
+  --text:#e8e8f0; --text-dim:#a2a2bd; --text-dimmer:#6a6a86;
+  --green:#5c9068; --red:#ff6b6b; --blue:#7eb8f7;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* ── AUTH SCREEN ── */
+#auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:24px;padding:40px;}
+.auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:#fff;}
+.auth-logo span{color:var(--accent);}
+.auth-sub{font-size:0.9rem;color:var(--text-dim);text-align:center;max-width:320px;line-height:1.6;}
+.btn-google{display:flex;align-items:center;gap:12px;padding:14px 28px;background:#fff;color:#333;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.95rem;border:none;border-radius:10px;cursor:pointer;transition:box-shadow .2s;}
+.btn-google:hover{box-shadow:0 4px 20px rgba(255,255,255,.15);}
+.btn-google svg{width:20px;height:20px;}
+.auth-err{color:var(--red);font-size:0.82rem;text-align:center;}
+
+/* ── LAYOUT ── */
+#app{display:none;}
+header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;height:64px;gap:20px;}
+.hd-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;flex:1;}
+.hd-logo span{color:var(--accent);}
+.hd-user{font-size:0.8rem;color:var(--text-dim);}
+.btn-logout{padding:7px 16px;background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.78rem;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+.layout{display:flex;min-height:calc(100vh - 64px);}
+nav.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 20px;cursor:pointer;font-size:0.85rem;color:var(--text-dim);transition:all .15s;border-left:3px solid transparent;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.03);}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(201,168,76,.06);}
+.nav-item .ico{font-size:1.1rem;width:20px;text-align:center;}
+
+main{flex:1;padding:32px;max-width:900px;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* ── CARDS / FORMS ── */
+.sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;margin-bottom:4px;}
+.sec-sub{font-size:0.82rem;color:var(--text-dim);margin-bottom:28px;}
+.card-form{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:24px;}
+.card-form h3{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:0.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dimmer);}
+.field input,.field textarea,.field select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;transition:border-color .2s;width:100%;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(201,168,76,.4);}
+.field textarea{min-height:68px;resize:vertical;}
+.field-full{grid-column:1/-1;}
+.toggle-row{display:flex;gap:8px;}
+.toggle-btn{padding:7px 16px;border-radius:20px;font-size:0.8rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.toggle-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0a0f;}
+.img-preview{width:80px;height:80px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:var(--surface2);}
+.img-drop{border:2px dashed rgba(201,168,76,.3);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;font-size:0.82rem;color:var(--text-dim);}
+.img-drop:hover{border-color:var(--accent);background:rgba(201,168,76,.04);}
+.img-uploading{font-size:0.78rem;color:var(--accent);margin-top:6px;}
+.btn-row{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+.btn-primary{padding:10px 24px;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:.06em;text-transform:uppercase;border-radius:7px;border:none;cursor:pointer;transition:background .2s;}
+.btn-primary:hover{background:#e2c97e;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.btn-secondary{padding:10px 18px;background:none;color:var(--text-dim);border:1px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.82rem;cursor:pointer;transition:all .2s;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.msg{font-size:0.82rem;padding:8px 14px;border-radius:7px;display:none;}
+.msg.ok{background:rgba(92,144,104,.15);border:1px solid rgba(92,144,104,.3);color:#7ec991;}
+.msg.err{background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.3);color:var(--red);}
+
+/* ── PRODUCT LIST ── */
+.prod-list{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;}
+.prod-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;}
+.prod-item img{width:40px;height:40px;object-fit:contain;border-radius:4px;background:var(--surface);flex-shrink:0;}
+.prod-item .pi-info{flex:1;min-width:0;}
+.prod-item .pi-name{font-size:0.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prod-item .pi-meta{font-size:0.72rem;color:var(--text-dimmer);}
+.prod-item .pi-badge{font-size:0.68rem;padding:2px 7px;border-radius:10px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--accent);white-space:nowrap;}
+.btn-del{padding:5px 12px;background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.25);color:var(--red);border-radius:5px;font-size:0.75rem;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.btn-del:hover{background:rgba(255,80,80,.2);}
+.empty-state{text-align:center;padding:40px;color:var(--text-dimmer);font-size:0.85rem;}
+
+/* ── ACTUS SECTION ── */
+.actus-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px;}
+.actu-thumb{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);aspect-ratio:3/4;background:var(--surface2);}
+.actu-thumb img{width:100%;height:100%;object-fit:cover;}
+.actu-thumb .del-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;cursor:pointer;}
+.actu-thumb:hover .del-overlay{opacity:1;}
+.actu-thumb .del-overlay button{background:var(--red);border:none;color:#fff;padding:7px 14px;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;}
+.actu-order{font-size:0.7rem;color:var(--text-dimmer);text-align:center;padding:4px 0;}
+.timer-info{font-size:0.8rem;color:var(--text-dim);background:rgba(126,184,247,.07);border:1px solid rgba(126,184,247,.15);border-radius:8px;padding:10px 14px;margin-bottom:14px;line-height:1.6;}
+
+@media(max-width:700px){
+  nav.sidebar{display:none;}
+  .form-grid{grid-template-columns:1fr;}
+  main{padding:16px;}
+}
+
+/* Tags */
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.tag-btn{padding:5px 12px;border-radius:16px;font-size:0.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);transition:all .15s;font-family:'DM Sans',sans-serif;}
+.tag-btn.sel{background:rgba(201,168,76,.15);border-color:var(--accent);color:var(--accent);}
+.tags-search{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;width:100%;margin-bottom:8px;}
+.tags-search:focus{border-color:rgba(201,168,76,.4);}
+/* Matrice CBD */
+.mat-select{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.mat-select label{font-size:0.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dimmer);}
+.mat-select select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;flex:1;}
+.mat-preview{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.8rem;color:var(--text-dim);line-height:1.8;}
+.cbd-price-table{display:flex;flex-direction:column;gap:8px;}
+.cbd-price-row{display:grid;grid-template-columns:60px 1fr;align-items:center;gap:10px;}
+.cbd-price-row label{font-size:0.78rem;color:var(--text-dim);font-weight:600;}
+.cbd-price-row input{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;width:100%;box-sizing:border-box;}
+.cbd-price-row input:focus{border-color:rgba(201,168,76,.4);}
+.cbd-price-row.hidden-note{opacity:0.4;}
+.cbd-price-hint{font-size:0.7rem;color:var(--text-dimmer);font-style:italic;margin-top:-2px;}
+.mat-preview strong{color:var(--accent);}
+
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-logo">J&S <span>Sun Shop</span></div>
+  <p class="auth-sub">Interface d'administration — connectez-vous avec le compte Google de la boutique.</p>
+  <button class="btn-google" onclick="signInGoogle()">
+    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    Connexion avec Google
+  </button>
+  <p class="auth-err" id="auth-err"></p>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="hd-logo">J&S <span>Admin</span></div>
+    <span class="hd-user" id="hd-user"></span>
+    <button class="btn-logout" onclick="signOut()">Déconnexion</button>
+  </header>
+  <div class="layout">
+    <nav class="sidebar">
+      <div class="nav-item active" onclick="showSection('aromes')" id="nav-aromes">
+        <span class="ico">🌿</span> Arômes
+      </div>
+      <div class="nav-item" onclick="showSection('concentres')" id="nav-concentres">
+        <span class="ico">💧</span> Concentrés
+      </div>
+      <div class="nav-item" onclick="showSection('cbd')" id="nav-cbd">
+        <span class="ico">🌱</span> Fleurs &amp; Résines
+      </div>
+      <div class="nav-item" onclick="showSection('cigarettes')" id="nav-cigarettes">
+        <span class="ico">⚡</span> Cigarettes &amp; Box
+      </div>
+      <div class="nav-item" onclick="showSection('actus')" id="nav-actus">
+        <span class="ico">📋</span> Actus
+      </div>
+      <div class="nav-item" onclick="showSection('matrices')" id="nav-matrices">
+        <span class="ico">📐</span> Matrices de prix
+      </div>
+      <div class="nav-item" onclick="showSection('boutiques')" id="nav-boutiques">
+        <span class="ico">🏙</span> Boutiques
+      </div>
+    </nav>
+    <main>
+
+      <!-- ═══ AROMES ═══ -->
+      <div class="section active" id="sec-aromes">
+        <div class="sec-title">Arômes E-liquides</div>
+        <p class="sec-sub">Ajoutez ou supprimez des produits. Les modifications s'affichent immédiatement sur tous les écrans.</p>
+        <div class="card-form">
+          <h3>➕ Ajouter un produit</h3>
+          <div class="form-grid">
+            <div class="field"><label>Marque</label><input type="text" id="ar-marque" placeholder="ex: Fighter Fuel"></div>
+            <div class="field"><label>Nom du produit</label><input type="text" id="ar-nom" placeholder="ex: SHIGERI"></div>
+            <div class="field field-full"><label>Arômes</label><textarea id="ar-aromes" placeholder="ex: Grenade, fraises des bois, kiwi, frais"></textarea></div>
+            <div class="field"><label>ML (volume)</label><input type="text" id="ar-ml" placeholder="ex: 50"></div>
+            <div class="field"><label>PG/VG</label><input type="text" id="ar-pgvg" placeholder="ex: 30/70"></div>
+            <div class="field field-full">
+              <label>Catégories / Tags</label>
+              <input type="text" class="tags-search" id="ar-tag-search" placeholder="Rechercher une catégorie..." oninput="filterTags('ar')">
+              <div class="tags-wrap" id="ar-tags-wrap"></div>
+            </div>
+            <div class="field">
+              <label>Frais ?</label>
+              <div class="toggle-row">
+                <button class="toggle-btn active" id="ar-frais-oui" onclick="setToggle('ar-frais',true)">❄ Oui</button>
+                <button class="toggle-btn" id="ar-frais-non" onclick="setToggle('ar-frais',false)">Non</button>
+              </div>
+            </div>
+            <div class="field field-full">
+              <label>Image produit</label>
+              <div class="img-drop" id="ar-drop" onclick="document.getElementById('ar-img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleImgDrop(event,'ar')">
+                📁 Cliquez ou glissez une image JPG/PNG
+                <input type="file" id="ar-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,'ar')">
+              </div>
+              <p class="img-uploading" id="ar-upload-status" style="display:none">⏳ Upload en cours…</p>
+              <input type="hidden" id="ar-img-url">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="addProd('aromes')">✓ Ajouter</button>
+            <button class="btn-secondary" onclick="resetForm('ar')">↺ Vider</button>
+          </div>
+          <div class="msg" id="ar-msg"></div>
+        </div>
+        <div class="card-form">
+          <h3>🗑 Produits ajoutés (supprimables)</h3>
+          <div class="prod-list" id="ar-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ CONCENTRES ═══ -->
+      <div class="section" id="sec-concentres">
+        <div class="sec-title">Concentrés</div>
+        <p class="sec-sub">Ajoutez ou supprimez des concentrés arômatiques.</p>
+        <div class="card-form">
+          <h3>➕ Ajouter un concentré</h3>
+          <div class="form-grid">
+            <div class="field"><label>Marque</label><input type="text" id="co-marque" placeholder="ex: A&L"></div>
+            <div class="field"><label>Nom du produit</label><input type="text" id="co-nom" placeholder="ex: SHIGERI"></div>
+            <div class="field field-full"><label>Arômes</label><textarea id="co-aromes" placeholder="ex: Grenade, fraises des bois, kiwi"></textarea></div>
+            <div class="field"><label>ML (volume)</label><input type="text" id="co-ml" placeholder="ex: 30"></div>
+            <div class="field field-full">
+              <label>Catégories / Tags</label>
+              <input type="text" class="tags-search" id="co-tag-search" placeholder="Rechercher une catégorie..." oninput="filterTags('co')">
+              <div class="tags-wrap" id="co-tags-wrap"></div>
+            </div>
+            <div class="field">
+              <label>Frais ?</label>
+              <div class="toggle-row">
+                <button class="toggle-btn active" id="co-frais-oui" onclick="setToggle('co-frais',true)">❄ Oui</button>
+                <button class="toggle-btn" id="co-frais-non" onclick="setToggle('co-frais',false)">Non</button>
+              </div>
+            </div>
+            <div class="field field-full">
+              <label>Image produit</label>
+              <div class="img-drop" id="co-drop" onclick="document.getElementById('co-img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleImgDrop(event,'co')">
+                📁 Cliquez ou glissez une image JPG/PNG
+                <input type="file" id="co-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,'co')">
+              </div>
+              <p class="img-uploading" id="co-upload-status" style="display:none">⏳ Upload en cours…</p>
+              <input type="hidden" id="co-img-url">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="addProd('concentres')">✓ Ajouter</button>
+            <button class="btn-secondary" onclick="resetForm('co')">↺ Vider</button>
+          </div>
+          <div class="msg" id="co-msg"></div>
+        </div>
+        <div class="card-form">
+          <h3>🗑 Concentrés ajoutés (supprimables)</h3>
+          <div class="prod-list" id="co-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ CBD ═══ -->
+      <div class="section" id="sec-cbd">
+        <div class="sec-title">Fleurs &amp; Résines CBD</div>
+        <p class="sec-sub">Ajoutez ou supprimez des produits CBD.</p>
+
+        <div class="card-form">
+          <h3>➕ Ajouter un produit</h3>
+          <div class="form-grid">
+            <div class="field"><label>Nom du produit</label><input type="text" id="cbd-nom" placeholder="ex: OG KUSH"></div>
+            <div class="field"><label>Catégorie</label>
+              <select id="cbd-cat" onchange="populateMatSelect()">
+                <option>Small Buds</option><option>Greenhouse</option><option>Hydro / Indoor</option>
+                <option>Fleurs Molécule</option>
+                <option>Résines naturelles</option><option>Résines Molécule</option><option>Isolats</option>
+              </select>
+            </div>
+            <div class="field field-full">
+              <label>Boutiques où ce produit est disponible</label>
+              <div class="tags-wrap" id="cbd-villes-check"></div>
+            </div>
+            <div class="field field-full">
+              <div class="mat-select">
+                <label>Matrice de prix (€/10g)</label>
+                <select id="cbd-mat" onchange="applyMatrice()">
+                  <option value="">-- Choisir une matrice --</option>
+                </select>
+              </div>
+            </div>
+            <div class="field field-full">
+              <label>Tableau de prix (modifiable avant validation)</label>
+              <div id="cbd-price-table" class="cbd-price-table">
+                <p style="color:var(--text-dimmer);font-size:0.85rem;">Choisissez d'abord une catégorie puis une matrice.</p>
+              </div>
+            </div>
+            <div class="field field-full">
+              <label>Image produit</label>
+              <div class="img-drop" id="cbd-drop" onclick="document.getElementById('cbd-img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleImgDrop(event,'cbd')">
+                📁 Cliquez ou glissez une image JPG/PNG
+                <input type="file" id="cbd-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,'cbd')">
+              </div>
+              <p class="img-uploading" id="cbd-upload-status" style="display:none">⏳ Upload en cours…</p>
+              <input type="hidden" id="cbd-img-url">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="addProd('cbd')">✓ Ajouter</button>
+            <button class="btn-secondary" onclick="resetForm('cbd')">↺ Vider</button>
+          </div>
+          <div class="msg" id="cbd-msg"></div>
+        </div>
+        <div class="card-form">
+          <h3>🗑 Produits ajoutés (supprimables)</h3>
+          <div class="prod-list" id="cbd-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ CIGARETTES & BOX ═══ -->
+      <div class="section" id="sec-cigarettes">
+        <div class="sec-title">Cigarettes Électroniques &amp; Box</div>
+        <p class="sec-sub">Ajoutez ou supprimez des appareils.</p>
+        <div class="card-form">
+          <h3>➕ Ajouter un appareil</h3>
+          <div class="form-grid">
+            <div class="field"><label>Marque</label><input type="text" id="ci-marque" placeholder="ex: Smok"></div>
+            <div class="field"><label>Nom du produit</label><input type="text" id="ci-nom" placeholder="ex: Nord 5"></div>
+            <div class="field"><label>Puissance (W)</label><input type="text" id="ci-puissance" placeholder="ex: 80W"></div>
+            <div class="field"><label>Autonomie (mAh)</label><input type="text" id="ci-autonomie" placeholder="ex: 2500mAh"></div>
+            <div class="field"><label>Tirage</label><input type="text" id="ci-tirage" placeholder="ex: Indirect / Direct"></div>
+            <div class="field"><label>Contenance (ML)</label><input type="text" id="ci-ml" placeholder="ex: 4ml"></div>
+            <div class="field"><label>Port de charge</label><input type="text" id="ci-port" placeholder="ex: USB-C"></div>
+            <div class="field"><label>Résistance incluse</label><input type="text" id="ci-resistance" placeholder="ex: 0.4Ω Mesh"></div>
+            <div class="field"><label>Prix (€)</label><input type="number" id="ci-prix" placeholder="ex: 49.90" step="0.01" min="0"></div>
+            <div class="field">
+              <label>Écran ?</label>
+              <div class="toggle-row">
+                <button class="toggle-btn active" id="ci-ecran-oui" onclick="setToggle('ci-ecran',true)">Oui</button>
+                <button class="toggle-btn" id="ci-ecran-non" onclick="setToggle('ci-ecran',false)">Non</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Réglages ?</label>
+              <div class="toggle-row">
+                <button class="toggle-btn active" id="ci-reglages-oui" onclick="setToggle('ci-reglages',true)">Oui</button>
+                <button class="toggle-btn" id="ci-reglages-non" onclick="setToggle('ci-reglages',false)">Non</button>
+              </div>
+            </div>
+            <div class="field field-full">
+              <label>Image produit</label>
+              <div class="img-drop" onclick="document.getElementById('ci-img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleImgDrop(event,'ci')">
+                📁 Cliquez ou glissez une image JPG/PNG
+                <input type="file" id="ci-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,'ci')">
+              </div>
+              <p class="img-uploading" id="ci-upload-status" style="display:none">⏳ Upload en cours…</p>
+              <input type="hidden" id="ci-img-url">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="addProd('cigarettes')">✓ Ajouter</button>
+            <button class="btn-secondary" onclick="resetForm('ci')">↺ Vider</button>
+          </div>
+          <div class="msg" id="ci-msg"></div>
+        </div>
+        <div class="card-form">
+          <h3>🗑 Appareils ajoutés (supprimables)</h3>
+          <div class="prod-list" id="ci-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ ACTUS ═══ -->
+      <div class="section" id="sec-actus">
+        <div class="sec-title">Actualités</div>
+        <p class="sec-sub">Gérez les visuels affichés sur la page Actus.</p>
+        <div class="timer-info">
+          ⏱ Les images s'affichent à la suite, <strong>15 secondes chacune</strong>. Ajoutez plusieurs images pour créer un diaporama automatique.
+        </div>
+        <div class="card-form">
+          <h3>➕ Ajouter un visuel</h3>
+          <div class="img-drop" id="ac-drop" onclick="document.getElementById('ac-img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleImgDrop(event,'ac')">
+            📁 Cliquez ou glissez une image JPG/PNG
+            <input type="file" id="ac-img-input" accept="image/*" style="display:none" onchange="uploadActu(this)">
+          </div>
+          <p class="img-uploading" id="ac-upload-status" style="display:none">⏳ Upload en cours…</p>
+          <div class="msg" id="ac-msg" style="margin-top:10px;"></div>
+        </div>
+        <div class="card-form">
+          <h3>🖼 Visuels actuels</h3>
+          <div class="actus-grid" id="ac-list"></div>
+          <p class="empty-state" id="ac-empty" style="display:none">Aucun visuel pour le moment.</p>
+        </div>
+      </div>
+
+      <!-- ═══ MATRICES DE PRIX ═══ -->
+      <div class="section" id="sec-matrices">
+        <div class="sec-title">Matrices de prix</div>
+        <p class="sec-sub">Créez, modifiez ou supprimez les matrices de prix utilisées pour les fleurs et résines.</p>
+        <div class="card-form">
+          <h3>📐 Matrices de prix — gestion</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>Type</label>
+              <select id="mat-type" onchange="loadMatrixList()">
+                <option value="fleurs">Fleurs</option>
+                <option value="resines">Résines</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Matrice à éditer (ou laisser vide pour créer)</label>
+              <select id="mat-select-edit" onchange="loadMatrixIntoEditor()">
+                <option value="">-- Nouvelle matrice --</option>
+              </select>
+            </div>
+            <div class="field field-full">
+              <label>Nom de la matrice</label>
+              <input type="text" id="mat-label" placeholder="ex: Prix A2 / Premium">
+            </div>
+            <div class="field field-full">
+              <label>Grammages et prix (€)</label>
+              <div id="mat-editor-rows" class="cbd-price-table"></div>
+              <div class="btn-row" style="margin-top:8px;">
+                <input type="number" id="mat-new-gram" placeholder="Grammage (ex: 4)" step="0.5" min="0" style="width:160px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
+                <button class="btn-secondary" onclick="addGramColumn()">➕ Ajouter ce grammage</button>
+              </div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="saveMatrix()">✓ Enregistrer la matrice</button>
+            <button class="btn-secondary" id="mat-delete-btn" onclick="deleteMatrix()" style="display:none;">🗑 Supprimer cette matrice</button>
+            <button class="btn-secondary" onclick="resetMatrixEditor()">↺ Vider</button>
+          </div>
+          <div class="msg" id="mat-msg"></div>
+        </div>
+      </div>
+
+      <!-- ═══ BOUTIQUES ═══ -->
+      <div class="section" id="sec-boutiques">
+        <div class="sec-title">Boutiques</div>
+        <p class="sec-sub">Gérez la liste des boutiques où les produits CBD sont vendus.</p>
+        <div class="card-form">
+          <h3>🏙 Boutiques</h3>
+          <div class="form-grid">
+            <div class="field field-full">
+              <label>Ajouter une nouvelle ville</label>
+              <div class="btn-row" style="margin-top:0;">
+                <input type="text" id="new-ville-nom" placeholder="ex: Troyes" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
+                <button class="btn-secondary" onclick="addVille()">➕ Ajouter</button>
+              </div>
+              <p class="cbd-price-hint" style="margin-top:8px;">Les prix sont communs à toutes les boutiques. Cette liste détermine simplement les boutons de boutique affichés sur la page publique.</p>
+            </div>
+          </div>
+          <div id="villes-list" style="margin-top:14px;"></div>
+          <div class="msg" id="ville-msg"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, push, remove, update, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyARHxSNh_452vXWeUC133wosXHl0S3QOp0",
+  authDomain: "jss-sunshop.firebaseapp.com",
+  databaseURL: "https://jss-sunshop-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "jss-sunshop",
+  storageBucket: "jss-sunshop.firebasestorage.app",
+  messagingSenderId: "50204504264",
+  appId: "1:50204504264:web:63cc0bbe736b062ff835fd"
+};
+
+const CLOUDINARY_CLOUD = 'dmz6c7vum';
+const CLOUDINARY_PRESET = 'jss_upload'; // unsigned preset à créer
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+// Allowed email
+const ALLOWED_EMAIL = 'sunshopromilly@gmail.com';
+
+// Toggle states
+window._toggles = { 'ar-frais': true, 'co-frais': true, 'ci-ecran': true, 'ci-reglages': true };
+
+window.setToggle = (key, val) => {
+  window._toggles[key] = val;
+  document.getElementById(key+'-oui').classList.toggle('active', val);
+  document.getElementById(key+'-non').classList.toggle('active', !val);
+};
+
+// Auth
+window.signInGoogle = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ login_hint: ALLOWED_EMAIL });
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    document.getElementById('auth-err').textContent = 'Erreur de connexion : ' + e.message;
+  }
+};
+
+window.signOut = () => fbSignOut(auth);
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('hd-user').textContent = user.email;
+    initListeners();
+    initAdminExtras();
+  } else {
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// Navigation
+window.showSection = (name) => {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+};
+
+// Image upload via Cloudinary
+window.handleImgDrop = (e, prefix) => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if(file) {
+    const input = document.getElementById(prefix+'-img-input');
+    const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+    uploadImg(input, prefix);
+  }
+};
+
+window.uploadImg = async (input, prefix) => {
+  const file = input.files[0];
+  if(!file) return;
+  const status = document.getElementById(prefix+'-upload-status');
+  const drop = document.getElementById(prefix+'-drop');
+  if(status) status.style.display = 'block';
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  fd.append('folder', 'jss_sunshop');
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd });
+    const data = await res.json();
+    if(data.secure_url) {
+      document.getElementById(prefix+'-img-url').value = data.secure_url;
+      if(drop) drop.innerHTML = `<img class="img-preview" src="${data.secure_url}"> Image uploadée ✓`;
+    } else {
+      if(drop) drop.textContent = '⚠ Erreur upload. Réessayez.';
+    }
+  } catch(e) {
+    if(drop) drop.textContent = '⚠ Erreur upload.';
+  } finally {
+    if(status) status.style.display = 'none';
+  }
+};
+
+// Actus upload
+window.uploadActu = async (input) => {
+  const file = input.files[0]; if(!file) return;
+  const status = document.getElementById('ac-upload-status');
+  status.style.display = 'block';
+
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  fd.append('folder', 'jss_sunshop/actus');
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd });
+    const data = await res.json();
+    if(data.secure_url) {
+      await push(ref(db, 'actus'), { url: data.secure_url, createdAt: Date.now() });
+      showMsg('ac-msg', '✓ Visuel ajouté !', 'ok');
+    }
+  } catch(e) {
+    showMsg('ac-msg', '⚠ Erreur : ' + e.message, 'err');
+  } finally {
+    status.style.display = 'none';
+    input.value = '';
+  }
+};
+
+// Add product
+window._editKey = { aromes: null, concentres: null, cbd: null, cigarettes: null };
+
+window.addProd = async (section) => {
+  let data = {};
+  let msgId = '';
+
+  if(section === 'aromes') {
+    const nom = document.getElementById('ar-nom').value.trim();
+    const marque = document.getElementById('ar-marque').value.trim();
+    if(!nom || !marque) { showMsg('ar-msg','⚠ Marque et nom requis.','err'); return; }
+    data = {
+      marque, nom,
+      aromes: document.getElementById('ar-aromes').value.trim() || '—',
+      ml: document.getElementById('ar-ml').value.trim(),
+      pg_vg: document.getElementById('ar-pgvg').value.trim(),
+      frais: window._toggles['ar-frais'],
+      img: document.getElementById('ar-img-url').value,
+      themes: window._selectedTags['ar'] || [], _admin: true, createdAt: Date.now()
+    };
+    msgId = 'ar-msg';
+  } else if(section === 'concentres') {
+    const nom = document.getElementById('co-nom').value.trim();
+    const marque = document.getElementById('co-marque').value.trim();
+    if(!nom || !marque) { showMsg('co-msg','⚠ Marque et nom requis.','err'); return; }
+    data = {
+      marque, nom,
+      aromes: document.getElementById('co-aromes').value.trim() || '—',
+      ml: document.getElementById('co-ml').value.trim() || '30',
+      frais: window._toggles['co-frais'],
+      img: document.getElementById('co-img-url').value,
+      familles: window._selectedTags['co'] || [], _admin: true, createdAt: Date.now()
+    };
+    msgId = 'co-msg';
+  } else if(section === 'cbd') {
+    const nom = document.getElementById('cbd-nom').value.trim();
+    if(!nom) { showMsg('cbd-msg','⚠ Nom requis.','err'); return; }
+    const cat = document.getElementById('cbd-cat').value;
+    const grams = getGramsForCat(cat);
+    const prices = grams.map(g => {
+      const v = document.getElementById('cbd-price-'+g)?.value;
+      return v !== '' && v !== undefined ? parseFloat(v) : null;
+    });
+    data = {
+      nom, cat, grams, prices,
+      villes: window._selectedVilles.slice(),
+      img: document.getElementById('cbd-img-url').value,
+      _admin: true, createdAt: Date.now()
+    };
+    msgId = 'cbd-msg';
+  } else if(section === 'cigarettes') {
+    const nom = document.getElementById('ci-nom').value.trim();
+    const marque = document.getElementById('ci-marque').value.trim();
+    if(!nom || !marque) { showMsg('ci-msg','⚠ Marque et nom requis.','err'); return; }
+    const prixRaw = document.getElementById('ci-prix').value.trim();
+    data = {
+      marque, nom,
+      puissance: document.getElementById('ci-puissance').value.trim(),
+      autonomie: document.getElementById('ci-autonomie').value.trim(),
+      tirage: document.getElementById('ci-tirage').value.trim(),
+      ml: document.getElementById('ci-ml').value.trim(),
+      port: document.getElementById('ci-port').value.trim(),
+      resistance: document.getElementById('ci-resistance').value.trim(),
+      ecran: window._toggles['ci-ecran'],
+      reglages: window._toggles['ci-reglages'],
+      img: document.getElementById('ci-img-url').value,
+      _admin: true, createdAt: Date.now()
+    };
+    msgId = 'ci-msg';
+  }
+
+  const editKey = window._editKey[section];
+
+  try {
+    if(editKey) {
+      await update(ref(db, section+'/'+editKey), data);
+      showMsg(msgId, '✓ Produit modifié ! Visible sur tous les écrans.', 'ok');
+      window._editKey[section] = null;
+      setFormModeAdd(section);
+    } else {
+      await push(ref(db, section), data);
+      showMsg(msgId, '✓ Produit ajouté ! Visible sur tous les écrans.', 'ok');
+    }
+    resetFormBySection(section);
+  } catch(e) {
+    showMsg(msgId, '⚠ Erreur Firebase : ' + e.message, 'err');
+  }
+};
+
+// Edit product: prefill form with existing data
+window.editProd = (section, key, dataStr) => {
+  const p = JSON.parse(decodeURIComponent(dataStr));
+  window._editKey[section] = key;
+
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  const prefix = map[section];
+
+  if(section === 'aromes') {
+    document.getElementById('ar-marque').value = p.marque || '';
+    document.getElementById('ar-nom').value = p.nom || '';
+    document.getElementById('ar-aromes').value = p.aromes || '';
+    document.getElementById('ar-ml').value = p.ml || '';
+    document.getElementById('ar-pgvg').value = p.pg_vg || '';
+    window._toggles['ar-frais'] = !!p.frais;
+    setToggle('ar-frais', !!p.frais);
+    window._selectedTags['ar'] = p.themes || [];
+    renderTags('ar');
+    if(p.img){ document.getElementById('ar-img-url').value = p.img; document.getElementById('ar-drop').innerHTML = `<img class="img-preview" src="${p.img}"> Image actuelle`; }
+  } else if(section === 'concentres') {
+    document.getElementById('co-marque').value = p.marque || '';
+    document.getElementById('co-nom').value = p.nom || '';
+    document.getElementById('co-aromes').value = p.aromes || '';
+    document.getElementById('co-ml').value = p.ml || '';
+    window._toggles['co-frais'] = !!p.frais;
+    setToggle('co-frais', !!p.frais);
+    window._selectedTags['co'] = p.familles || [];
+    renderTags('co');
+    if(p.img){ document.getElementById('co-img-url').value = p.img; document.getElementById('co-drop').innerHTML = `<img class="img-preview" src="${p.img}"> Image actuelle`; }
+  } else if(section === 'cbd') {
+    document.getElementById('cbd-nom').value = p.nom || '';
+    document.getElementById('cbd-cat').value = p.cat || 'Small Buds';
+    populateMatSelect();
+    document.getElementById('cbd-mat').value = '';
+    window._selectedVilles = (p.villes || []).slice();
+    renderVilleCheckboxes();
+    if(p.grams && p.prices) {
+      const grams = p.grams;
+      const container = document.getElementById('cbd-price-table');
+      let html = '';
+      grams.forEach((g, i) => {
+        const val = p.prices[i];
+        html += `<div class="cbd-price-row">
+          <label>${g}g</label>
+          <input type="number" step="0.01" min="0" id="cbd-price-${g}" value="${val !== null && val !== undefined ? val : ''}" placeholder="ex: 23.00">
+        </div>`;
+      });
+      html += `<p class="cbd-price-hint">Les sachets dont le prix est inférieur à 5€ ne s'afficheront pas sur le site public.</p>`;
+      container.innerHTML = html;
+    }
+    if(p.img){ document.getElementById('cbd-img-url').value = p.img; }
+  } else if(section === 'cigarettes') {
+    document.getElementById('ci-marque').value = p.marque || '';
+    document.getElementById('ci-nom').value = p.nom || '';
+    document.getElementById('ci-puissance').value = p.puissance || '';
+    document.getElementById('ci-autonomie').value = p.autonomie || '';
+    document.getElementById('ci-tirage').value = p.tirage || '';
+    document.getElementById('ci-ml').value = p.ml || '';
+    document.getElementById('ci-port').value = p.port || '';
+    document.getElementById('ci-resistance').value = p.resistance || '';
+    document.getElementById('ci-prix').value = (p.prix||'').replace(/[^\d.,]/g,'').replace(',','.');
+    window._toggles['ci-ecran'] = !!p.ecran;
+    setToggle('ci-ecran', !!p.ecran);
+    window._toggles['ci-reglages'] = !!p.reglages;
+    setToggle('ci-reglages', !!p.reglages);
+    if(p.img){ document.getElementById('ci-img-url').value = p.img; }
+  }
+
+  setFormModeEdit(section);
+  document.getElementById(prefix === 'cbd' ? 'sec-cbd' : 'sec-'+section)?.scrollIntoView({behavior:'smooth'});
+};
+
+window.cancelEdit = (section) => {
+  window._editKey[section] = null;
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  resetForm(map[section]);
+  setFormModeAdd(section);
+};
+
+function setFormModeEdit(section) {
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  const prefix = map[section];
+  const btn = document.querySelector(`#sec-${section} .btn-primary`);
+  if(btn) btn.textContent = '✓ Enregistrer les modifications';
+  let cancelBtn = document.getElementById(prefix+'-cancel-edit');
+  if(!cancelBtn && btn) {
+    cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-secondary';
+    cancelBtn.id = prefix+'-cancel-edit';
+    cancelBtn.textContent = '✕ Annuler la modification';
+    cancelBtn.onclick = () => window.cancelEdit(section);
+    btn.parentNode.appendChild(cancelBtn);
+  }
+}
+
+function setFormModeAdd(section) {
+  const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
+  const prefix = map[section];
+  const btn = document.querySelector(`#sec-${section} .btn-primary`);
+  if(btn) btn.textContent = '✓ Ajouter';
+  const cancelBtn = document.getElementById(prefix+'-cancel-edit');
+  if(cancelBtn) cancelBtn.remove();
+}
+
+// Reset forms
+window.resetForm = (prefix) => {
+  document.querySelectorAll(`[id^="${prefix}-"]`).forEach(el => {
+    if(el.tagName === 'INPUT' && el.type !== 'hidden') el.value = '';
+    if(el.tagName === 'TEXTAREA') el.value = '';
+  });
+  const drop = document.getElementById(prefix+'-drop');
+  if(drop) drop.innerHTML = '📁 Cliquez ou glissez une image JPG/PNG<input type="file" id="'+prefix+'-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,\''+prefix+'\')">';
+  if(prefix === 'cbd'){ window._selectedVilles = []; renderVilleCheckboxes(); }
+};
+
+function resetFormBySection(section) {
+  const map = {aromes:'ar', concentres:'co', cbd:'cbd', cigarettes:'ci'};
+  window.resetForm(map[section] || section);
+}
+
+// Show message
+function showMsg(id, txt, type) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = txt; el.className = 'msg '+type; el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+
+/* ── TAGS ── */
+const ALL_THEMES = ["Abricot","Alcool / cocktails","Ananas","Baies","Banane","Biscuit","Boisson énergisante","Bonbon","Cacahuète","Cactus","Café","Canelle","Caramel","Cassis","Cerise","Chantilly","Chocolat","Citron","Cola","Concombre","Corossol","Céréales","Fleurs","Fraise","Framboise","Fruit de la passion","Fruit du dragon","Fruit du jacquier","Fruit du serpent","Fruits rouges","Goyave","Grenade","Groseille","Kiwi","Lait","Litchi","Macadamia","Madeleine","Mandarine","Mangoustan","Mangue","Manioc","Melon","Menthe / Chlorophylle","Myrtille","Mûre","Nectarine","Noisette","Noix de coco","Noix de pécan","Nougat","Orange","Pamplemousse","Papaye","Pastèque","Pistache","Poire","Pomme","Pop corn","Praliné","Pâtisserie","Pêche","Raisin","Réglisse","Speculoos","Tabac","Thé","Vanille"];
+const ALL_FAMILLES = ["Agrumes","Fruits d'été","Fruits exotiques","Fruits noirs","Fruits rouges","Fruit dragon / serpent","Gourmand","Mentholé","Pomme / poire","Sucré","Café / Tabac"];
+
+function getThemeList(prefix){ return prefix === 'co' ? ALL_FAMILLES : ALL_THEMES; }
+
+window._selectedTags = { ar: [], co: [] };
+
+function renderTags(prefix, filter=''){
+  const wrap = document.getElementById(prefix+'-tags-wrap');
+  if(!wrap) return;
+  const sel = window._selectedTags[prefix] || [];
+  const list_full = getThemeList(prefix);
+  const list = filter ? list_full.filter(t=>t.toLowerCase().includes(filter.toLowerCase())) : list_full;
+  wrap.innerHTML = list.map(t => {
+    const safe = t.replace(/'/g, "\\'");
+    return `<button type="button" class="tag-btn${sel.includes(t)?' sel':''}" onclick="toggleTag('${prefix}','${safe}')">${t}</button>`;
+  }).join('');
+}
+
+window.toggleTag = (prefix, tag) => {
+  const arr = window._selectedTags[prefix] || [];
+  const idx = arr.indexOf(tag);
+  if(idx>=0) arr.splice(idx,1); else arr.push(tag);
+  window._selectedTags[prefix] = arr;
+  const search = document.getElementById(prefix+'-tag-search');
+  renderTags(prefix, search ? search.value : '');
+};
+
+window.filterTags = (prefix) => {
+  const val = document.getElementById(prefix+'-tag-search')?.value || '';
+  renderTags(prefix, val);
+};
+
+/* ── MATRICE CBD (chargées depuis Firebase, gérables) ── */
+const RESINES_CATS_ADMIN = ['Résines naturelles','Résines Molécule'];
+window._matricesCache = { fleurs: {}, resines: {} };
+window._villesCache = {};
+window._matEditGrams = []; // grammages en cours d'édition dans l'éditeur de matrice
+
+function isResineCat(cat){ return RESINES_CATS_ADMIN.includes(cat); }
+function matTypeForCat(cat){ return isResineCat(cat) ? 'resines' : 'fleurs'; }
+function getGramsForCat(cat){
+  // Grammages standards par défaut si aucune matrice n'existe encore
+  return isResineCat(cat) ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
+}
+
+function populateMatSelect(){
+  const cat = document.getElementById('cbd-cat')?.value || '';
+  const sel = document.getElementById('cbd-mat');
+  if(!sel) return;
+  const type = matTypeForCat(cat);
+  const mats = window._matricesCache[type] || {};
+  sel.innerHTML = '<option value="">-- Choisir une matrice --</option>';
+  Object.entries(mats).forEach(([k, m]) => {
+    const idx10 = (m.grams||[]).indexOf(10);
+    const p10 = idx10>=0 ? m.prices[idx10] : (m.prices ? m.prices[0] : '');
+    sel.innerHTML += `<option value="${k}">${m.label || k}${p10!==''&&p10!==undefined&&p10!==null ? ' ('+p10+'€/10g)' : ''}</option>`;
+  });
+  renderPriceTable(getGramsForCat(cat), null);
+}
+
+window.applyMatrice = () => {
+  const cat = document.getElementById('cbd-cat')?.value || '';
+  const key = document.getElementById('cbd-mat')?.value || '';
+  const type = matTypeForCat(cat);
+  const mats = window._matricesCache[type] || {};
+  const m = key && mats[key] ? mats[key] : null;
+  renderPriceTable(m ? m.grams : getGramsForCat(cat), m ? m.prices : null);
+};
+
+function renderPriceTable(grams, prices){
+  const container = document.getElementById('cbd-price-table');
+  if(!container) return;
+  let html = '';
+  grams.forEach((g, i) => {
+    const val = prices ? prices[i] : '';
+    html += `<div class="cbd-price-row">
+      <label>${g}g</label>
+      <input type="number" step="0.01" min="0" id="cbd-price-${g}" value="${val !== null && val !== undefined ? val : ''}" placeholder="ex: 23.00">
+    </div>`;
+  });
+  html += `<p class="cbd-price-hint">Les sachets dont le prix est inférieur à 5€ ne s'afficheront pas sur le site public.</p>`;
+  container.innerHTML = html;
+}
+
+// Quand la section CBD devient visible, initialiser le tableau vide selon catégorie par défaut
+function initCbdForm(){
+  populateMatSelect();
+  loadMatrixList();
+  renderVillesUI();
+}
+
+/* ── GESTION DES VILLES ── */
+function renderVillesUI(){
+  const list = document.getElementById('villes-list');
+  if(!list) return;
+  const villes = window._villesCache || {};
+  const keys = Object.keys(villes);
+  list.innerHTML = keys.map(k => `
+    <div class="prod-item" style="margin-bottom:6px;">
+      <div class="pi-info"><div class="pi-name">${villes[k].nom}</div></div>
+      ${keys.length > 1 ? `<button class="btn-del" onclick="delVille('${k}')">Supprimer</button>` : ''}
+    </div>`).join('') || '<p class="empty-state">Aucune ville.</p>';
+  renderVilleCheckboxes();
+}
+
+window._selectedVilles = [];
+function renderVilleCheckboxes(){
+  const wrap = document.getElementById('cbd-villes-check');
+  if(!wrap) return;
+  const villes = window._villesCache || {};
+  const sel = window._selectedVilles;
+  wrap.innerHTML = Object.entries(villes).map(([k, v]) =>
+    `<button type="button" class="tag-btn${sel.includes(k)?' sel':''}" onclick="toggleVille('${k}')">${v.nom}</button>`
+  ).join('') || '<p style="color:var(--text-dimmer);font-size:0.82rem;">Ajoutez d\'abord une ville ci-dessus.</p>';
+}
+window.toggleVille = (key) => {
+  const idx = window._selectedVilles.indexOf(key);
+  if(idx >= 0) window._selectedVilles.splice(idx, 1);
+  else window._selectedVilles.push(key);
+  renderVilleCheckboxes();
+};
+
+window.addVille = async () => {
+  const nom = document.getElementById('new-ville-nom').value.trim();
+  if(!nom){ showMsg('ville-msg', '⚠ Indiquez un nom de ville.', 'err'); return; }
+  const key = nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_');
+  try {
+    await set(ref(db, 'cbd_villes/'+key), { nom });
+    document.getElementById('new-ville-nom').value = '';
+    showMsg('ville-msg', '✓ Ville ajoutée ! Pensez à renseigner ses prix pour chaque produit.', 'ok');
+  } catch(e) {
+    showMsg('ville-msg', '⚠ Erreur : ' + e.message, 'err');
+  }
+};
+
+window.delVille = async (key) => {
+  if(!confirm('Supprimer cette ville ? Les prix associés ne seront plus affichés.')) return;
+  await remove(ref(db, 'cbd_villes/'+key));
+};
+
+/* ── GESTION DES MATRICES (CRUD) ── */
+window.loadMatrixList = () => {
+  const type = document.getElementById('mat-type')?.value || 'fleurs';
+  const sel = document.getElementById('mat-select-edit');
+  if(!sel) return;
+  const mats = window._matricesCache[type] || {};
+  sel.innerHTML = '<option value="">-- Nouvelle matrice --</option>';
+  Object.entries(mats).forEach(([k, m]) => {
+    sel.innerHTML += `<option value="${k}">${m.label || k}</option>`;
+  });
+  resetMatrixEditor();
+};
+
+window.loadMatrixIntoEditor = () => {
+  const type = document.getElementById('mat-type').value;
+  const key = document.getElementById('mat-select-edit').value;
+  const deleteBtn = document.getElementById('mat-delete-btn');
+  if(!key){
+    resetMatrixEditor();
+    return;
+  }
+  const m = window._matricesCache[type][key];
+  if(!m) return;
+  document.getElementById('mat-label').value = m.label || key;
+  window._matEditGrams = m.grams.map((g, i) => ({ gram: g, price: m.prices[i] }));
+  renderMatEditorRows();
+  deleteBtn.style.display = 'inline-block';
+  window._matEditingKey = key;
+};
+
+window.resetMatrixEditor = () => {
+  document.getElementById('mat-label').value = '';
+  const type = document.getElementById('mat-type')?.value || 'fleurs';
+  const defaultGrams = type === 'resines' ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
+  window._matEditGrams = defaultGrams.map(g => ({ gram: g, price: null }));
+  window._matEditingKey = null;
+  document.getElementById('mat-select-edit').value = '';
+  document.getElementById('mat-delete-btn').style.display = 'none';
+  renderMatEditorRows();
+};
+
+function renderMatEditorRows(){
+  const container = document.getElementById('mat-editor-rows');
+  if(!container) return;
+  const rows = window._matEditGrams.slice().sort((a,b) => a.gram - b.gram);
+  container.innerHTML = rows.map(r => `
+    <div class="cbd-price-row">
+      <label>${r.gram}g</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="number" step="0.01" min="0" value="${r.price !== null && r.price !== undefined ? r.price : ''}" placeholder="ex: 23.00" onchange="updateMatPrice(${r.gram}, this.value)" style="flex:1;">
+        <button class="btn-del" style="padding:5px 10px;" onclick="removeGramColumn(${r.gram})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+window.updateMatPrice = (gram, value) => {
+  const row = window._matEditGrams.find(r => r.gram === gram);
+  if(row) row.price = value === '' ? null : parseFloat(value);
+};
+
+window.removeGramColumn = (gram) => {
+  window._matEditGrams = window._matEditGrams.filter(r => r.gram !== gram);
+  renderMatEditorRows();
+};
+
+window.addGramColumn = () => {
+  const input = document.getElementById('mat-new-gram');
+  const val = parseFloat(input.value);
+  if(!val || val <= 0){ showMsg('mat-msg', '⚠ Indiquez un grammage valide.', 'err'); return; }
+  if(window._matEditGrams.some(r => r.gram === val)){
+    showMsg('mat-msg', '⚠ Ce grammage existe déjà dans cette matrice.', 'err');
+    return;
+  }
+
+  const type = document.getElementById('mat-type').value;
+  const usualGrams = type === 'resines' ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
+  const typeLabel = type === 'resines' ? 'résines' : 'fleurs';
+
+  if(!usualGrams.includes(val)){
+    const ok = confirm(`Ce grammage ne correspond habituellement pas à un prix de ${typeLabel}. Souhaitez-vous ajouter une nouvelle colonne au tableau ?`);
+    if(!ok) { input.value=''; return; }
+  }
+
+  window._matEditGrams.push({ gram: val, price: null });
+  input.value = '';
+  renderMatEditorRows();
+  showMsg('mat-msg', `✓ Colonne ${val}g ajoutée. Le tableau public se réorganisera automatiquement par ordre croissant de grammage.`, 'ok');
+};
+
+window.saveMatrix = async () => {
+  const type = document.getElementById('mat-type').value;
+  const label = document.getElementById('mat-label').value.trim();
+  if(!label){ showMsg('mat-msg', '⚠ Indiquez un nom de matrice.', 'err'); return; }
+  if(!window._matEditGrams.length){ showMsg('mat-msg', '⚠ Ajoutez au moins un grammage.', 'err'); return; }
+
+  const sorted = window._matEditGrams.slice().sort((a,b) => a.gram - b.gram);
+  const grams = sorted.map(r => r.gram);
+  const prices = sorted.map(r => r.price);
+
+  const key = window._matEditingKey || ('M' + Date.now());
+
+  try {
+    await set(ref(db, `cbd_matrices/${type}/${key}`), { label, grams, prices });
+    showMsg('mat-msg', '✓ Matrice enregistrée !', 'ok');
+    window._matEditingKey = key;
+  } catch(e) {
+    showMsg('mat-msg', '⚠ Erreur : ' + e.message, 'err');
+  }
+};
+
+window.deleteMatrix = async () => {
+  const type = document.getElementById('mat-type').value;
+  const key = window._matEditingKey;
+  if(!key) return;
+  if(!confirm("Supprimer cette matrice ? Les produits qui l'utilisent garderont leurs prix actuels mais ne seront plus liés à cette matrice.")) return;
+  await remove(ref(db, `cbd_matrices/${type}/${key}`));
+  showMsg('mat-msg', '✓ Matrice supprimée.', 'ok');
+  resetMatrixEditor();
+};
+
+window._editKey = window._editKey || {};
+
+// Init tags quand section visible
+const _origShowSection = window.showSection;
+window.showSection = (name) => {
+  _origShowSection(name);
+  if(name==='aromes'){ window._selectedTags.ar=[]; renderTags('ar'); }
+  if(name==='concentres'){ window._selectedTags.co=[]; renderTags('co'); }
+  if(name==='cbd'){ populateMatSelect(); }
+  if(name==='matrices'){ loadMatrixList(); }
+  if(name==='boutiques'){ renderVillesUI(); }
+};
+
+// Init au chargement
+function initAdminExtras(){
+  renderTags('ar');
+  renderTags('co');
+  populateMatSelect();
+}
+
+// Listeners
+function initListeners() {
+  // Matrices CBD (fleurs + résines)
+  onValue(ref(db, 'cbd_matrices/fleurs'), snap => {
+    window._matricesCache.fleurs = snap.exists() ? snap.val() : {};
+    populateMatSelect();
+    if(document.getElementById('mat-type')?.value === 'fleurs') loadMatrixList();
+  });
+  onValue(ref(db, 'cbd_matrices/resines'), snap => {
+    window._matricesCache.resines = snap.exists() ? snap.val() : {};
+    populateMatSelect();
+    if(document.getElementById('mat-type')?.value === 'resines') loadMatrixList();
+  });
+
+  // Villes CBD
+  onValue(ref(db, 'cbd_villes'), snap => {
+    window._villesCache = snap.exists() ? snap.val() : {};
+    renderVillesUI();
+  });
+
+  // Aromes
+  onValue(ref(db, 'aromes'), snap => {
+    const list = document.getElementById('ar-list');
+    list.innerHTML = '';
+    if(!snap.exists()) { list.innerHTML = '<p class="empty-state">Aucun produit ajouté.</p>'; return; }
+    snap.forEach(child => {
+      const p = child.val();
+      const key = child.key;
+      list.appendChild(makeProdItem(p, key, 'aromes'));
+    });
+  });
+
+  // Concentres
+  onValue(ref(db, 'concentres'), snap => {
+    const list = document.getElementById('co-list');
+    list.innerHTML = '';
+    if(!snap.exists()) { list.innerHTML = '<p class="empty-state">Aucun concentré ajouté.</p>'; return; }
+    snap.forEach(child => {
+      list.appendChild(makeProdItem(child.val(), child.key, 'concentres'));
+    });
+  });
+
+  // CBD
+  onValue(ref(db, 'cbd'), snap => {
+    const list = document.getElementById('cbd-list');
+    list.innerHTML = '';
+    if(!snap.exists()) { list.innerHTML = '<p class="empty-state">Aucun produit ajouté.</p>'; return; }
+    snap.forEach(child => {
+      list.appendChild(makeProdItem(child.val(), child.key, 'cbd'));
+    });
+  });
+
+  // Cigarettes
+  onValue(ref(db, 'cigarettes'), snap => {
+    const list = document.getElementById('ci-list');
+    list.innerHTML = '';
+    if(!snap.exists()) { list.innerHTML = '<p class="empty-state">Aucun appareil ajouté.</p>'; return; }
+    snap.forEach(child => {
+      list.appendChild(makeProdItem(child.val(), child.key, 'cigarettes'));
+    });
+  });
+
+  // Actus
+  onValue(ref(db, 'actus'), snap => {
+    const grid = document.getElementById('ac-list');
+    const empty = document.getElementById('ac-empty');
+    grid.innerHTML = '';
+    if(!snap.exists()) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    let i = 1;
+    snap.forEach(child => {
+      const a = child.val();
+      const key = child.key;
+      const div = document.createElement('div');
+      div.innerHTML = `<div class="actu-thumb">
+        <img src="${a.url}" alt="Visuel ${i}" loading="lazy">
+        <div class="del-overlay"><button onclick="delActu('${key}')">🗑 Supprimer</button></div>
+      </div>
+      <div class="actu-order">Image ${i}</div>`;
+      grid.appendChild(div);
+      i++;
+    });
+  });
+}
+
+// Delete product
+window.delProd = async (section, key) => {
+  if(!confirm('Supprimer ce produit ?')) return;
+  await remove(ref(db, section+'/'+key));
+};
+
+window.delActu = async (key) => {
+  if(!confirm('Supprimer ce visuel ?')) return;
+  await remove(ref(db, 'actus/'+key));
+};
+
+// Build product list item
+function makeProdItem(p, key, section) {
+  const div = document.createElement('div');
+  div.className = 'prod-item';
+  const name = p.nom || p.name || '—';
+  const brand = p.marque || p.cat || '';
+  const showPrice = section === 'cbd' || section === 'cigarettes';
+  const prix = showPrice ? (p.prix || p.prix_romilly || '') : '';
+  const encoded = encodeURIComponent(JSON.stringify(p));
+  div.innerHTML = `
+    ${p.img ? `<img src="${p.img}" alt="${name}">` : '<div style="width:40px;height:40px;background:var(--surface);border-radius:4px;flex-shrink:0"></div>'}
+    <div class="pi-info">
+      <div class="pi-name">${name}</div>
+      <div class="pi-meta">${brand}${prix ? ' · '+prix : ''}</div>
+    </div>
+    ${prix ? `<span class="pi-badge">${prix}</span>` : ''}
+    <button class="btn-secondary" style="padding:5px 12px;font-size:0.75rem;" onclick="editProd('${section}','${key}','${encoded}')">✎ Modifier</button>
+    <button class="btn-del" onclick="delProd('${section}','${key}')">Supprimer</button>`;
+  return div;
+}
+</script>
+</body>
+</html>

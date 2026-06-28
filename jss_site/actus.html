@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Actus — J&S Sun Shop</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c27;
+  --border: rgba(255,255,255,0.07);
+  --accent: #c9a84c;
+  --accent2: #ff6b6b;
+  --accent3: #7eb8f7;
+  --text: #e8e8f0;
+  --text-dim: #a2a2bd;
+  --text-dimmer: #6a6a86;
+  --tr: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  background:rgba(10,10,15,0.94);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 40px;
+  display:flex; align-items:center;
+  height:68px;
+}
+
+.nav-logo {
+  height:50px; width:auto; flex-shrink:0; margin-right:28px;
+  filter:drop-shadow(0 0 8px rgba(201,168,76,0.25));
+  transition:filter 0.3s;
+}
+.nav-logo:hover { filter:drop-shadow(0 0 16px rgba(201,168,76,0.55)); }
+
+.nav-links { display:flex; align-items:center; gap:2px; flex:1; flex-wrap:wrap; }
+
+.nav-link {
+  text-decoration:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.72rem; font-weight:600; letter-spacing:0.07em;
+  color:var(--text-dim);
+  padding:6px 13px; border-radius:5px;
+  border:1px solid transparent;
+  transition:all var(--tr); white-space:nowrap;
+}
+.nav-link:hover { color:var(--text); border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.06); }
+.nav-link.active { color:var(--accent); border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.07); }
+
+.nav-burger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; margin-left:auto; }
+.nav-burger span { display:block; width:22px; height:2px; background:var(--accent); border-radius:2px; }
+.nav-mobile {
+  display:none; position:fixed; top:68px; left:0; right:0;
+  background:rgba(10,10,15,0.98); border-bottom:1px solid var(--border);
+  padding:14px; flex-direction:column; gap:4px; z-index:199;
+  backdrop-filter:blur(20px);
+}
+.nav-mobile.open { display:flex; }
+.nav-mobile .nav-link { font-size:0.9rem; padding:10px 16px; }
+
+.page { padding-top:68px; min-height:100vh; }
+
+@media(max-width:880px) {
+  nav { padding:0 16px; }
+  .nav-links { display:none; }
+  .nav-burger { display:flex; }
+}
+
+.actus-wrap{max-width:900px;margin:0 auto;padding:36px 40px 80px;display:flex;flex-direction:column;align-items:center;}
+.actus-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:-0.02em;color:#fff;margin-bottom:6px;text-align:center;}
+.actus-heading span{color:var(--accent);}
+.actus-sub{font-size:0.88rem;color:var(--text-dim);margin-bottom:36px;text-align:center;}
+
+/* ── DISPLAY AREA ── */
+.poster-area{
+  width:100%; max-width:600px;
+  aspect-ratio:210/297; /* A4 */
+  background:var(--surface);
+  border:2px dashed var(--border);
+  border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  transition:border-color .3s;
+}
+.poster-area.has-content{border-style:solid;border-color:rgba(201,168,76,.3);}
+.poster-empty{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--text-dimmer);}
+.poster-empty .icon{font-size:3rem;opacity:.4;}
+.poster-empty p{font-size:0.85rem;text-align:center;max-width:240px;line-height:1.6;}
+#poster-iframe{
+  width:100%;height:100%;border:none;display:none;
+  border-radius:10px;
+}
+#poster-img{
+  width:100%;height:100%;object-fit:contain;display:none;
+}
+
+/* ── ADMIN LINK ── */
+.actus-admin-btn{
+  margin-top:28px;
+  padding:11px 28px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.78rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;
+  border-radius:20px;cursor:pointer;
+  transition:all .2s;
+}
+.actus-admin-btn:hover{border-color:rgba(201,168,76,.4);color:var(--accent);}
+
+/* ── ADMIN OVERLAY ── */
+#actus-admin{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);overflow-y:auto;}
+#actus-admin.open{display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;}
+.actus-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:660px;padding:32px;position:relative;}
+.actus-box h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;margin-bottom:4px;}
+.actus-box .sub{font-size:0.82rem;color:var(--text-dim);margin-bottom:24px;}
+.actus-close{position:absolute;top:16px;right:16px;background:none;border:1px solid var(--border);color:var(--text-dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;transition:all .2s;}
+.actus-close:hover{border-color:#ff6b6b;color:#ff6b6b;}
+
+.drop-zone{
+  border:2px dashed rgba(201,168,76,.35);
+  border-radius:12px;
+  padding:40px 24px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .25s;
+  background:var(--surface2);
+  margin-bottom:16px;
+}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:rgba(201,168,76,.06);}
+.drop-zone .dz-icon{font-size:2.4rem;margin-bottom:12px;display:block;}
+.drop-zone p{font-size:0.85rem;color:var(--text-dim);line-height:1.6;margin-bottom:8px;}
+.drop-zone .hint{font-size:0.75rem;color:var(--text-dimmer);}
+
+.upload-btn{
+  display:inline-block;padding:10px 24px;
+  background:var(--accent);color:#0a0a0f;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;
+  letter-spacing:.06em;text-transform:uppercase;
+  border-radius:6px;border:none;cursor:pointer;
+  transition:background .2s;margin-top:8px;
+}
+.upload-btn:hover{background:#e2c97e;}
+.clear-btn-actus{
+  padding:10px 20px;background:none;
+  color:#ff6b6b;border:1px solid rgba(255,107,107,.3);
+  border-radius:6px;font-size:0.8rem;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all .2s;margin-top:8px;
+}
+.clear-btn-actus:hover{background:rgba(255,107,107,.1);}
+
+.current-preview{margin-top:20px;padding:16px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
+.current-preview h4{font-size:0.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:10px;}
+.preview-thumb{width:100%;max-height:200px;object-fit:contain;border-radius:6px;display:none;}
+
+.pwd-screen{display:flex;flex-direction:column;align-items:center;gap:14px;padding:32px 20px;}
+.pwd-screen h2{font-family:'Syne',sans-serif;color:#fff;font-size:1.3rem;}
+.pwd-screen input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:8px;font-size:1rem;outline:none;width:260px;text-align:center;letter-spacing:.15em;}
+.pwd-screen input:focus{border-color:rgba(201,168,76,.4);}
+.pwd-err{color:#ff6b6b;font-size:0.8rem;min-height:18px;}
+
+.info-box{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:12px 16px;font-size:0.82rem;color:var(--text-dim);line-height:1.65;margin-bottom:14px;}
+.info-box strong{color:var(--accent);}
+
+@media(max-width:600px){
+  .actus-wrap{padding:20px 16px 60px;}
+  .poster-area{max-width:100%;}
+}
+</style>
+</head>
+<body data-page="actus">
+<nav>
+  <a href="index.html"><img src="imgs/logo.webp" class="nav-logo" alt="J&S Sun Shop"></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link" data-page="accueil">Accueil</a>
+    <a href="cbd.html" class="nav-link" data-page="cbd">Fleurs &amp; Résines</a>
+    <a href="aromes.html" class="nav-link" data-page="aromes">Arômes E-liquides</a>
+    <a href="concentres.html" class="nav-link" data-page="concentres">Concentrés</a>
+    <a href="cigarettes.html" class="nav-link" data-page="cigarettes">Cigarettes Élec.</a>
+    <a href="box.html" class="nav-link" data-page="box">Box &amp; Clearos</a>
+    <a href="actus.html" class="nav-link" data-page="actus">Actus</a>
+  </div>
+  <div class="nav-burger" onclick="document.getElementById('nm').classList.toggle('open')"><span></span><span></span><span></span></div>
+</nav>
+<div class="nav-mobile" id="nm">
+  <a href="index.html" class="nav-link" data-page="accueil">Accueil</a>
+  <a href="cbd.html" class="nav-link" data-page="cbd">Fleurs &amp; Résines</a>
+  <a href="aromes.html" class="nav-link" data-page="aromes">Arômes E-liquides</a>
+  <a href="concentres.html" class="nav-link" data-page="concentres">Concentrés</a>
+  <a href="cigarettes.html" class="nav-link" data-page="cigarettes">Cigarettes Élec.</a>
+  <a href="box.html" class="nav-link" data-page="box">Box &amp; Clearos</a>
+  <a href="actus.html" class="nav-link" data-page="actus">Actus</a>
+</div>
+<div class="page">
+  <div class="actus-wrap">
+    <h1 class="actus-heading">Nos <span>Actus</span></h1>
+    <p class="actus-sub">Promotions, nouveautés et événements J&amp;S Sun Shop</p>
+
+    <!-- Poster display zone A4 -->
+    <div class="poster-area" id="poster-area">
+      <div class="poster-empty" id="poster-empty">
+        <span class="icon">📋</span>
+        <p>Aucun visuel affiché pour le moment.<br>Revenez bientôt !</p>
+      </div>
+      <iframe id="poster-iframe" title="Visuel actus"></iframe>
+      <img id="poster-img" alt="Visuel actus">
+    </div>
+
+    <!-- Admin button -->
+    <button class="actus-admin-btn" onclick="openActusAdmin()">⚙ Gérer le visuel</button>
+  </div>
+</div>
+
+<!-- Admin overlay -->
+<div id="actus-admin">
+  <div class="actus-box">
+    <button class="actus-close" onclick="closeActusAdmin()">✕</button>
+    <h2>📋 Gestion des Actus</h2>
+    <p class="sub">Chargez un visuel à afficher sur cet écran</p>
+    <div id="actus-inner"></div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = 'sunshop2024';
+let adminUnlocked = false;
+
+// ── Display current poster ──────────────────────────────────────────────────
+function loadCurrentPoster() {
+  const stored = localStorage.getItem('jss_actus_poster');
+  if (!stored) return;
+  try {
+    const data = JSON.parse(stored);
+    showPoster(data.dataUrl, data.type);
+  } catch(e) {}
+}
+
+function showPoster(dataUrl, type) {
+  const area = document.getElementById('poster-area');
+  const empty = document.getElementById('poster-empty');
+  const iframe = document.getElementById('poster-iframe');
+  const img = document.getElementById('poster-img');
+
+  empty.style.display = 'none';
+  area.classList.add('has-content');
+
+  if (type === 'pdf') {
+    img.src = dataUrl;
+    img.style.display = 'block';
+    iframe.style.display = 'none';
+  } else {
+    img.src = dataUrl;
+    img.style.display = 'block';
+    iframe.style.display = 'none';
+  }
+}
+
+function clearPoster() {
+  localStorage.removeItem('jss_actus_poster');
+  const area = document.getElementById('poster-area');
+  const empty = document.getElementById('poster-empty');
+  const iframe = document.getElementById('poster-iframe');
+  const img = document.getElementById('poster-img');
+  area.classList.remove('has-content');
+  empty.style.display = '';
+  iframe.style.display = 'none';
+  iframe.src = '';
+  img.style.display = 'none';
+  img.src = '';
+}
+
+// ── Admin ───────────────────────────────────────────────────────────────────
+function openActusAdmin() {
+  document.getElementById('actus-admin').classList.add('open');
+  adminUnlocked ? showActusPanel() : showPwdScreen();
+}
+function closeActusAdmin() {
+  document.getElementById('actus-admin').classList.remove('open');
+}
+
+function showPwdScreen() {
+  document.getElementById('actus-inner').innerHTML = `
+    <div class="pwd-screen">
+      <h2>🔐 Accès Admin</h2>
+      <p style="font-size:.85rem;color:var(--text-dim);">Entrez le mot de passe</p>
+      <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPwd()">
+      <button class="upload-btn" onclick="checkPwd()">Accéder</button>
+      <p class="pwd-err" id="pwd-err"></p>
+    </div>`;
+}
+
+function checkPwd() {
+  if (document.getElementById('pwd-input')?.value === ADMIN_PASSWORD) {
+    adminUnlocked = true;
+    showActusPanel();
+  } else {
+    document.getElementById('pwd-err').textContent = 'Mot de passe incorrect';
+    setTimeout(() => { const e=document.getElementById('pwd-err'); if(e) e.textContent=''; }, 2000);
+  }
+}
+
+function showActusPanel() {
+  const stored = localStorage.getItem('jss_actus_poster');
+  const hasContent = !!stored;
+
+  document.getElementById('actus-inner').innerHTML = `
+    <div class="info-box">
+      <strong>Comment ça fonctionne :</strong> Chargez une image JPG ou PNG. 
+      Il s'affichera en format A4 sur la page Actus. Le visuel est stocké temporairement dans ce navigateur.
+      Pour changer de visuel, chargez simplement un nouveau fichier.
+    </div>
+
+    <div class="drop-zone" id="drop-zone"
+      ondragover="event.preventDefault();this.classList.add('dragover')"
+      ondragleave="this.classList.remove('dragover')"
+      ondrop="handleDrop(event)">
+      <span class="dz-icon">📄</span>
+      <p>Glissez-déposez votre visuel ici<br>ou cliquez pour choisir un fichier</p>
+      <p class="hint">Formats acceptés : JPG, PNG</p>
+      <input type="file" id="file-input" accept=".png,.jpg,.jpeg,image/*" style="display:none" onchange="handleFile(this.files[0])">
+      <button class="upload-btn" onclick="document.getElementById('file-input').click()">📁 Choisir un fichier</button>
+    </div>
+
+    ${hasContent ? `
+    <div class="current-preview">
+      <h4>✅ Visuel actuellement affiché</h4>
+      <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:10px;">Un visuel est chargé et affiché sur la page Actus.</p>
+      <button class="clear-btn-actus" onclick="clearPoster();showActusPanel()">🗑 Supprimer le visuel</button>
+    </div>` : ''}
+
+    <div class="current-preview" style="margin-top:16px;">
+      <h4>🌙 Mode veille (écran de garde)</h4>
+      <p style="font-size:.82rem;color:var(--text-dim);margin-bottom:12px;line-height:1.6;">
+        Après une période d'inactivité, l'écran affiche automatiquement le visuel Actus en plein écran, sur n'importe quelle page. Touchez l'écran pour reprendre.
+      </p>
+      <label style="display:flex;align-items:center;gap:10px;font-size:.88rem;color:var(--text);margin-bottom:14px;cursor:pointer;">
+        <input type="checkbox" id="sb-en" ${standbyEnabled() ? 'checked' : ''} onchange="setStandbyEnabled(this.checked)" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer;">
+        Activer le mode veille
+      </label>
+      <div style="display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text-dim);">
+        Délai d'inactivité :
+        <input type="number" id="sb-min" min="1" max="180" value="${standbyMinutes()}" onchange="setStandbyMinutes(this.value)" style="width:74px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:7px 8px;border-radius:6px;text-align:center;outline:none;"> minutes
+      </div>
+    </div>
+  `;
+
+  // Make drop zone clickable
+  document.getElementById('drop-zone').addEventListener('click', (e) => {
+    if (e.target.tagName !== 'BUTTON') document.getElementById('file-input').click();
+  });
+}
+
+function standbyEnabled(){ var v=localStorage.getItem('jss_standby_enabled'); return v===null?true:v==='1'; }
+function standbyMinutes(){ var m=parseFloat(localStorage.getItem('jss_standby_minutes')); return (m&&m>0)?m:10; }
+function setStandbyEnabled(on){ localStorage.setItem('jss_standby_enabled', on?'1':'0'); }
+function setStandbyMinutes(v){ var m=parseFloat(v); if(m>0) localStorage.setItem('jss_standby_minutes', m); }
+
+function handleDrop(event) {
+  event.preventDefault();
+  document.getElementById('drop-zone').classList.remove('dragover');
+  const file = event.dataTransfer.files[0];
+  if (file) handleFile(file);
+}
+
+function handleFile(file) {
+  if (!file) return;
+  const allowed = ['image/png','image/jpeg','image/jpg','image/webp'];
+  const isPdf = false;
+  const isImg = file.type.startsWith('image/');
+  if (!isImg) {
+    alert('Format non supporté. Utilisez PDF, PNG ou JPG.');
+    return;
+  }
+
+  // Check size (max 10MB for localStorage)
+  if (file.size > 10 * 1024 * 1024) {
+    alert('Fichier trop lourd (max 10 MB). Compressez votre PDF ou image.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    const type = isPdf ? 'pdf' : 'image';
+    try {
+      localStorage.setItem('jss_actus_poster', JSON.stringify({ dataUrl, type, name: file.name, date: new Date().toISOString() }));
+      showPoster(dataUrl, type);
+      showActusPanel();
+      // Close admin after short delay
+      setTimeout(() => closeActusAdmin(), 800);
+    } catch(err) {
+      alert('Fichier trop lourd pour le stockage local. Essayez une image plus légère ou un PDF compressé.');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadCurrentPoster();
+  document.querySelectorAll('.nav-link').forEach(a=>{
+    if(a.dataset.page===document.body.dataset.page)a.classList.add('active');
+  });
+});
+</script>
+<script src="standby.js"></script>
+</body>
+</html>
