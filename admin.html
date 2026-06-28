@@ -181,7 +181,6 @@ main{flex:1;padding:32px;max-width:900px;}
               <input type="text" class="tags-search" id="ar-tag-search" placeholder="Rechercher une catégorie..." oninput="filterTags('ar')">
               <div class="tags-wrap" id="ar-tags-wrap"></div>
             </div>
-            <div class="field"><label>Prix (€)</label><input type="number" id="ar-prix" placeholder="ex: 8.90" step="0.01" min="0"></div>
             <div class="field">
               <label>Frais ?</label>
               <div class="toggle-row">
@@ -222,7 +221,6 @@ main{flex:1;padding:32px;max-width:900px;}
             <div class="field"><label>Nom du produit</label><input type="text" id="co-nom" placeholder="ex: SHIGERI"></div>
             <div class="field field-full"><label>Arômes</label><textarea id="co-aromes" placeholder="ex: Grenade, fraises des bois, kiwi"></textarea></div>
             <div class="field"><label>ML (volume)</label><input type="text" id="co-ml" placeholder="ex: 30"></div>
-            <div class="field"><label>Prix (€)</label><input type="number" id="co-prix" placeholder="ex: 8.90" step="0.01" min="0"></div>
             <div class="field field-full">
               <label>Catégories / Tags</label>
               <input type="text" class="tags-search" id="co-tag-search" placeholder="Rechercher une catégorie..." oninput="filterTags('co')">
@@ -261,16 +259,75 @@ main{flex:1;padding:32px;max-width:900px;}
       <div class="section" id="sec-cbd">
         <div class="sec-title">Fleurs &amp; Résines CBD</div>
         <p class="sec-sub">Ajoutez ou supprimez des produits CBD.</p>
+
+        <div class="card-form">
+          <h3>🏙 Boutiques</h3>
+          <div class="form-grid">
+            <div class="field field-full">
+              <label>Ajouter une nouvelle ville</label>
+              <div class="btn-row" style="margin-top:0;">
+                <input type="text" id="new-ville-nom" placeholder="ex: Troyes" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
+                <button class="btn-secondary" onclick="addVille()">➕ Ajouter</button>
+              </div>
+              <p class="cbd-price-hint" style="margin-top:8px;">Les prix sont communs à toutes les boutiques. Cette liste détermine simplement les boutons de boutique affichés sur la page publique.</p>
+            </div>
+          </div>
+          <div id="villes-list" style="margin-top:14px;"></div>
+          <div class="msg" id="ville-msg"></div>
+        </div>
+
+        <div class="card-form">
+          <h3>📐 Matrices de prix — gestion</h3>
+          <p class="sec-sub" style="margin-bottom:14px;">Créez, modifiez ou supprimez les matrices de prix utilisées pour les fleurs et résines.</p>
+          <div class="form-grid">
+            <div class="field">
+              <label>Type</label>
+              <select id="mat-type" onchange="loadMatrixList()">
+                <option value="fleurs">Fleurs</option>
+                <option value="resines">Résines</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Matrice à éditer (ou laisser vide pour créer)</label>
+              <select id="mat-select-edit" onchange="loadMatrixIntoEditor()">
+                <option value="">-- Nouvelle matrice --</option>
+              </select>
+            </div>
+            <div class="field field-full">
+              <label>Nom de la matrice</label>
+              <input type="text" id="mat-label" placeholder="ex: Prix A2 / Premium">
+            </div>
+            <div class="field field-full">
+              <label>Grammages et prix (€)</label>
+              <div id="mat-editor-rows" class="cbd-price-table"></div>
+              <div class="btn-row" style="margin-top:8px;">
+                <input type="number" id="mat-new-gram" placeholder="Grammage (ex: 4)" step="0.5" min="0" style="width:160px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
+                <button class="btn-secondary" onclick="addGramColumn()">➕ Ajouter ce grammage</button>
+              </div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="saveMatrix()">✓ Enregistrer la matrice</button>
+            <button class="btn-secondary" id="mat-delete-btn" onclick="deleteMatrix()" style="display:none;">🗑 Supprimer cette matrice</button>
+            <button class="btn-secondary" onclick="resetMatrixEditor()">↺ Vider</button>
+          </div>
+          <div class="msg" id="mat-msg"></div>
+        </div>
+
         <div class="card-form">
           <h3>➕ Ajouter un produit</h3>
           <div class="form-grid">
             <div class="field"><label>Nom du produit</label><input type="text" id="cbd-nom" placeholder="ex: OG KUSH"></div>
             <div class="field"><label>Catégorie</label>
               <select id="cbd-cat" onchange="populateMatSelect()">
-                <option>Small Buds</option><option>Greenhouse</option><option>Hydro</option>
-                <option>Indoor</option><option>Fleurs Molécule</option>
+                <option>Small Buds</option><option>Greenhouse</option><option>Hydro / Indoor</option>
+                <option>Fleurs Molécule</option>
                 <option>Résines naturelles</option><option>Résines Molécule</option><option>Isolats</option>
               </select>
+            </div>
+            <div class="field field-full">
+              <label>Boutiques où ce produit est disponible</label>
+              <div class="tags-wrap" id="cbd-villes-check"></div>
             </div>
             <div class="field field-full">
               <div class="mat-select">
@@ -391,7 +448,7 @@ main{flex:1;padding:32px;max-width:900px;}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, push, remove, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, remove, update, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyARHxSNh_452vXWeUC133wosXHl0S3QOp0",
@@ -532,13 +589,11 @@ window.addProd = async (section) => {
     const nom = document.getElementById('ar-nom').value.trim();
     const marque = document.getElementById('ar-marque').value.trim();
     if(!nom || !marque) { showMsg('ar-msg','⚠ Marque et nom requis.','err'); return; }
-    const prixRaw = document.getElementById('ar-prix').value.trim();
     data = {
       marque, nom,
       aromes: document.getElementById('ar-aromes').value.trim() || '—',
       ml: document.getElementById('ar-ml').value.trim(),
       pg_vg: document.getElementById('ar-pgvg').value.trim(),
-      prix: prixRaw ? parseFloat(prixRaw).toFixed(2)+' €' : '',
       frais: window._toggles['ar-frais'],
       img: document.getElementById('ar-img-url').value,
       themes: window._selectedTags['ar'] || [], _admin: true, createdAt: Date.now()
@@ -548,12 +603,10 @@ window.addProd = async (section) => {
     const nom = document.getElementById('co-nom').value.trim();
     const marque = document.getElementById('co-marque').value.trim();
     if(!nom || !marque) { showMsg('co-msg','⚠ Marque et nom requis.','err'); return; }
-    const prixRaw = document.getElementById('co-prix').value.trim();
     data = {
       marque, nom,
       aromes: document.getElementById('co-aromes').value.trim() || '—',
       ml: document.getElementById('co-ml').value.trim() || '30',
-      prix: prixRaw ? parseFloat(prixRaw).toFixed(2)+'€' : '',
       frais: window._toggles['co-frais'],
       img: document.getElementById('co-img-url').value,
       familles: window._selectedTags['co'] || [], _admin: true, createdAt: Date.now()
@@ -570,6 +623,7 @@ window.addProd = async (section) => {
     });
     data = {
       nom, cat, grams, prices,
+      villes: window._selectedVilles.slice(),
       img: document.getElementById('cbd-img-url').value,
       _admin: true, createdAt: Date.now()
     };
@@ -587,7 +641,6 @@ window.addProd = async (section) => {
       ml: document.getElementById('ci-ml').value.trim(),
       port: document.getElementById('ci-port').value.trim(),
       resistance: document.getElementById('ci-resistance').value.trim(),
-      prix: prixRaw ? parseFloat(prixRaw).toFixed(2)+' €' : '',
       ecran: window._toggles['ci-ecran'],
       reglages: window._toggles['ci-reglages'],
       img: document.getElementById('ci-img-url').value,
@@ -628,7 +681,6 @@ window.editProd = (section, key, dataStr) => {
     document.getElementById('ar-aromes').value = p.aromes || '';
     document.getElementById('ar-ml').value = p.ml || '';
     document.getElementById('ar-pgvg').value = p.pg_vg || '';
-    document.getElementById('ar-prix').value = (p.prix||'').replace(/[^\d.,]/g,'').replace(',','.');
     window._toggles['ar-frais'] = !!p.frais;
     setToggle('ar-frais', !!p.frais);
     window._selectedTags['ar'] = p.themes || [];
@@ -639,7 +691,6 @@ window.editProd = (section, key, dataStr) => {
     document.getElementById('co-nom').value = p.nom || '';
     document.getElementById('co-aromes').value = p.aromes || '';
     document.getElementById('co-ml').value = p.ml || '';
-    document.getElementById('co-prix').value = (p.prix||'').replace(/[^\d.,]/g,'').replace(',','.');
     window._toggles['co-frais'] = !!p.frais;
     setToggle('co-frais', !!p.frais);
     window._selectedTags['co'] = p.familles || [];
@@ -650,6 +701,8 @@ window.editProd = (section, key, dataStr) => {
     document.getElementById('cbd-cat').value = p.cat || 'Small Buds';
     populateMatSelect();
     document.getElementById('cbd-mat').value = '';
+    window._selectedVilles = (p.villes || []).slice();
+    renderVilleCheckboxes();
     if(p.grams && p.prices) {
       const grams = p.grams;
       const container = document.getElementById('cbd-price-table');
@@ -726,6 +779,7 @@ window.resetForm = (prefix) => {
   });
   const drop = document.getElementById(prefix+'-drop');
   if(drop) drop.innerHTML = '📁 Cliquez ou glissez une image JPG/PNG<input type="file" id="'+prefix+'-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,\''+prefix+'\')">';
+  if(prefix === 'cbd'){ window._selectedVilles = []; renderVilleCheckboxes(); }
 };
 
 function resetFormBySection(section) {
@@ -769,43 +823,44 @@ window.filterTags = (prefix) => {
   renderTags(prefix, val);
 };
 
-/* ── MATRICE CBD (exacte selon fichiers fournis) ── */
-const FLEURS_GRAMS = [1,3,5,10,25,50,100];
-const RESINES_GRAMS = [2,5,10,25,50,100];
-const FLEURS_MATRICES = {"A": [1.25, 3.6, 5.5, 10.0, 23.0, 42.0, 75.0], "B": [1.5, 4.5, 7.0, 12.5, 28.0, 52.0, 95.0], "C": [2.0, 5.0, 8.0, 15.0, 35.0, 60.0, 110.0], "D": [2.25, 6.3, 10.0, 17.5, 40.0, 75.0, 130.0], "E": [2.5, 7.0, 11.0, 20.0, 45.0, 82.0, 150.0], "F": [2.75, 8.0, 12.0, 22.5, 50.0, 95.0, 170.0], "G": [3.0, 9.0, 14.0, 25.0, 58.0, 105.0, 185.0], "H": [3.5, 10.0, 15.0, 27.5, 63.0, 115.0, 200.0], "I": [3.75, 10.5, 16.0, 30.0, 69.0, 125.0, 230.0], "J": [4.0, 12.0, 18.0, 32.5, 75.0, 137.0, 245.0], "K": [4.5, 13.0, 20.0, 35.0, 80.0, 150.0, 260.0], "L": [4.75, 13.5, 21.0, 37.5, 87.0, 157.0, 280.0], "M": [5.0, 14.5, 22.0, 40.0, 92.0, 170.0, 310.0], "N": [5.5, 16.0, 24.0, 42.5, 100.0, 180.0, 320.0], "O": [5.7, 17.0, 25.0, 45.0, 105.0, 190.0, 340.0], "P": [6.0, 17.5, 26.0, 47.5, 110.0, 200.0, 350.0], "Q": [6.3, 18.0, 27.5, 50.0, 115.0, 210.0, 375.0], "R": [6.5, 19.0, 30.0, 52.5, 120.0, 220.0, 400.0], "S": [6.7, 20.0, 32.0, 55.0, 125.0, 230.0, 420.0], "T": [7.0, 22.0, 33.0, 57.5, 130.0, 240.0, 430.0], "U": [7.5, 22.5, 35.0, 60.0, 140.0, 250.0, 450.0], "V": [7.7, 23.0, 36.0, 62.5, 145.0, 260.0, 470.0], "W": [8.0, 23.5, 38.0, 65.0, 150.0, 275.0, 490.0], "X": [8.5, 25.0, 40.0, 67.5, 155.0, 285.0, 500.0], "Y": [8.7, 26.0, 42.0, 70.0, 165.0, 300.0, 550.0], "Z": [9.0, 26.5, 42.5, 72.5, 179.0, 326.0, 626.0], "A1": [10.5, 29.5, 46.5, 75.0, 185.0, 337.0, 647.5], "A2": [11.0, 31.5, 49.5, 80.0, 197.0, 359.5, 691.0]};
-const RESINES_MATRICES = {"A": [8.0, 18.0, 33.0, 75.0, 140.0, 250.0], "B": [11.0, 25.0, 45.5, 108.0, 196.0, 375.0], "C": [14.0, 32.0, 55.0, 130.0, 250.0, 455.0], "D": [15.0, 35.0, 60.0, 140.0, 270.0, 490.0], "E": [16.5, 38.0, 65.0, 151.5, 292.5, 531.0], "F": [17.0, 40.0, 70.0, 165.0, 300.0, 550.0], "G": [17.5, 42.0, 72.5, 179.0, 326.0, 626.0], "H": [18.0, 43.0, 75.0, 179.0, 326.0, 647.0]};
+/* ── MATRICE CBD (chargées depuis Firebase, gérables) ── */
 const RESINES_CATS_ADMIN = ['Résines naturelles','Résines Molécule'];
-const PRICE_IDX_10G_FLEURS = FLEURS_GRAMS.indexOf(10);
-const PRICE_IDX_10G_RESINES = RESINES_GRAMS.indexOf(10);
+window._matricesCache = { fleurs: {}, resines: {} };
+window._villesCache = {};
+window._matEditGrams = []; // grammages en cours d'édition dans l'éditeur de matrice
 
 function isResineCat(cat){ return RESINES_CATS_ADMIN.includes(cat); }
-function getGramsForCat(cat){ return isResineCat(cat) ? RESINES_GRAMS : FLEURS_GRAMS; }
-function getMatricesForCat(cat){ return isResineCat(cat) ? RESINES_MATRICES : FLEURS_MATRICES; }
+function matTypeForCat(cat){ return isResineCat(cat) ? 'resines' : 'fleurs'; }
+function getGramsForCat(cat){
+  // Grammages standards par défaut si aucune matrice n'existe encore
+  return isResineCat(cat) ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
+}
 
 function populateMatSelect(){
   const cat = document.getElementById('cbd-cat')?.value || '';
   const sel = document.getElementById('cbd-mat');
   if(!sel) return;
-  const mats = getMatricesForCat(cat);
-  const grams = getGramsForCat(cat);
-  const idx10 = grams.indexOf(10);
+  const type = matTypeForCat(cat);
+  const mats = window._matricesCache[type] || {};
   sel.innerHTML = '<option value="">-- Choisir une matrice --</option>';
-  Object.entries(mats).forEach(([k,prices]) => {
-    const p10 = idx10>=0 ? prices[idx10] : prices[0];
-    sel.innerHTML += `<option value="${k}">Prix ${k} (${p10}€/10g)</option>`;
+  Object.entries(mats).forEach(([k, m]) => {
+    const idx10 = (m.grams||[]).indexOf(10);
+    const p10 = idx10>=0 ? m.prices[idx10] : (m.prices ? m.prices[0] : '');
+    sel.innerHTML += `<option value="${k}">${m.label || k}${p10!==''&&p10!==undefined&&p10!==null ? ' ('+p10+'€/10g)' : ''}</option>`;
   });
-  renderPriceTable(cat, null);
+  renderPriceTable(getGramsForCat(cat), null);
 }
 
 window.applyMatrice = () => {
   const cat = document.getElementById('cbd-cat')?.value || '';
   const key = document.getElementById('cbd-mat')?.value || '';
-  const mats = getMatricesForCat(cat);
-  renderPriceTable(cat, key && mats[key] ? mats[key] : null);
+  const type = matTypeForCat(cat);
+  const mats = window._matricesCache[type] || {};
+  const m = key && mats[key] ? mats[key] : null;
+  renderPriceTable(m ? m.grams : getGramsForCat(cat), m ? m.prices : null);
 };
 
-function renderPriceTable(cat, prices){
-  const grams = getGramsForCat(cat);
+function renderPriceTable(grams, prices){
   const container = document.getElementById('cbd-price-table');
   if(!container) return;
   let html = '';
@@ -823,7 +878,178 @@ function renderPriceTable(cat, prices){
 // Quand la section CBD devient visible, initialiser le tableau vide selon catégorie par défaut
 function initCbdForm(){
   populateMatSelect();
+  loadMatrixList();
+  renderVillesUI();
 }
+
+/* ── GESTION DES VILLES ── */
+function renderVillesUI(){
+  const list = document.getElementById('villes-list');
+  if(!list) return;
+  const villes = window._villesCache || {};
+  const keys = Object.keys(villes);
+  list.innerHTML = keys.map(k => `
+    <div class="prod-item" style="margin-bottom:6px;">
+      <div class="pi-info"><div class="pi-name">${villes[k].nom}</div></div>
+      ${keys.length > 1 ? `<button class="btn-del" onclick="delVille('${k}')">Supprimer</button>` : ''}
+    </div>`).join('') || '<p class="empty-state">Aucune ville.</p>';
+  renderVilleCheckboxes();
+}
+
+window._selectedVilles = [];
+function renderVilleCheckboxes(){
+  const wrap = document.getElementById('cbd-villes-check');
+  if(!wrap) return;
+  const villes = window._villesCache || {};
+  const sel = window._selectedVilles;
+  wrap.innerHTML = Object.entries(villes).map(([k, v]) =>
+    `<button type="button" class="tag-btn${sel.includes(k)?' sel':''}" onclick="toggleVille('${k}')">${v.nom}</button>`
+  ).join('') || '<p style="color:var(--text-dimmer);font-size:0.82rem;">Ajoutez d\\'abord une ville ci-dessus.</p>';
+}
+window.toggleVille = (key) => {
+  const idx = window._selectedVilles.indexOf(key);
+  if(idx >= 0) window._selectedVilles.splice(idx, 1);
+  else window._selectedVilles.push(key);
+  renderVilleCheckboxes();
+};
+
+window.addVille = async () => {
+  const nom = document.getElementById('new-ville-nom').value.trim();
+  if(!nom){ showMsg('ville-msg', '⚠ Indiquez un nom de ville.', 'err'); return; }
+  const key = nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_');
+  try {
+    await set(ref(db, 'cbd_villes/'+key), { nom });
+    document.getElementById('new-ville-nom').value = '';
+    showMsg('ville-msg', '✓ Ville ajoutée ! Pensez à renseigner ses prix pour chaque produit.', 'ok');
+  } catch(e) {
+    showMsg('ville-msg', '⚠ Erreur : ' + e.message, 'err');
+  }
+};
+
+window.delVille = async (key) => {
+  if(!confirm('Supprimer cette ville ? Les prix associés ne seront plus affichés.')) return;
+  await remove(ref(db, 'cbd_villes/'+key));
+};
+
+/* ── GESTION DES MATRICES (CRUD) ── */
+window.loadMatrixList = () => {
+  const type = document.getElementById('mat-type')?.value || 'fleurs';
+  const sel = document.getElementById('mat-select-edit');
+  if(!sel) return;
+  const mats = window._matricesCache[type] || {};
+  sel.innerHTML = '<option value="">-- Nouvelle matrice --</option>';
+  Object.entries(mats).forEach(([k, m]) => {
+    sel.innerHTML += `<option value="${k}">${m.label || k}</option>`;
+  });
+  resetMatrixEditor();
+};
+
+window.loadMatrixIntoEditor = () => {
+  const type = document.getElementById('mat-type').value;
+  const key = document.getElementById('mat-select-edit').value;
+  const deleteBtn = document.getElementById('mat-delete-btn');
+  if(!key){
+    resetMatrixEditor();
+    return;
+  }
+  const m = window._matricesCache[type][key];
+  if(!m) return;
+  document.getElementById('mat-label').value = m.label || key;
+  window._matEditGrams = m.grams.map((g, i) => ({ gram: g, price: m.prices[i] }));
+  renderMatEditorRows();
+  deleteBtn.style.display = 'inline-block';
+  window._matEditingKey = key;
+};
+
+window.resetMatrixEditor = () => {
+  document.getElementById('mat-label').value = '';
+  const type = document.getElementById('mat-type')?.value || 'fleurs';
+  const defaultGrams = type === 'resines' ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
+  window._matEditGrams = defaultGrams.map(g => ({ gram: g, price: null }));
+  window._matEditingKey = null;
+  document.getElementById('mat-select-edit').value = '';
+  document.getElementById('mat-delete-btn').style.display = 'none';
+  renderMatEditorRows();
+};
+
+function renderMatEditorRows(){
+  const container = document.getElementById('mat-editor-rows');
+  if(!container) return;
+  const rows = window._matEditGrams.slice().sort((a,b) => a.gram - b.gram);
+  container.innerHTML = rows.map(r => `
+    <div class="cbd-price-row">
+      <label>${r.gram}g</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="number" step="0.01" min="0" value="${r.price !== null && r.price !== undefined ? r.price : ''}" placeholder="ex: 23.00" onchange="updateMatPrice(${r.gram}, this.value)" style="flex:1;">
+        <button class="btn-del" style="padding:5px 10px;" onclick="removeGramColumn(${r.gram})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+window.updateMatPrice = (gram, value) => {
+  const row = window._matEditGrams.find(r => r.gram === gram);
+  if(row) row.price = value === '' ? null : parseFloat(value);
+};
+
+window.removeGramColumn = (gram) => {
+  window._matEditGrams = window._matEditGrams.filter(r => r.gram !== gram);
+  renderMatEditorRows();
+};
+
+window.addGramColumn = () => {
+  const input = document.getElementById('mat-new-gram');
+  const val = parseFloat(input.value);
+  if(!val || val <= 0){ showMsg('mat-msg', '⚠ Indiquez un grammage valide.', 'err'); return; }
+  if(window._matEditGrams.some(r => r.gram === val)){
+    showMsg('mat-msg', '⚠ Ce grammage existe déjà dans cette matrice.', 'err');
+    return;
+  }
+
+  const type = document.getElementById('mat-type').value;
+  const usualGrams = type === 'resines' ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
+  const typeLabel = type === 'resines' ? 'résines' : 'fleurs';
+
+  if(!usualGrams.includes(val)){
+    const ok = confirm(`Ce grammage ne correspond habituellement pas à un prix de ${typeLabel}. Souhaitez-vous ajouter une nouvelle colonne au tableau ?`);
+    if(!ok) { input.value=''; return; }
+  }
+
+  window._matEditGrams.push({ gram: val, price: null });
+  input.value = '';
+  renderMatEditorRows();
+  showMsg('mat-msg', `✓ Colonne ${val}g ajoutée. Le tableau public se réorganisera automatiquement par ordre croissant de grammage.`, 'ok');
+};
+
+window.saveMatrix = async () => {
+  const type = document.getElementById('mat-type').value;
+  const label = document.getElementById('mat-label').value.trim();
+  if(!label){ showMsg('mat-msg', '⚠ Indiquez un nom de matrice.', 'err'); return; }
+  if(!window._matEditGrams.length){ showMsg('mat-msg', '⚠ Ajoutez au moins un grammage.', 'err'); return; }
+
+  const sorted = window._matEditGrams.slice().sort((a,b) => a.gram - b.gram);
+  const grams = sorted.map(r => r.gram);
+  const prices = sorted.map(r => r.price);
+
+  const key = window._matEditingKey || ('M' + Date.now());
+
+  try {
+    await set(ref(db, `cbd_matrices/${type}/${key}`), { label, grams, prices });
+    showMsg('mat-msg', '✓ Matrice enregistrée !', 'ok');
+    window._matEditingKey = key;
+  } catch(e) {
+    showMsg('mat-msg', '⚠ Erreur : ' + e.message, 'err');
+  }
+};
+
+window.deleteMatrix = async () => {
+  const type = document.getElementById('mat-type').value;
+  const key = window._matEditingKey;
+  if(!key) return;
+  if(!confirm('Supprimer cette matrice ? Les produits qui l\\'utilisent garderont leurs prix actuels mais ne seront plus liés à cette matrice.')) return;
+  await remove(ref(db, `cbd_matrices/${type}/${key}`));
+  showMsg('mat-msg', '✓ Matrice supprimée.', 'ok');
+  resetMatrixEditor();
+};
 
 window._editKey = window._editKey || {};
 
@@ -845,6 +1071,24 @@ function initAdminExtras(){
 
 // Listeners
 function initListeners() {
+  // Matrices CBD (fleurs + résines)
+  onValue(ref(db, 'cbd_matrices/fleurs'), snap => {
+    window._matricesCache.fleurs = snap.exists() ? snap.val() : {};
+    populateMatSelect();
+    if(document.getElementById('mat-type')?.value === 'fleurs') loadMatrixList();
+  });
+  onValue(ref(db, 'cbd_matrices/resines'), snap => {
+    window._matricesCache.resines = snap.exists() ? snap.val() : {};
+    populateMatSelect();
+    if(document.getElementById('mat-type')?.value === 'resines') loadMatrixList();
+  });
+
+  // Villes CBD
+  onValue(ref(db, 'cbd_villes'), snap => {
+    window._villesCache = snap.exists() ? snap.val() : {};
+    renderVillesUI();
+  });
+
   // Aromes
   onValue(ref(db, 'aromes'), snap => {
     const list = document.getElementById('ar-list');
