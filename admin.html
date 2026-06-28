@@ -161,6 +161,12 @@ main{flex:1;padding:32px;max-width:900px;}
       <div class="nav-item" onclick="showSection('actus')" id="nav-actus">
         <span class="ico">📋</span> Actus
       </div>
+      <div class="nav-item" onclick="showSection('matrices')" id="nav-matrices">
+        <span class="ico">📐</span> Matrices de prix
+      </div>
+      <div class="nav-item" onclick="showSection('boutiques')" id="nav-boutiques">
+        <span class="ico">🏙</span> Boutiques
+      </div>
     </nav>
     <main>
 
@@ -259,60 +265,6 @@ main{flex:1;padding:32px;max-width:900px;}
       <div class="section" id="sec-cbd">
         <div class="sec-title">Fleurs &amp; Résines CBD</div>
         <p class="sec-sub">Ajoutez ou supprimez des produits CBD.</p>
-
-        <div class="card-form">
-          <h3>🏙 Boutiques</h3>
-          <div class="form-grid">
-            <div class="field field-full">
-              <label>Ajouter une nouvelle ville</label>
-              <div class="btn-row" style="margin-top:0;">
-                <input type="text" id="new-ville-nom" placeholder="ex: Troyes" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
-                <button class="btn-secondary" onclick="addVille()">➕ Ajouter</button>
-              </div>
-              <p class="cbd-price-hint" style="margin-top:8px;">Les prix sont communs à toutes les boutiques. Cette liste détermine simplement les boutons de boutique affichés sur la page publique.</p>
-            </div>
-          </div>
-          <div id="villes-list" style="margin-top:14px;"></div>
-          <div class="msg" id="ville-msg"></div>
-        </div>
-
-        <div class="card-form">
-          <h3>📐 Matrices de prix — gestion</h3>
-          <p class="sec-sub" style="margin-bottom:14px;">Créez, modifiez ou supprimez les matrices de prix utilisées pour les fleurs et résines.</p>
-          <div class="form-grid">
-            <div class="field">
-              <label>Type</label>
-              <select id="mat-type" onchange="loadMatrixList()">
-                <option value="fleurs">Fleurs</option>
-                <option value="resines">Résines</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Matrice à éditer (ou laisser vide pour créer)</label>
-              <select id="mat-select-edit" onchange="loadMatrixIntoEditor()">
-                <option value="">-- Nouvelle matrice --</option>
-              </select>
-            </div>
-            <div class="field field-full">
-              <label>Nom de la matrice</label>
-              <input type="text" id="mat-label" placeholder="ex: Prix A2 / Premium">
-            </div>
-            <div class="field field-full">
-              <label>Grammages et prix (€)</label>
-              <div id="mat-editor-rows" class="cbd-price-table"></div>
-              <div class="btn-row" style="margin-top:8px;">
-                <input type="number" id="mat-new-gram" placeholder="Grammage (ex: 4)" step="0.5" min="0" style="width:160px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
-                <button class="btn-secondary" onclick="addGramColumn()">➕ Ajouter ce grammage</button>
-              </div>
-            </div>
-          </div>
-          <div class="btn-row">
-            <button class="btn-primary" onclick="saveMatrix()">✓ Enregistrer la matrice</button>
-            <button class="btn-secondary" id="mat-delete-btn" onclick="deleteMatrix()" style="display:none;">🗑 Supprimer cette matrice</button>
-            <button class="btn-secondary" onclick="resetMatrixEditor()">↺ Vider</button>
-          </div>
-          <div class="msg" id="mat-msg"></div>
-        </div>
 
         <div class="card-form">
           <h3>➕ Ajouter un produit</h3>
@@ -437,6 +389,69 @@ main{flex:1;padding:32px;max-width:900px;}
           <h3>🖼 Visuels actuels</h3>
           <div class="actus-grid" id="ac-list"></div>
           <p class="empty-state" id="ac-empty" style="display:none">Aucun visuel pour le moment.</p>
+        </div>
+      </div>
+
+      <!-- ═══ MATRICES DE PRIX ═══ -->
+      <div class="section" id="sec-matrices">
+        <div class="sec-title">Matrices de prix</div>
+        <p class="sec-sub">Créez, modifiez ou supprimez les matrices de prix utilisées pour les fleurs et résines.</p>
+        <div class="card-form">
+          <h3>📐 Matrices de prix — gestion</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>Type</label>
+              <select id="mat-type" onchange="loadMatrixList()">
+                <option value="fleurs">Fleurs</option>
+                <option value="resines">Résines</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Matrice à éditer (ou laisser vide pour créer)</label>
+              <select id="mat-select-edit" onchange="loadMatrixIntoEditor()">
+                <option value="">-- Nouvelle matrice --</option>
+              </select>
+            </div>
+            <div class="field field-full">
+              <label>Nom de la matrice</label>
+              <input type="text" id="mat-label" placeholder="ex: Prix A2 / Premium">
+            </div>
+            <div class="field field-full">
+              <label>Grammages et prix (€)</label>
+              <div id="mat-editor-rows" class="cbd-price-table"></div>
+              <div class="btn-row" style="margin-top:8px;">
+                <input type="number" id="mat-new-gram" placeholder="Grammage (ex: 4)" step="0.5" min="0" style="width:160px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
+                <button class="btn-secondary" onclick="addGramColumn()">➕ Ajouter ce grammage</button>
+              </div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="saveMatrix()">✓ Enregistrer la matrice</button>
+            <button class="btn-secondary" id="mat-delete-btn" onclick="deleteMatrix()" style="display:none;">🗑 Supprimer cette matrice</button>
+            <button class="btn-secondary" onclick="resetMatrixEditor()">↺ Vider</button>
+          </div>
+          <div class="msg" id="mat-msg"></div>
+        </div>
+      </div>
+
+      <!-- ═══ BOUTIQUES ═══ -->
+      <div class="section" id="sec-boutiques">
+        <div class="sec-title">Boutiques</div>
+        <p class="sec-sub">Gérez la liste des boutiques où les produits CBD sont vendus.</p>
+        <div class="card-form">
+          <h3>🏙 Boutiques</h3>
+          <div class="form-grid">
+            <div class="field field-full">
+              <label>Ajouter une nouvelle ville</label>
+              <div class="btn-row" style="margin-top:0;">
+                <input type="text" id="new-ville-nom" placeholder="ex: Troyes" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
+                <button class="btn-secondary" onclick="addVille()">➕ Ajouter</button>
+              </div>
+              <p class="cbd-price-hint" style="margin-top:8px;">Les prix sont communs à toutes les boutiques. Cette liste détermine simplement les boutons de boutique affichés sur la page publique.</p>
+            </div>
+          </div>
+          <div id="villes-list" style="margin-top:14px;"></div>
+          <div class="msg" id="ville-msg"></div>
         </div>
       </div>
 
@@ -1060,6 +1075,8 @@ window.showSection = (name) => {
   if(name==='aromes'){ window._selectedTags.ar=[]; renderTags('ar'); }
   if(name==='concentres'){ window._selectedTags.co=[]; renderTags('co'); }
   if(name==='cbd'){ populateMatSelect(); }
+  if(name==='matrices'){ loadMatrixList(); }
+  if(name==='boutiques'){ renderVillesUI(); }
 };
 
 // Init au chargement
