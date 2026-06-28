@@ -825,7 +825,10 @@ function renderTags(prefix, filter=''){
   const sel = window._selectedTags[prefix] || [];
   const list_full = getThemeList(prefix);
   const list = filter ? list_full.filter(t=>t.toLowerCase().includes(filter.toLowerCase())) : list_full;
-  wrap.innerHTML = list.map(t => `<button type="button" class="tag-btn${sel.includes(t)?' sel':''}" onclick="toggleTag('${prefix}','${t}')">${t}</button>`).join('');
+  wrap.innerHTML = list.map(t => {
+    const safe = t.replace(/'/g, "\\'");
+    return `<button type="button" class="tag-btn${sel.includes(t)?' sel':''}" onclick="toggleTag('${prefix}','${safe}')">${t}</button>`;
+  }).join('');
 }
 
 window.toggleTag = (prefix, tag) => {
