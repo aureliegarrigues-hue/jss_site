@@ -904,7 +904,7 @@ function renderVilleCheckboxes(){
   const sel = window._selectedVilles;
   wrap.innerHTML = Object.entries(villes).map(([k, v]) =>
     `<button type="button" class="tag-btn${sel.includes(k)?' sel':''}" onclick="toggleVille('${k}')">${v.nom}</button>`
-  ).join('') || '<p style="color:var(--text-dimmer);font-size:0.82rem;">Ajoutez d\\'abord une ville ci-dessus.</p>';
+  ).join('') || '<p style="color:var(--text-dimmer);font-size:0.82rem;">Ajoutez d\'abord une ville ci-dessus.</p>';
 }
 window.toggleVille = (key) => {
   const idx = window._selectedVilles.indexOf(key);
@@ -1045,7 +1045,7 @@ window.deleteMatrix = async () => {
   const type = document.getElementById('mat-type').value;
   const key = window._matEditingKey;
   if(!key) return;
-  if(!confirm('Supprimer cette matrice ? Les produits qui l\\'utilisent garderont leurs prix actuels mais ne seront plus liés à cette matrice.')) return;
+  if(!confirm("Supprimer cette matrice ? Les produits qui l'utilisent garderont leurs prix actuels mais ne seront plus liés à cette matrice.")) return;
   await remove(ref(db, `cbd_matrices/${type}/${key}`));
   showMsg('mat-msg', '✓ Matrice supprimée.', 'ok');
   resetMatrixEditor();
