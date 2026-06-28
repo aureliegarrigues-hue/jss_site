@@ -824,14 +824,14 @@ function renderTags(prefix, filter=''){
   wrap.innerHTML = list.map(t => `<button type="button" class="tag-btn${sel.includes(t)?' sel':''}" onclick="toggleTag('${prefix}','${t}')">${t}</button>`).join('');
 }
 
-function toggleTag(prefix, tag){
+window.toggleTag = (prefix, tag) => {
   const arr = window._selectedTags[prefix] || [];
   const idx = arr.indexOf(tag);
   if(idx>=0) arr.splice(idx,1); else arr.push(tag);
   window._selectedTags[prefix] = arr;
   const search = document.getElementById(prefix+'-tag-search');
   renderTags(prefix, search ? search.value : '');
-}
+};
 
 window.filterTags = (prefix) => {
   const val = document.getElementById(prefix+'-tag-search')?.value || '';
