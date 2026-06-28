@@ -473,6 +473,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   const qp=new URLSearchParams(window.location.search).get('q');
   if(qp){document.getElementById('ms').value=qp;buildPills();document.querySelectorAll('.m-pill').forEach(p=>p.classList.add('sel'));document.getElementById('vm').classList.remove('active');document.getElementById('vg').classList.add('active');galQ=qp;renderGal();renderTags();}
 });
+
+// Exposé pour permettre au module Firebase de réassigner la vraie variable PRODUCTS
+window.updateProducts = function(newProducts){
+  PRODUCTS = newProducts;
+  if (typeof buildPills === 'function') buildPills();
+  if (typeof renderGal === 'function') renderGal();
+};
 </script>
 
 <!-- ── Firebase : synchronisation temps réel ── -->
@@ -502,9 +509,11 @@ onValue(ref(db, 'aromes'), (snap) => {
       arr.push(v);
     });
   }
-  window.PRODUCTS = arr;
-  if (typeof buildPills === 'function') buildPills();
-  if (typeof renderGal === 'function') renderGal();
+  if (typeof window.updateProducts === 'function') {
+    window.updateProducts(arr);
+  } else {
+    window.PRODUCTS = arr;
+  }
 });
 </script>
 

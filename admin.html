@@ -813,6 +813,9 @@ function showMsg(id, txt, type) {
 
 /* ── TAGS ── */
 const ALL_THEMES = ["Abricot","Alcool / cocktails","Ananas","Baies","Banane","Biscuit","Boisson énergisante","Bonbon","Cacahuète","Cactus","Café","Canelle","Caramel","Cassis","Cerise","Chantilly","Chocolat","Citron","Cola","Concombre","Corossol","Céréales","Fleurs","Fraise","Framboise","Fruit de la passion","Fruit du dragon","Fruit du jacquier","Fruit du serpent","Fruits rouges","Goyave","Grenade","Groseille","Kiwi","Lait","Litchi","Macadamia","Madeleine","Mandarine","Mangoustan","Mangue","Manioc","Melon","Menthe / Chlorophylle","Myrtille","Mûre","Nectarine","Noisette","Noix de coco","Noix de pécan","Nougat","Orange","Pamplemousse","Papaye","Pastèque","Pistache","Poire","Pomme","Pop corn","Praliné","Pâtisserie","Pêche","Raisin","Réglisse","Speculoos","Tabac","Thé","Vanille"];
+const ALL_FAMILLES = ["Agrumes","Fruits d'été","Fruits exotiques","Fruits noirs","Fruits rouges","Fruit dragon / serpent","Gourmand","Mentholé","Pomme / poire","Sucré","Café / Tabac"];
+
+function getThemeList(prefix){ return prefix === 'co' ? ALL_FAMILLES : ALL_THEMES; }
 
 window._selectedTags = { ar: [], co: [] };
 
@@ -820,7 +823,8 @@ function renderTags(prefix, filter=''){
   const wrap = document.getElementById(prefix+'-tags-wrap');
   if(!wrap) return;
   const sel = window._selectedTags[prefix] || [];
-  const list = filter ? ALL_THEMES.filter(t=>t.toLowerCase().includes(filter.toLowerCase())) : ALL_THEMES;
+  const list_full = getThemeList(prefix);
+  const list = filter ? list_full.filter(t=>t.toLowerCase().includes(filter.toLowerCase())) : list_full;
   wrap.innerHTML = list.map(t => `<button type="button" class="tag-btn${sel.includes(t)?' sel':''}" onclick="toggleTag('${prefix}','${t}')">${t}</button>`).join('');
 }
 

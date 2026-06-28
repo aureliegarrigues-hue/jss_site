@@ -329,6 +329,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.nav-link').forEach(a=>{if(a.dataset.page===document.body.dataset.page)a.classList.add('active');});
 });
 
+// Exposé pour permettre au module Firebase de réassigner la vraie variable PRODUCTS
+window.updateProducts = function(newProducts){
+  PRODUCTS = newProducts;
+  if (typeof buildPills === 'function') buildPills();
+  if (typeof renderGal === 'function') renderGal();
+};
+
 </script>
 
 <!-- ── Firebase : synchronisation temps réel ── -->
@@ -358,9 +365,11 @@ onValue(ref(db, 'concentres'), (snap) => {
       arr.push(v);
     });
   }
-  window.PRODUCTS = arr;
-  if (typeof buildPills === 'function') buildPills();
-  if (typeof renderGal === 'function') renderGal();
+  if (typeof window.updateProducts === 'function') {
+    window.updateProducts(arr);
+  } else {
+    window.PRODUCTS = arr;
+  }
 });
 </script>
 <script src="standby.js"></script>
