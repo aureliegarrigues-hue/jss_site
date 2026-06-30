@@ -683,8 +683,7 @@ window.addProd = async (section) => {
 };
 
 // Edit product: prefill form with existing data
-window.editProd = (section, key, dataStr) => {
-  const p = JSON.parse(decodeURIComponent(dataStr));
+window.editProd = (section, key, p) => {
   window._editKey[section] = key;
 
   const map = { aromes: 'ar', concentres: 'co', cbd: 'cbd', cigarettes: 'ci' };
@@ -1197,16 +1196,51 @@ function makeProdItem(p, key, section) {
   const brand = p.marque || p.cat || '';
   const showPrice = section === 'cbd' || section === 'cigarettes';
   const prix = showPrice ? (p.prix || p.prix_romilly || '') : '';
-  const encoded = encodeURIComponent(JSON.stringify(p));
-  div.innerHTML = `
-    ${p.img ? `<img src="${p.img}" alt="${name}">` : '<div style="width:40px;height:40px;background:var(--surface);border-radius:4px;flex-shrink:0"></div>'}
-    <div class="pi-info">
-      <div class="pi-name">${name}</div>
-      <div class="pi-meta">${brand}${prix ? ' · '+prix : ''}</div>
-    </div>
-    ${prix ? `<span class="pi-badge">${prix}</span>` : ''}
-    <button class="btn-secondary" style="padding:5px 12px;font-size:0.75rem;" onclick="editProd('${section}','${key}','${encoded}')">✎ Modifier</button>
-    <button class="btn-del" onclick="delProd('${section}','${key}')">Supprimer</button>`;
+
+  const img = document.createElement('img');
+  if(p.img){
+    img.src = p.img; img.alt = name;
+  }
+  if(!p.img){
+    const ph = document.createElement('div');
+    ph.style.cssText = 'width:40px;height:40px;background:var(--surface);border-radius:4px;flex-shrink:0';
+    div.appendChild(ph);
+  } else {
+    div.appendChild(img);
+  }
+
+  const info = document.createElement('div');
+  info.className = 'pi-info';
+  const nameEl = document.createElement('div');
+  nameEl.className = 'pi-name';
+  nameEl.textContent = name;
+  const metaEl = document.createElement('div');
+  metaEl.className = 'pi-meta';
+  metaEl.textContent = brand + (prix ? ' · '+prix : '');
+  info.appendChild(nameEl);
+  info.appendChild(metaEl);
+  div.appendChild(info);
+
+  if(prix){
+    const badge = document.createElement('span');
+    badge.className = 'pi-badge';
+    badge.textContent = prix;
+    div.appendChild(badge);
+  }
+
+  const editBtn = document.createElement('button');
+  editBtn.className = 'btn-secondary';
+  editBtn.style.cssText = 'padding:5px 12px;font-size:0.75rem;';
+  editBtn.textContent = '✎ Modifier';
+  editBtn.addEventListener('click', () => window.editProd(section, key, p));
+  div.appendChild(editBtn);
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'btn-del';
+  delBtn.textContent = 'Supprimer';
+  delBtn.addEventListener('click', () => window.delProd(section, key));
+  div.appendChild(delBtn);
+
   return div;
 }
 </script>
