@@ -228,6 +228,30 @@ nav {
 @media(max-width:900px){.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;margin-bottom:28px;}}
 @media(max-width:768px){.gal-hdr{padding:10px 16px;}.grid-wrap{padding:14px 16px 48px;}#grid{grid-template-columns:repeat(2,1fr);gap:10px;}.gs-input{width:130px;}}
 @media(max-width:600px){.menu-wrap{padding:20px 16px 48px;}.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;margin-bottom:28px;}}
+.bal-page{display:flex;gap:26px;align-items:flex-start;min-height:calc(100vh - 68px);}
+.bal-sb{width:238px;flex-shrink:0;background:transparent;padding:88px 4px 60px 22px;position:sticky;top:68px;height:calc(100vh - 68px);overflow-y:auto;}
+.bal-sb-title{display:block;font-size:0.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dimmer);padding:0 6px 14px;}
+.cat-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-bottom:10px;padding:12px 13px;position:relative;overflow:hidden;background:var(--surface2);border:1px solid var(--border);border-radius:13px;cursor:pointer;line-height:1.2;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .2s cubic-bezier(.4,0,.2,1),border-color .2s,background .2s,box-shadow .2s;}
+.cat-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:0 3px 3px 0;transform:scaleY(0);transition:transform .2s;}
+.cat-btn:hover{transform:translateY(-2px);box-shadow:0 9px 22px rgba(0,0,0,.42);}
+.cat-btn.active{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.08);}
+.cat-btn.active::before{transform:scaleY(1);}
+.cat-ic{flex-shrink:0;width:38px;height:38px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.15rem;}
+.cat-tx{flex:1;min-width:0;}
+.cat-nm{font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;color:var(--text);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-sub{font-size:0.62rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--text-dimmer);margin-top:3px;}
+.bal-main{flex:1;min-width:0;}
+.bal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;margin:0;white-space:nowrap;}
+@media(max-width:900px){.bal-sb{width:204px;padding-left:14px;}.cat-ic{width:34px;height:34px;font-size:1.05rem;}.cat-nm{font-size:0.86rem;}}
+@media(max-width:640px){
+  .bal-page{flex-direction:column;gap:0;}
+  .bal-sb{width:100%;height:auto;position:static;display:flex;flex-wrap:nowrap;gap:10px;padding:12px 12px 4px;overflow-x:auto;overflow-y:visible;}
+  .bal-sb-title{display:none;}
+  .cat-btn{margin-bottom:0;flex:0 0 auto;width:auto;padding:9px 13px;}
+  .cat-sub{display:none;}
+  .cat-ic{width:30px;height:30px;font-size:1rem;}
+}
+
 </style>
 </head>
 <body data-page="aromes">
@@ -254,42 +278,25 @@ nav {
   <a href="actus.html" class="nav-link" data-page="actus">Actus</a>
 </div>
 <div class="page">
-  <div id="vm" class="view active">
-    <div class="menu-wrap">
-      <h1 class="menu-heading">Bar à <span>Liquides</span></h1>
-      <p class="menu-sub">Sélectionnez une ou plusieurs familles puis lancez la recherche</p>
-      <div class="ms-wrap">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="ms" class="ms-input" placeholder="Filtrer les familles…" autocomplete="off">
-      </div>
-      <div class="frais-sel">
-        <button class="f-btn active" onclick="setFrais('all',this)">Tous</button>
-        <button class="f-btn" onclick="setFrais('frais',this)">❄️ Frais</button>
-        <button class="f-btn" onclick="setFrais('nonfrais',this)">🌡️ Sans frais</button>
-      </div>
-      <div class="pill-grid" id="pg"></div>
-      <p class="sel-summary" id="sel-sum"></p>
-      <div class="menu-actions">
-        <button class="btn-rst" onclick="resetMenu()">✕ Reset</button>
-        <button class="btn-go" onclick="showGallery()">🔍 Voir les produits</button>
-      </div>
-    </div>
-  </div>
-  <div id="vg" class="view">
-    <div class="gal-hdr">
-      <div class="gal-hdr-inner">
-        <button class="bk-btn" onclick="showMenu()">← Filtres</button>
-        <div class="act-filters" id="atf"></div>
-        <div class="gs-wrap">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="gsi" class="gs-input" placeholder="Affiner…" autocomplete="off" readonly>
+  <div class="bal-page">
+    <aside class="bal-sb" id="bal-sb"></aside>
+    <div class="bal-main">
+      <div class="gal-hdr">
+        <div class="gal-hdr-inner">
+          <h1 class="bal-title">Bar à <span>Liquides</span></h1>
+          <div class="act-filters" id="atf"></div>
+          <div class="gs-wrap">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="gsi" class="gs-input" placeholder="Affiner…" autocomplete="off" readonly>
+          </div>
+          <div class="gal-stats"><span id="gc" class="gal-cnt">—</span> produits</div>
         </div>
-        <div class="gal-stats"><span id="gc" class="gal-cnt">—</span> produits</div>
       </div>
+      <div class="grid-wrap"><div id="grid"></div></div>
     </div>
-    <div class="grid-wrap"><div id="grid"></div></div>
   </div>
 </div>
+
 <div class="kbd-ov" id="kbd-ov"></div>
 <script>
 let PRODUCTS=[{"marque": "Arsène Valentin", "nom": "Le Contrebandier", "aromes": "Tabac", "familles": ["Café / Tabac"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Bonimentheur", "aromes": "Menthe fraîche", "familles": ["Mentholé"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Mystère", "aromes": "Crème vanille, biscuit, caramel", "familles": ["Gourmand", "Sucré"], "frais": false, "pg_vg": "30/70", "img": ""}, {"marque": "Arsène Valentin", "nom": "Salem Vanilla", "aromes": "Crème brûlée, popcorn", "familles": ["Gourmand", "Sucré"], "frais": false, "pg_vg": "30/70", "img": ""}, {"marque": "Arsène Valentin", "nom": "Ving Mille Lieues sous la Fraise", "aromes": "Tarte aux fraises, crème vanille", "familles": ["Gourmand"], "frais": false, "pg_vg": "30/70", "img": ""}, {"marque": "Arsène Valentin", "nom": "La Mondaine", "aromes": "Macaron, pistache, framboise", "familles": ["Gourmand", "Sucré", "Fruits rouges"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Le Raffiné", "aromes": "Vanille, tonka, noisette", "familles": ["Sucré"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Croissant de Lune", "aromes": "Viennoiserie, crème vanille", "familles": ["Gourmand"], "frais": false, "pg_vg": "30/70", "img": ""}, {"marque": "Arsène Valentin", "nom": "A la Croisée des Crèmes", "aromes": "Crème brûlée, chantilly, caramel", "familles": ["Gourmand"], "frais": false, "pg_vg": "30/70", "img": ""}, {"marque": "Arsène Valentin", "nom": "Red Arsène", "aromes": "Fruits rouges, frais", "familles": ["Fruits rouges"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Blue Valentine", "aromes": "Fruits rouges, menthe fraîche", "familles": ["Fruits rouges", "Mentholé"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Hipogriffe", "aromes": "Fruit du dragon, frais", "familles": ["Fruit dragon / serpent"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Harry Gator", "aromes": "Fruit de la passion, ananas, mangue, frais", "familles": ["Fruits exotiques"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Leo Savanna", "aromes": "Pastèque, fruit du dragon, frais", "familles": ["Fruit dragon / serpent", "Fruits d'été", "Fruits rouges"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "John McEagle", "aromes": "Fraise, fruit du serpent", "familles": ["Fruits rouges", "Fruit dragon / serpent"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Mike Redcomb", "aromes": "Baies rouges, frais", "familles": ["Fruits rouges"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "L'Explorateur", "aromes": "Raisin blanc, cassis, fruits rouges, frais", "familles": ["Fruits d'été", "Fruits noirs", "Fruits rouges"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Le Nanti", "aromes": "Orange, citron, pamplemousse, frais", "familles": ["Agrumes"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "L'Illustre", "aromes": "Fruits rouges, frais", "familles": ["Fruits rouges"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "L'insolent", "aromes": "Pastèque, menthe", "familles": ["Fruits rouges", "Fruits d'été", "Mentholé"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "L'Aristocrate", "aromes": "Fraise, kiwi, cactus, frais", "familles": ["Fruits rouges", "Fruits exotiques"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "L'Avare", "aromes": "Banane, melon, bubble gum, frais", "familles": ["Sucré", "Fruits exotiques"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "La Pilote", "aromes": "Cerise fraîche", "familles": ["Fruits rouges"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Blood Mojo", "aromes": "Pastèque, kiwi, frais", "familles": ["Fruits rouges", "Fruits d'été"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Red Spell", "aromes": "Fraise, fruit du dragon, frais", "familles": ["Fruits rouges", "Fruit dragon / serpent"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Cult Exotic", "aromes": "Framboise, corossol, frais", "familles": ["Fruits rouges", "Fruits exotiques"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "La Blonde", "aromes": "Tabac blond", "familles": ["Café / Tabac"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Saveur d'Orient", "aromes": "Thé à la menthe", "familles": ["Mentholé"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Eclats de Noisettes", "aromes": "Noisette", "familles": ["Café / Tabac"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Café d'Italie", "aromes": "Café", "familles": ["Café / Tabac"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Breuvage Irlandais", "aromes": "Whisky", "familles": ["Café / Tabac"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Caramel breton", "aromes": "Caramel", "familles": ["Sucré"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Cheesecake", "aromes": "Cheesecake", "familles": ["Gourmand"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Beurre Américain", "aromes": "Beurre de cacahuètes", "familles": ["Sucré"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Biscuit Craquant", "aromes": "Biscuit", "familles": ["Gourmand"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Pop Corn", "aromes": "Pop corn", "familles": ["Gourmand"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Crème Anglaise", "aromes": "Crème pâtissière", "familles": ["Gourmand"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Crème Vanille", "aromes": "Crème vanille", "familles": ["Sucré"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Vanille des Iles", "aromes": "Vanille", "familles": ["Sucré"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Paille Framboise", "aromes": "Biscuit, framboise", "familles": ["Gourmand", "Fruits rouges"], "frais": false, "pg_vg": "40/60", "img": ""}, {"marque": "Arsène Valentin", "nom": "Sorbet Goyave", "aromes": "Goyave, frais", "familles": ["Fruits exotiques"], "frais": true, "pg_vg": "30/70", "img": ""}, {"marque": "Arsène Valentin", "nom": "Jaune Meringue", "aromes": "Tarte au citron meringuée", "familles": ["Agrumes", "Gourmand"], "frais": false, "pg_vg": "30/70", "img": ""}, {"marque": "Arsène Valentin", "nom": "Venise", "aromes": "Bonbon harlequin", "familles": ["Sucré"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Bulle Rose", "aromes": "Bubble gum", "familles": ["Sucré"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Baton de Réglisse", "aromes": "Réglisse", "familles": ["Mentholé"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Violette", "aromes": "Violette", "familles": ["Sucré"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Citronnade", "aromes": "Citron, frais", "familles": ["Agrumes"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Chlorophylle", "aromes": "Chlorophylle", "familles": ["Mentholé"], "frais": true, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Mangue Indienne", "aromes": "Mangue", "familles": ["Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Banane", "aromes": "Banane", "familles": ["Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Jus de Goyave", "aromes": "Goyave", "familles": ["Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Coco du Sud", "aromes": "Noix de coco", "familles": ["Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Ananas Exquis", "aromes": "Ananas", "familles": ["Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Litchi de Chine", "aromes": "Litchi", "familles": ["Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Fruit du Serpent", "aromes": "Fruit du Serpent", "familles": ["Fruit dragon / serpent"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Fruit de la Passion", "aromes": "Fruit de la Passion", "familles": ["Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Kiwi Austral", "aromes": "Kiwi", "familles": ["Fruits d'été", "Fruits exotiques"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Billes de Cassis", "aromes": "Cassis", "familles": ["Fruits noirs"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Myrtille Sauvage", "aromes": "Myrtille", "familles": ["Fruits noirs"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Grappe Française", "aromes": "Raisin", "familles": ["Fruits noirs"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Fraise des Bois", "aromes": "Fraise", "familles": ["Fruits rouges"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Framboise Douce", "aromes": "Framboise", "familles": ["Fruits rouges"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Cerise d'Eté", "aromes": "Cerise", "familles": ["Fruits rouges"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Rouge des Bois", "aromes": "Fruits rouges", "familles": ["Fruits rouges"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Melon de Saison", "aromes": "Melon", "familles": ["Fruits d'été"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Melon d'Eau", "aromes": "Pastèque", "familles": ["Fruits d'été", "Fruits rouges"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Pomme Craquante", "aromes": "Pomme", "familles": ["Pomme / poire"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Bonne Poire", "aromes": "Poire", "familles": ["Pomme / poire"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Pêche de Vigne", "aromes": "Pèche", "familles": ["Fruits d'été"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "L'Abricotier", "aromes": "Abricot", "familles": ["Fruits d'été"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Orange du Matin", "aromes": "Orange", "familles": ["Agrumes"], "frais": false, "pg_vg": "50/50", "img": ""}, {"marque": "Arsène Valentin", "nom": "Citron de Sicile", "aromes": "Citron", "familles": ["Agrumes"], "frais": false, "pg_vg": "50/50", "img": ""}];
@@ -305,21 +312,27 @@ function kbdPress(ch,oId){const kv=document.getElementById(oId)?.querySelector('
 function buildKbd(oId,rId,ph){const rows=[['A','Z','E','R','T','Y','U','I','O','P'],['Q','S','D','F','G','H','J','K','L','M'],['W','X','C','V','B','N','É','È','Ê','À'],['1','2','3','4','5','6','7','8','9','0']];const rH=rows.map(r=>`<div class="kbd-row">${r.map(k=>`<button class="kbd-k" onclick="kbdPress('${k}','${oId}')">${k}</button>`).join('')}</div>`).join('');return `<div class="kbd-box"><div class="kbd-top"><input class="kbd-val" placeholder="${ph}" autocomplete="off"><button class="kbd-x" onclick="closeKbd('${oId}')">✕</button></div><div class="kbd-rows">${rH}<div class="kbd-row"><button class="kbd-k w2" onclick="kbdPress('⌫','${oId}')">⌫</button><button class="kbd-k w4" onclick="kbdPress('␣','${oId}')">ESPACE</button><button class="kbd-k w2" onclick="closeKbd('${oId}')">OK ✓</button></div></div></div>`;}
 function buildCard(p){const el=document.createElement('div');el.className='card';const themes=p.familles||[];const ft=themes[0]||'';const TEMI=typeof THEME_ICONS!=='undefined'?THEME_ICONS:{};const TEME=typeof THEME_EMOJI!=='undefined'?THEME_EMOJI:FAM_EMOJI||{};let imgH='';if(p.img){imgH=`<img src="${p.img}" alt="${p.nom}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="card-ph" style="display:none">${TEMI[ft]?`<img class="p-ico" src="${TEMI[ft]}">`:`<div class="card-ph-icon">${TEME[ft]||'💧'}</div>`}<div class="card-ph-brand">${p.marque.substring(0,12)}</div></div>`;}else{imgH=`<div class="card-ph">${TEMI[ft]?`<img class="p-ico" src="${TEMI[ft]}">`:`<div class="card-ph-icon">${TEME[ft]||'💧'}</div>`}<div class="card-ph-brand">${p.marque.substring(0,12)}</div></div>`;}const pgvgH=p.pg_vg&&p.pg_vg!=='—'&&p.pg_vg!==''?`<span class="m-tag">PG/VG ${p.pg_vg}</span>`:`<span class="m-tag red">PG/VG manquant</span>`;const fraisH=p.frais?`<span class="m-tag ice">❄ Frais</span>`:'';el.innerHTML=`<div class="card-img">${imgH}${p.frais?'<span class="frais-badge">❄</span>':''}</div><div class="card-body"><div class="c-brand">${p.marque}</div><div class="c-name">${p.nom}</div><div class="c-aromes">${p.aromes||'—'}</div><div class="c-meta">${pgvgH}${fraisH}</div></div>`;return el;}
 
-let selF=new Set(),fraisMode='all',galQ='';
-function getBase(){return PRODUCTS.filter(p=>(fraisMode!=='frais'||p.frais)&&(fraisMode!=='nonfrais'||!p.frais));}
-function showMenu(){document.getElementById('vm').classList.add('active');document.getElementById('vg').classList.remove('active');window.scrollTo(0,0);}
-function showGallery(){document.getElementById('vm').classList.remove('active');document.getElementById('vg').classList.add('active');window.scrollTo(0,0);renderGal();renderTags();}
-function setFrais(m,btn){fraisMode=m;document.querySelectorAll('#vm .f-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');buildPills();}
-function toggleF(f){selF.has(f)?selF.delete(f):selF.add(f);document.querySelectorAll('.m-pill').forEach(p=>{if(p.dataset.f===f)p.classList.toggle('sel',selF.has(f));});updateSel();}
-function updateSel(){const el=document.getElementById('sel-sum');if(!selF.size){el.innerHTML='Aucun filtre — tous les concentrés seront affichés';return;}el.innerHTML=[...selF].map(t=>`<span>${FAM_EMOJI[t]||''} ${t}</span>`).join(', ');}
-function resetMenu(){selF.clear();fraisMode='all';document.querySelectorAll('#vm .f-btn').forEach((b,i)=>b.classList.toggle('active',i===0));document.getElementById('ms').value='';buildPills();updateSel();}
-function buildPills(){const s=document.getElementById('ms')?.value.trim().toLowerCase()||'';const base=getBase(),cnt={};for(const p of base)for(const f of p.familles)cnt[f]=(cnt[f]||0)+1;const c=document.getElementById('pg');c.innerHTML='';for(const fam of ALL_FAMILIES){const n=cnt[fam]||0;if(!n&&!selF.has(fam))continue;if(s&&!fam.toLowerCase().includes(s))continue;const b=document.createElement('button');b.className='m-pill'+(selF.has(fam)?' sel':'');b.dataset.f=fam;const ico=THEME_ICONS[fam]?`<img class="p-ico" src="${THEME_ICONS[fam]}" alt="">`:`<span>${FAM_EMOJI[fam]||''}</span>`;b.innerHTML=`<span class="p-left">${ico}<span class="p-name">${fam}</span></span><span class="p-cnt">${n}</span>`;b.onclick=()=>toggleF(fam);c.appendChild(b);}}
-function renderTags(){const c=document.getElementById('atf');c.innerHTML='';for(const t of selF){const tag=document.createElement('button');tag.className='act-tag';tag.innerHTML=`${FAM_EMOJI[t]||''} ${t} ✕`;tag.onclick=()=>{selF.delete(t);renderGal();renderTags();buildPills();updateSel();};c.appendChild(tag);}}
-function getFilt(){return PRODUCTS.filter(p=>{if(fraisMode==='frais'&&!p.frais)return false;if(fraisMode==='nonfrais'&&p.frais)return false;if(galQ){const q=galQ.toLowerCase();if(!p.nom.toLowerCase().includes(q)&&!p.marque.toLowerCase().includes(q)&&!p.aromes.toLowerCase().includes(q))return false;}if(selF.size>0&&![...selF].every(f=>p.familles.includes(f)))return false;return true;});}
+let selF=new Set(),galQ='';
+function buildSidebar(){
+  const cnt={};for(const p of PRODUCTS)for(const f of p.familles)cnt[f]=(cnt[f]||0)+1;
+  const sb=document.getElementById('bal-sb');
+  sb.innerHTML='<div class="bal-sb-title">Familles</div>';
+  for(const fam of ALL_FAMILIES){
+    const n=cnt[fam]||0;
+    const b=document.createElement('button');
+    b.className='cat-btn'+(selF.has(fam)?' active':'');
+    const ico=THEME_ICONS[fam]?`<img class="p-ico" src="${THEME_ICONS[fam]}" alt="">`:`<div class="cat-ic">${FAM_EMOJI[fam]||'💧'}</div>`;
+    b.innerHTML=`${ico}<div class="cat-tx"><div class="cat-nm">${fam}</div><div class="cat-sub">${n} produit${n>1?'s':''}</div></div>`;
+    b.onclick=()=>toggleF(fam);
+    sb.appendChild(b);
+  }
+}
+function toggleF(f){selF.has(f)?selF.delete(f):selF.add(f);buildSidebar();renderTags();renderGal();}
+function renderTags(){const c=document.getElementById('atf');c.innerHTML='';for(const t of selF){const tag=document.createElement('button');tag.className='act-tag';tag.innerHTML=`${FAM_EMOJI[t]||''} ${t} ✕`;tag.onclick=()=>{selF.delete(t);buildSidebar();renderTags();renderGal();};c.appendChild(tag);}}
+function getFilt(){return PRODUCTS.filter(p=>{if(galQ){const q=galQ.toLowerCase();if(!p.nom.toLowerCase().includes(q)&&!p.marque.toLowerCase().includes(q)&&!p.aromes.toLowerCase().includes(q))return false;}if(selF.size>0&&![...selF].every(f=>p.familles.includes(f)))return false;return true;});}
 function renderGal(){const f=getFilt(),g=document.getElementById('grid');g.innerHTML='';document.getElementById('gc').textContent=f.length;if(!f.length){const d=document.createElement('div');d.style.cssText='grid-column:1/-1;text-align:center;padding:60px;color:var(--text-dimmer);';d.innerHTML='🔍 Aucun produit.';g.appendChild(d);return;}f.forEach((p,i)=>{const c=buildCard(p);c.style.animationDelay=Math.min(i*5,180)+'ms';g.appendChild(c);});}
 document.addEventListener('DOMContentLoaded',()=>{
-  buildPills();updateSel();
-  document.getElementById('ms').addEventListener('input',buildPills);
+  buildSidebar();renderGal();
   const gsi=document.getElementById('gsi');
   if(gsi)gsi.addEventListener('input',e=>{galQ=e.target.value.trim();renderGal();});
   const ov=document.getElementById('kbd-ov');
