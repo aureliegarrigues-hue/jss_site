@@ -435,6 +435,14 @@ main{flex:1;padding:32px;max-width:900px;}
           </div>
           <div class="msg" id="mat-msg"></div>
         </div>
+        <div class="card-form">
+          <h3>📥 Importer les matrices résines (CSV)</h3>
+          <p style="color:var(--text-dim);font-size:0.85rem;margin:0 0 14px;">Cliquez ci-dessous pour écraser et remplacer toutes les matrices résines par les 30 matrices du fichier CSV (2g, 5g, 10g, 25g, 50g, 100g).</p>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="importResinesMatrices()" style="background:#7b4f1a;">📥 Importer les 30 matrices résines</button>
+          </div>
+          <div class="msg" id="import-resines-msg"></div>
+        </div>
       </div>
 
       <!-- ═══ BOUTIQUES ═══ -->
@@ -852,7 +860,23 @@ window.filterTags = (prefix) => {
   renderTags(prefix, val);
 };
 
-// Ajouter et continuer : enregistre puis remet uniquement le nom à vide (garde catégorie + matrice + villes)
+// Import résines matrices from CSV data
+window.importResinesMatrices = async () => {
+  const msgEl = document.getElementById('import-resines-msg');
+  const RESINES_MATRICES = {"r7_5":{"label":"7.5€/2g","grams":[2,5,10,25,50,100],"prices":[7.5,16.0,30.0,60.0,125.0,230.0]},"r8_0":{"label":"8.0€/2g","grams":[2,5,10,25,50,100],"prices":[8.0,18.0,33.0,75.0,140.0,250.0]},"r8_5":{"label":"8.5€/2g","grams":[2,5,10,25,50,100],"prices":[8.5,null,null,null,null,null]},"r9_0":{"label":"9.0€/2g","grams":[2,5,10,25,50,100],"prices":[9.0,null,null,null,null,null]},"r9_5":{"label":"9.5€/2g","grams":[2,5,10,25,50,100],"prices":[9.5,null,null,null,null,null]},"r10_0":{"label":"10.0€/2g","grams":[2,5,10,25,50,100],"prices":[10.0,null,null,null,null,null]},"r10_5":{"label":"10.5€/2g","grams":[2,5,10,25,50,100],"prices":[10.5,null,null,null,null,null]},"r11_0":{"label":"11.0€/2g","grams":[2,5,10,25,50,100],"prices":[11.0,25.0,45.5,108.0,196.0,375.0]},"r11_5":{"label":"11.5€/2g","grams":[2,5,10,25,50,100],"prices":[11.5,null,null,null,null,null]},"r12_0":{"label":"12.0€/2g","grams":[2,5,10,25,50,100],"prices":[12.0,null,null,null,null,null]},"r12_5":{"label":"12.5€/2g","grams":[2,5,10,25,50,100],"prices":[12.5,27.5,50.0,115.0,210.0,375.0]},"r13_0":{"label":"13.0€/2g","grams":[2,5,10,25,50,100],"prices":[13.0,null,null,null,null,null]},"r13_5":{"label":"13.5€/2g","grams":[2,5,10,25,50,100],"prices":[13.5,null,null,null,null,null]},"r14_0":{"label":"14.0€/2g","grams":[2,5,10,25,50,100],"prices":[14.0,32.0,55.0,125.0,230.0,420.0]},"r14_5":{"label":"14.5€/2g","grams":[2,5,10,25,50,100],"prices":[14.5,null,null,null,null,null]},"r15_0":{"label":"15.0€/2g","grams":[2,5,10,25,50,100],"prices":[15.0,35.0,60.0,140.0,270.0,490.0]},"r15_5":{"label":"15.5€/2g","grams":[2,5,10,25,50,100],"prices":[15.5,null,null,null,null,null]},"r16_0":{"label":"16.0€/2g","grams":[2,5,10,25,50,100],"prices":[16.0,38.0,65.0,150.0,275.0,490.0]},"r16_5":{"label":"16.5€/2g","grams":[2,5,10,25,50,100],"prices":[16.5,null,null,null,null,null]},"r17_0":{"label":"17.0€/2g","grams":[2,5,10,25,50,100],"prices":[17.0,40.0,70.0,165.0,300.0,550.0]},"r17_5":{"label":"17.5€/2g","grams":[2,5,10,25,50,100],"prices":[17.5,42.0,72.5,179.0,326.0,626.0]},"r18_0":{"label":"18.0€/2g","grams":[2,5,10,25,50,100],"prices":[18.0,null,null,null,null,null]},"r18_5":{"label":"18.5€/2g","grams":[2,5,10,25,50,100],"prices":[18.5,null,null,null,null,null]},"r19_0":{"label":"19.0€/2g","grams":[2,5,10,25,50,100],"prices":[19.0,null,null,null,null,null]},"r19_5":{"label":"19.5€/2g","grams":[2,5,10,25,50,100],"prices":[19.5,null,null,null,null,null]},"r20_0":{"label":"20.0€/2g","grams":[2,5,10,25,50,100],"prices":[20.0,null,null,null,null,null]},"r20_5":{"label":"20.5€/2g","grams":[2,5,10,25,50,100],"prices":[20.5,null,null,null,null,null]},"r21_0":{"label":"21.0€/2g","grams":[2,5,10,25,50,100],"prices":[21.0,null,null,null,null,null]},"r21_5":{"label":"21.5€/2g","grams":[2,5,10,25,50,100],"prices":[21.5,null,null,null,null,null]},"r22_0":{"label":"22.0€/2g","grams":[2,5,10,25,50,100],"prices":[22.0,49.5,80.0,197.0,359.5,691.0]}};
+  if(!confirm('Remplacer TOUTES les matrices résines par les 30 matrices du CSV ?')) return;
+  if(msgEl){ msgEl.textContent = '⏳ Import en cours…'; msgEl.className = 'msg'; msgEl.style.display='block'; }
+  try {
+    await set(ref(db, 'cbd_matrices/resines'), RESINES_MATRICES);
+    if(msgEl){ msgEl.textContent = '✓ 30 matrices résines importées avec succès !'; msgEl.className = 'msg ok'; }
+    loadMatrixList();
+  } catch(e) {
+    if(msgEl){ msgEl.textContent = '⚠ Erreur : ' + e.message; msgEl.className = 'msg err'; }
+    console.error('import resines error', e);
+  }
+};
+
+
 window.addProdAndContinue = async (section) => {
   if(section !== 'cbd') { window.addProd(section); return; }
   const catBefore = document.getElementById('cbd-cat')?.value;
