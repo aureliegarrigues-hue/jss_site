@@ -272,9 +272,19 @@ main{flex:1;padding:32px;max-width:900px;}
             <div class="field"><label>Nom du produit</label><input type="text" id="cbd-nom" placeholder="ex: OG KUSH"></div>
             <div class="field"><label>Catégorie</label>
               <select id="cbd-cat" onchange="populateMatSelect()">
-                <option>Small Buds</option><option>Greenhouse</option><option>Hydro / Indoor</option>
-                <option>Fleurs Molécule</option>
-                <option>Résines naturelles</option><option>Résines Molécule</option><option>Isolats</option>
+                <optgroup label="🌿 Fleurs">
+                  <option>Small Buds</option>
+                  <option>Greenhouse</option>
+                  <option>Hydro / Indoor</option>
+                  <option>Fleurs Molécule</option>
+                </optgroup>
+                <optgroup label="🍫 Résines">
+                  <option>Résines naturelles</option>
+                  <option>Résines Molécule</option>
+                </optgroup>
+                <optgroup label="💎 Autres">
+                  <option>Isolats</option>
+                </optgroup>
               </select>
             </div>
             <div class="field field-full">
@@ -295,18 +305,11 @@ main{flex:1;padding:32px;max-width:900px;}
                 <p style="color:var(--text-dimmer);font-size:0.85rem;">Choisissez d'abord une catégorie puis une matrice.</p>
               </div>
             </div>
-            <div class="field field-full">
-              <label>Image produit</label>
-              <div class="img-drop" id="cbd-drop" onclick="document.getElementById('cbd-img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" ondragleave="this.style.borderColor=''" ondrop="handleImgDrop(event,'cbd')">
-                📁 Cliquez ou glissez une image JPG/PNG
-                <input type="file" id="cbd-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,'cbd')">
-              </div>
-              <p class="img-uploading" id="cbd-upload-status" style="display:none">⏳ Upload en cours…</p>
-              <input type="hidden" id="cbd-img-url">
-            </div>
+
           </div>
           <div class="btn-row">
             <button class="btn-primary" onclick="addProd('cbd')">✓ Ajouter</button>
+            <button class="btn-primary" id="cbd-btn-continue" onclick="addProdAndContinue('cbd')" style="background:#2a6049;">✓ Ajouter et continuer (même catégorie)</button>
             <button class="btn-secondary" onclick="resetForm('cbd')">↺ Vider</button>
           </div>
           <div class="msg" id="cbd-msg"></div>
@@ -639,7 +642,7 @@ window.addProd = async (section) => {
     data = {
       nom, cat, grams, prices,
       villes: window._selectedVilles.slice(),
-      img: document.getElementById('cbd-img-url').value,
+      img: document.getElementById('cbd-img-url')?.value || '',
       _admin: true, createdAt: Date.now()
     };
     msgId = 'cbd-msg';
@@ -679,6 +682,7 @@ window.addProd = async (section) => {
     resetFormBySection(section);
   } catch(e) {
     showMsg(msgId, '⚠ Erreur Firebase : ' + e.message, 'err');
+    console.error('saveProduct error', section, e);
   }
 };
 
@@ -717,12 +721,16 @@ window.editProd = (section, key, p) => {
     document.getElementById('cbd-mat').value = '';
     window._selectedVilles = (p.villes || []).slice();
     renderVilleCheckboxes();
-    if(p.grams && p.prices) {
-      const grams = p.grams;
+    {
+      const grams = (p.grams && p.grams.length) ? p.grams : getGramsForCat(document.getElementById('cbd-cat').value);
+      const pricesSrc = p.prices || {};
       const container = document.getElementById('cbd-price-table');
       let html = '';
       grams.forEach((g, i) => {
-        const val = p.prices[i];
+        let val = null;
+        if(Array.isArray(p.prices)) val = p.prices[i];
+        else if(pricesSrc && typeof pricesSrc === 'object') val = pricesSrc[g] ?? pricesSrc[g+'g'] ?? null;
+        if(val === null && p['prix_'+g]) val = p['prix_'+g];
         html += `<div class="cbd-price-row">
           <label>${g}g</label>
           <input type="number" step="0.01" min="0" id="cbd-price-${g}" value="${val !== null && val !== undefined ? val : ''}" placeholder="ex: 23.00">
@@ -731,7 +739,7 @@ window.editProd = (section, key, p) => {
       html += `<p class="cbd-price-hint">Les sachets dont le prix est inférieur à 5€ ne s'afficheront pas sur le site public.</p>`;
       container.innerHTML = html;
     }
-    if(p.img){ document.getElementById('cbd-img-url').value = p.img; }
+    if(p.img){ const el = document.getElementById('cbd-img-url'); if(el) el.value = p.img; }
   } else if(section === 'cigarettes') {
     document.getElementById('ci-marque').value = p.marque || '';
     document.getElementById('ci-nom').value = p.nom || '';
@@ -844,8 +852,27 @@ window.filterTags = (prefix) => {
   renderTags(prefix, val);
 };
 
-/* ── MATRICE CBD (chargées depuis Firebase, gérables) ── */
-const RESINES_CATS_ADMIN = ['Résines naturelles','Résines Molécule'];
+// Ajouter et continuer : enregistre puis remet uniquement le nom à vide (garde catégorie + matrice + villes)
+window.addProdAndContinue = async (section) => {
+  if(section !== 'cbd') { window.addProd(section); return; }
+  const catBefore = document.getElementById('cbd-cat')?.value;
+  const matBefore = document.getElementById('cbd-mat')?.value;
+  const villesBefore = (window._selectedVilles || []).slice();
+  await window.addProd(section);
+  // Restaure catégorie + matrice + villes après le reset automatique fait par addProd
+  await new Promise(r => setTimeout(r, 200));
+  if(document.getElementById('cbd-cat')) document.getElementById('cbd-cat').value = catBefore;
+  populateMatSelect();
+  await new Promise(r => setTimeout(r, 50));
+  if(document.getElementById('cbd-mat')) document.getElementById('cbd-mat').value = matBefore;
+  window.applyMatrice();
+  window._selectedVilles = villesBefore;
+  renderVilleCheckboxes();
+  document.getElementById('cbd-nom')?.focus();
+};
+
+
+const RESINES_CATS_ADMIN = ['Résines naturelles','Résines Molécule','Isolats'];
 window._matricesCache = { fleurs: {}, resines: {} };
 window._villesCache = {};
 window._matEditGrams = []; // grammages en cours d'édition dans l'éditeur de matrice
@@ -1180,12 +1207,22 @@ function initListeners() {
 // Delete product
 window.delProd = async (section, key) => {
   if(!confirm('Supprimer ce produit ?')) return;
-  await remove(ref(db, section+'/'+key));
+  try {
+    await remove(ref(db, section+'/'+key));
+  } catch(e) {
+    alert('⚠ Suppression impossible : ' + e.message + '\n\n(clé concernée : ' + key + ')');
+    console.error('delProd error', section, key, e);
+  }
 };
 
 window.delActu = async (key) => {
   if(!confirm('Supprimer ce visuel ?')) return;
-  await remove(ref(db, 'actus/'+key));
+  try {
+    await remove(ref(db, 'actus/'+key));
+  } catch(e) {
+    alert('⚠ Suppression impossible : ' + e.message);
+    console.error('delActu error', key, e);
+  }
 };
 
 // Build product list item
