@@ -269,9 +269,9 @@ main{flex:1;padding:32px;max-width:900px;}
         <div class="card-form">
           <h3>➕ Ajouter un produit</h3>
           <div class="form-grid">
-            <div class="field"><label>Nom du produit</label><input type="text" id="cbd-nom" placeholder="ex: OG KUSH"></div>
+            <div class="field"><label>Nom du produit</label><input type="text" id="cbd-nom" placeholder="ex: OG KUSH" oninput="checkCbdReady()"></div>
             <div class="field"><label>Catégorie</label>
-              <select id="cbd-cat" onchange="populateMatSelect()">
+              <select id="cbd-cat" onchange="onCbdCatChange()">
                 <optgroup label="🌿 Fleurs">
                   <option>Small Buds</option>
                   <option>Greenhouse</option>
@@ -291,24 +291,22 @@ main{flex:1;padding:32px;max-width:900px;}
               <label>Boutiques où ce produit est disponible</label>
               <div class="tags-wrap" id="cbd-villes-check"></div>
             </div>
-            <div class="field field-full">
+            <div class="field field-full" id="cbd-mat-block" style="display:none;">
               <div class="mat-select">
-                <label>Matrice de prix (€/10g)</label>
+                <label id="cbd-mat-label">Matrice de prix</label>
                 <select id="cbd-mat" onchange="applyMatrice()">
                   <option value="">-- Choisir une matrice --</option>
                 </select>
               </div>
             </div>
-            <div class="field field-full">
+            <div class="field field-full" id="cbd-price-block" style="display:none;">
               <label>Tableau de prix (modifiable avant validation)</label>
-              <div id="cbd-price-table" class="cbd-price-table">
-                <p style="color:var(--text-dimmer);font-size:0.85rem;">Choisissez d'abord une catégorie puis une matrice.</p>
-              </div>
+              <div id="cbd-price-table" class="cbd-price-table"></div>
             </div>
 
           </div>
           <div class="btn-row">
-            <button class="btn-primary" onclick="addProd('cbd')">✓ Ajouter</button>
+            <button class="btn-primary" onclick="addProd('cbd')">✓ Valider et fermer</button>
             <button class="btn-primary" id="cbd-btn-continue" onclick="addProdAndContinue('cbd')" style="background:#2a6049;">✓ Ajouter et continuer (même catégorie)</button>
             <button class="btn-secondary" onclick="resetForm('cbd')">↺ Vider</button>
           </div>
@@ -724,6 +722,7 @@ window.editProd = (section, key, p) => {
     if(p.img){ document.getElementById('co-img-url').value = p.img; document.getElementById('co-drop').innerHTML = `<img class="img-preview" src="${p.img}"> Image actuelle`; }
   } else if(section === 'cbd') {
     document.getElementById('cbd-nom').value = p.nom || '';
+    checkCbdReady();
     document.getElementById('cbd-cat').value = p.cat || 'Small Buds';
     populateMatSelect();
     document.getElementById('cbd-mat').value = '';
@@ -809,7 +808,7 @@ window.resetForm = (prefix) => {
   });
   const drop = document.getElementById(prefix+'-drop');
   if(drop) drop.innerHTML = '📁 Cliquez ou glissez une image JPG/PNG<input type="file" id="'+prefix+'-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,\''+prefix+'\')">';
-  if(prefix === 'cbd'){ window._selectedVilles = []; renderVilleCheckboxes(); }
+  if(prefix === 'cbd'){ window._selectedVilles = []; renderVilleCheckboxes(); checkCbdReady(); }
 };
 
 function resetFormBySection(section) {
@@ -908,20 +907,40 @@ function getGramsForCat(cat){
   return isResineCat(cat) ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
 }
 
+function onCbdCatChange(){
+  populateMatSelect();
+  checkCbdReady();
+}
+
+function checkCbdReady(){
+  const nom = (document.getElementById('cbd-nom')?.value || '').trim();
+  const cat = document.getElementById('cbd-cat')?.value || '';
+  const ready = nom.length > 0 && cat.length > 0;
+  const matBlock = document.getElementById('cbd-mat-block');
+  const priceBlock = document.getElementById('cbd-price-block');
+  if(matBlock) matBlock.style.display = ready ? '' : 'none';
+  if(priceBlock) priceBlock.style.display = ready ? '' : 'none';
+}
+
 function populateMatSelect(){
   const cat = document.getElementById('cbd-cat')?.value || '';
   const sel = document.getElementById('cbd-mat');
   if(!sel) return;
   const type = matTypeForCat(cat);
   const mats = window._matricesCache[type] || {};
+  const isResine = type === 'resines';
+  const labelEl = document.getElementById('cbd-mat-label');
+  if(labelEl) labelEl.textContent = isResine ? 'Matrice de prix (€/2g)' : 'Matrice de prix (€/10g)';
   sel.innerHTML = '<option value="">-- Choisir une matrice --</option>';
   Object.entries(mats).forEach(([k, m]) => {
-    const idx10 = (m.grams||[]).indexOf(10);
-    const p10 = idx10>=0 ? m.prices[idx10] : (m.prices ? m.prices[0] : '');
-    sel.innerHTML += `<option value="${k}">${m.label || k}${p10!==''&&p10!==undefined&&p10!==null ? ' ('+p10+'€/10g)' : ''}</option>`;
+    const refGram = isResine ? 2 : 10;
+    const idx = (m.grams||[]).indexOf(refGram);
+    const pRef = idx>=0 && m.prices ? m.prices[idx] : (m.prices ? m.prices[0] : '');
+    sel.innerHTML += `<option value="${k}">${m.label || k}${pRef!==''&&pRef!==undefined&&pRef!==null ? ' ('+pRef+'€/'+refGram+'g)' : ''}</option>`;
   });
   renderPriceTable(getGramsForCat(cat), null);
 }
+
 
 window.applyMatrice = () => {
   const cat = document.getElementById('cbd-cat')?.value || '';
@@ -952,6 +971,7 @@ function initCbdForm(){
   populateMatSelect();
   loadMatrixList();
   renderVillesUI();
+  checkCbdReady();
 }
 
 /* ── GESTION DES VILLES ── */
