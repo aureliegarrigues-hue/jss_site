@@ -907,12 +907,12 @@ function getGramsForCat(cat){
   return isResineCat(cat) ? [2,5,10,25,50,100] : [1,3,5,10,25,50,100];
 }
 
-function onCbdCatChange(){
+window.onCbdCatChange = function(){
   populateMatSelect();
   checkCbdReady();
-}
+};
 
-function checkCbdReady(){
+window.checkCbdReady = function checkCbdReady(){
   const nom = (document.getElementById('cbd-nom')?.value || '').trim();
   const cat = document.getElementById('cbd-cat')?.value || '';
   const ready = nom.length > 0 && cat.length > 0;
