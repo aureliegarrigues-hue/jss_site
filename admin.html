@@ -114,6 +114,14 @@ main{flex:1;padding:32px;max-width:900px;}
 .mat-select select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;flex:1;}
 .mat-preview{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.8rem;color:var(--text-dim);line-height:1.8;}
 .cbd-price-table{display:flex;flex-direction:column;gap:8px;}
+.cbd-cat-btn{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:10px 14px;margin-bottom:4px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:var(--text);transition:background .15s;}
+.cbd-cat-btn:hover{background:rgba(201,168,76,.08);border-color:rgba(201,168,76,.3);}
+.cbd-cat-btn.open{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.35);color:var(--accent);}
+.cbd-cat-btn .cat-arrow{transition:transform .2s;font-size:0.75rem;}
+.cbd-cat-btn.open .cat-arrow{transform:rotate(90deg);}
+.cbd-cat-count{font-size:0.72rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2px 7px;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-weight:600;}
+.cbd-cat-prods{display:none;padding:4px 0 8px 8px;border-left:2px solid rgba(201,168,76,.2);margin-left:4px;margin-bottom:8px;}
+.cbd-cat-prods.open{display:block;}
 .cbd-price-row{display:grid;grid-template-columns:60px 1fr;align-items:center;gap:10px;}
 .cbd-price-row label{font-size:0.78rem;color:var(--text-dim);font-weight:600;}
 .cbd-price-row input{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;width:100%;box-sizing:border-box;}
@@ -945,26 +953,54 @@ function populateMatSelect(){
 window.applyMatrice = () => {
   const cat = document.getElementById('cbd-cat')?.value || '';
   const key = document.getElementById('cbd-mat')?.value || '';
+  if(key === '__libre__'){
+    renderPriceTable([1,2,3,5,10,25,50,100], null, true);
+    return;
+  }
   const type = matTypeForCat(cat);
   const mats = window._matricesCache[type] || {};
   const m = key && mats[key] ? mats[key] : null;
-  renderPriceTable(m ? m.grams : getGramsForCat(cat), m ? m.prices : null);
+  renderPriceTable(m ? m.grams : getGramsForCat(cat), m ? m.prices : null, false);
 };
 
-function renderPriceTable(grams, prices){
+function renderPriceTable(grams, prices, libre=false){
   const container = document.getElementById('cbd-price-table');
   if(!container) return;
+  window._libreGrams = grams.slice();
   let html = '';
   grams.forEach((g, i) => {
     const val = prices ? prices[i] : '';
-    html += `<div class="cbd-price-row">
+    html += `<div class="cbd-price-row" id="cbd-libre-row-${g}">
       <label>${g}g</label>
       <input type="number" step="0.01" min="0" id="cbd-price-${g}" value="${val !== null && val !== undefined ? val : ''}" placeholder="ex: 23.00">
+      ${libre ? `<button type="button" class="btn-del" style="padding:3px 8px;font-size:0.75rem;" onclick="removeFreeGram(${g})">✕</button>` : ''}
     </div>`;
   });
+  if(libre){
+    html += `<div class="cbd-price-row" style="margin-top:8px;border-top:1px solid var(--border);padding-top:10px;gap:8px;flex-wrap:wrap;">
+      <label style="min-width:70px;">Ajouter</label>
+      <input type="number" min="0.1" step="0.5" id="cbd-libre-add-g" placeholder="Grammes (ex: 7)" style="width:110px;">
+      <button type="button" class="btn-secondary" style="padding:6px 12px;font-size:0.8rem;" onclick="addFreeGram()">➕ Ajouter ce grammage</button>
+    </div>`;
+  }
   html += `<p class="cbd-price-hint">Les sachets dont le prix est inférieur à 5€ ne s'afficheront pas sur le site public.</p>`;
   container.innerHTML = html;
 }
+
+window.addFreeGram = () => {
+  const input = document.getElementById('cbd-libre-add-g');
+  const val = parseFloat(input.value);
+  if(!val || val <= 0){ alert('Entrez un grammage valide.'); return; }
+  if((window._libreGrams||[]).includes(val)){ alert('Ce grammage existe déjà.'); return; }
+  window._libreGrams = [...(window._libreGrams||[]), val].sort((a,b)=>a-b);
+  renderPriceTable(window._libreGrams, null, true);
+  input.value = '';
+};
+
+window.removeFreeGram = (g) => {
+  window._libreGrams = (window._libreGrams||[]).filter(x => x !== g);
+  renderPriceTable(window._libreGrams, null, true);
+};
 
 // Quand la section CBD devient visible, initialiser le tableau vide selon catégorie par défaut
 function initCbdForm(){
@@ -1205,13 +1241,38 @@ function initListeners() {
     });
   });
 
-  // CBD
+  // CBD — groupé par catégorie
   onValue(ref(db, 'cbd'), snap => {
     const list = document.getElementById('cbd-list');
     list.innerHTML = '';
     if(!snap.exists()) { list.innerHTML = '<p class="empty-state">Aucun produit ajouté.</p>'; return; }
+    const CBD_CATS = ['Small Buds','Greenhouse','Hydro / Indoor','Fleurs Molécule','Résines Naturelles','Résines Molécule','Isolats'];
+    const groups = {};
     snap.forEach(child => {
-      list.appendChild(makeProdItem(child.val(), child.key, 'cbd'));
+      const p = child.val(); const k = child.key;
+      const cat = p.cat || 'Autre';
+      if(!groups[cat]) groups[cat] = [];
+      groups[cat].push({p, k});
+    });
+    const allCats = [...CBD_CATS, ...Object.keys(groups).filter(c => !CBD_CATS.includes(c))];
+    allCats.forEach(cat => {
+      const items = groups[cat];
+      if(!items || !items.length) return;
+      const wrap = document.createElement('div');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cbd-cat-btn';
+      btn.innerHTML = `<span>▶ <span class="cat-arrow">›</span> ${cat}</span><span class="cbd-cat-count">${items.length}</span>`;
+      const prods = document.createElement('div');
+      prods.className = 'cbd-cat-prods';
+      items.forEach(({p, k}) => prods.appendChild(makeProdItem(p, k, 'cbd')));
+      btn.addEventListener('click', () => {
+        const open = prods.classList.toggle('open');
+        btn.classList.toggle('open', open);
+      });
+      wrap.appendChild(btn);
+      wrap.appendChild(prods);
+      list.appendChild(wrap);
     });
   });
 
