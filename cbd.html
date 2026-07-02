@@ -359,7 +359,7 @@ function getFlatProductsForCat(cat){
 
   // Produits Firebase de cette catégorie, filtrés par ville sélectionnée
   (window.firebaseCbdProducts||[]).forEach(p => {
-    if(p.cat !== cat) return;
+    if((p.cat||'').toLowerCase() !== cat.toLowerCase()) return;
     const villesProduit = p.villes || [];
     // Si le produit n'a aucune ville assignée, on l'affiche partout (comportement rétro-compatible)
     if(villesProduit.length && !villesProduit.includes(currentStore)) return;
