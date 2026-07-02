@@ -404,7 +404,7 @@ function buildSB(){
       'Résines Naturelles':'🍯','Isolats':'⭐','Fleurs Molécule':'🔬','Résines Molécule':'🧪'
     }[cat]||'🌱';
     btn.innerHTML = `<div class="cat-ic">${emoji}</div><div class="cat-nm">${cat}</div>`;
-    btn.onclick = () => { currentCat=cat; buildSB(); renderCat(); };
+    btn.onclick = () => { currentCat=cat; currentMolFilter=null; buildSB(); renderCat(); };
     sb.appendChild(btn);
   });
   // Onglet Pré-rolls (page en construction)
@@ -431,11 +431,36 @@ function renderCat(){
   const color = catColor(currentCat);
   const label = isIsolat ? 'Isolat' : (isResine ? 'Résine' : 'Fleur');
 
-  const { grams: usedGrams, list } = getFlatProductsForCat(currentCat);
+  const { grams: usedGrams, list: fullList } = getFlatProductsForCat(currentCat);
 
-  if(!list.length){ content.innerHTML = `<div class="cat-heading" style="color:${color}">${currentCat}</div><p style="color:var(--text-dimmer);padding:40px;text-align:center;">Aucun produit dans cette catégorie.</p>`; return; }
+  // Molécules présentes dans cette catégorie
+  const molsInCat = {};
+  fullList.forEach(item => {
+    (item.molecules||[]).forEach(mk => {
+      const m = (window._molsCache||{})[mk];
+      if(m && m.visible !== false) molsInCat[mk] = m;
+    });
+  });
+  const hasMols = Object.keys(molsInCat).length > 0;
+
+  // Filtrage
+  const list = currentMolFilter
+    ? fullList.filter(item => (item.molecules||[]).includes(currentMolFilter))
+    : fullList;
+
+  if(!fullList.length){ content.innerHTML = `<div class="cat-heading" style="color:${color}">${currentCat}</div><p style="color:var(--text-dimmer);padding:40px;text-align:center;">Aucun produit dans cette catégorie.</p>`; return; }
 
   let html = `<div class="cat-heading" style="color:${color}">${currentCat}</div>`;
+
+  if(hasMols){
+    html += `<div class="mol-filter-wrap">`;
+    html += `<button class="mol-filter-tag ${!currentMolFilter?'active':''}" style="color:#aaa;border-color:#aaa;" onclick="setMolFilter(null)">Toutes</button>`;
+    Object.entries(molsInCat).sort((a,b)=>a[1].nom.localeCompare(b[1].nom)).forEach(([mk, m]) => {
+      const active = currentMolFilter === mk;
+      html += `<button class="mol-filter-tag ${active?'active':''}" style="color:${m.couleur};border-color:${m.couleur};${active?'background:'+m.couleur+'22':''}" onclick="setMolFilter('${mk}')">${m.nom}</button>`;
+    });
+    html += `</div>`;
+  }
 
   html += `<table class="price-table">
     <thead>
@@ -476,6 +501,12 @@ function renderCat(){
 
   content.innerHTML = html;
 }
+
+
+window.setMolFilter = (key) => {
+  currentMolFilter = key;
+  renderCat();
+};
 
 /* ── Switch boutique ── */
 function switchStore(store, btn){

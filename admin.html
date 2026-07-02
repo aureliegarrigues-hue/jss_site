@@ -175,6 +175,9 @@ main{flex:1;padding:32px;max-width:900px;}
       <div class="nav-item" onclick="showSection('boutiques')" id="nav-boutiques">
         <span class="ico">🏙</span> Boutiques
       </div>
+      <div class="nav-item" onclick="showSection('molecules')" id="nav-molecules">
+        <span class="ico">🧬</span> Molécules
+      </div>
     </nav>
     <main>
 
@@ -298,6 +301,10 @@ main{flex:1;padding:32px;max-width:900px;}
             <div class="field field-full">
               <label>Boutiques où ce produit est disponible</label>
               <div class="tags-wrap" id="cbd-villes-check"></div>
+            </div>
+            <div class="field field-full">
+              <label>Molécules associées <span style="font-size:0.75rem;color:var(--text-dimmer);font-weight:400;">(optionnel)</span></label>
+              <div id="cbd-mol-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;min-height:30px;"></div>
             </div>
             <div class="field field-full" id="cbd-mat-block" style="display:none;">
               <div class="mat-select">
@@ -469,6 +476,42 @@ main{flex:1;padding:32px;max-width:900px;}
           </div>
           <div id="villes-list" style="margin-top:14px;"></div>
           <div class="msg" id="ville-msg"></div>
+        </div>
+      </div>
+
+
+      <div class="section" id="sec-molecules">
+        <div class="sec-title">Molécules</div>
+        <p class="sec-sub">Gérez la liste des molécules (tags filtrables dans le tableau des fleurs & résines).</p>
+        <div class="card-form">
+          <h3>🧬 Créer / Modifier une molécule</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>Nom Sunshop molécule</label>
+              <input type="text" id="mol-nom" placeholder="ex: CBG, THCV…">
+            </div>
+            <div class="field">
+              <label>Réf fournisseur molécule</label>
+              <input type="text" id="mol-ref" placeholder="ex: REF-42B">
+            </div>
+            <div class="field">
+              <label>Couleur du tag</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <input type="color" id="mol-color" value="#c9a84c" style="width:48px;height:36px;border:none;background:none;cursor:pointer;padding:0;">
+                <input type="text" id="mol-color-hex" placeholder="#c9a84c" style="flex:1;" oninput="document.getElementById('mol-color').value=this.value">
+              </div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="saveMolecule()">✓ Créer / Enregistrer</button>
+            <button class="btn-secondary" onclick="resetMolForm()">↺ Vider</button>
+          </div>
+          <div class="msg" id="mol-msg"></div>
+          <input type="hidden" id="mol-edit-key">
+        </div>
+        <div class="card-form" style="margin-top:16px;">
+          <h3>Liste des molécules</h3>
+          <div id="mol-list"><p class="empty-state">Aucune molécule ajoutée.</p></div>
         </div>
       </div>
 
@@ -648,7 +691,10 @@ window.addProd = async (section) => {
     const nom = document.getElementById('cbd-nom').value.trim();
     if(!nom) { showMsg('cbd-msg','⚠ Nom requis.','err'); return; }
     const cat = document.getElementById('cbd-cat').value;
-    const grams = getGramsForCat(cat);
+    const matKey = document.getElementById('cbd-mat')?.value || '';
+    // Si matrice libre, utiliser _libreGrams, sinon grammages standards
+    const isLibre = matKey === '__libre__';
+    const grams = isLibre ? (window._libreGrams || getGramsForCat(cat)) : getGramsForCat(cat);
     const prices = grams.map(g => {
       const v = document.getElementById('cbd-price-'+g)?.value;
       return v !== '' && v !== undefined ? parseFloat(v) : null;
@@ -656,6 +702,7 @@ window.addProd = async (section) => {
     data = {
       nom, cat, grams, prices,
       villes: window._selectedVilles.slice(),
+      molecules: window._selectedMols.slice(),
       img: document.getElementById('cbd-img-url')?.value || '',
       _admin: true, createdAt: Date.now()
     };
@@ -816,7 +863,7 @@ window.resetForm = (prefix) => {
   });
   const drop = document.getElementById(prefix+'-drop');
   if(drop) drop.innerHTML = '📁 Cliquez ou glissez une image JPG/PNG<input type="file" id="'+prefix+'-img-input" accept="image/*" style="display:none" onchange="uploadImg(this,\''+prefix+'\')">';
-  if(prefix === 'cbd'){ window._selectedVilles = []; renderVilleCheckboxes(); checkCbdReady(); }
+  if(prefix === 'cbd'){ window._selectedVilles = []; window._selectedMols = []; renderVilleCheckboxes(); renderMolTagsInForm(); checkCbdReady(); }
 };
 
 function resetFormBySection(section) {
@@ -1219,7 +1266,7 @@ window.showSection = (name) => {
   _origShowSection(name);
   if(name==='aromes'){ window._selectedTags.ar=[]; renderTags('ar'); }
   if(name==='concentres'){ window._selectedTags.co=[]; renderTags('co'); }
-  if(name==='cbd'){ populateMatSelect(); }
+  if(name==='cbd'){ populateMatSelect(); window._selectedMols=[]; renderMolTagsInForm(); }
   if(name==='matrices'){ loadMatrixList(); }
   if(name==='boutiques'){ renderVillesUI(); }
 };
@@ -1230,6 +1277,107 @@ function initAdminExtras(){
   renderTags('co');
   populateMatSelect();
 }
+
+
+/* ── MOLÉCULES ── */
+window._molCache = {};        // key -> {nom, ref, couleur, visible}
+window._selectedMols = [];    // keys sélectionnées dans le formulaire CBD
+
+function renderMolList(){
+  const list = document.getElementById('mol-list');
+  if(!list) return;
+  const mols = Object.entries(window._molCache).sort((a,b) => a[1].nom.localeCompare(b[1].nom));
+  if(!mols.length){ list.innerHTML='<p class="empty-state">Aucune molécule ajoutée.</p>'; return; }
+  list.innerHTML = '';
+  mols.forEach(([k, m]) => {
+    const div = document.createElement('div');
+    div.className = 'mol-item' + (m.visible===false ? ' hidden-mol' : '');
+    const tag = document.createElement('span');
+    tag.className = 'mol-tag-admin';
+    tag.textContent = m.nom;
+    tag.style.color = m.couleur || '#c9a84c';
+    tag.style.borderColor = m.couleur || '#c9a84c';
+    div.appendChild(tag);
+    const info = document.createElement('div');
+    info.className = 'mol-info';
+    info.innerHTML = `<div class="mol-nom">${m.nom}</div><div class="mol-ref">${m.ref||'—'}</div>`;
+    div.appendChild(info);
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn-secondary'; editBtn.style.cssText='padding:5px 10px;font-size:0.75rem;';
+    editBtn.textContent = '✎'; editBtn.title = 'Modifier';
+    editBtn.addEventListener('click', () => {
+      document.getElementById('mol-nom').value = m.nom;
+      document.getElementById('mol-ref').value = m.ref || '';
+      document.getElementById('mol-color').value = m.couleur || '#c9a84c';
+      document.getElementById('mol-color-hex').value = m.couleur || '#c9a84c';
+      document.getElementById('mol-edit-key').value = k;
+    });
+    const visBtn = document.createElement('button');
+    visBtn.className = 'btn-secondary'; visBtn.style.cssText='padding:5px 10px;font-size:0.75rem;';
+    visBtn.textContent = m.visible===false ? '👁 Afficher' : '🚫 Masquer';
+    visBtn.addEventListener('click', async () => {
+      await update(ref(db, 'molecules/'+k), { visible: m.visible===false });
+    });
+    const delBtn = document.createElement('button');
+    delBtn.className = 'btn-del'; delBtn.textContent = 'Supprimer';
+    delBtn.addEventListener('click', async () => {
+      if(!confirm('Supprimer cette molécule ?')) return;
+      await remove(ref(db, 'molecules/'+k));
+    });
+    div.appendChild(editBtn); div.appendChild(visBtn); div.appendChild(delBtn);
+    list.appendChild(div);
+  });
+}
+
+function renderMolTagsInForm(){
+  const wrap = document.getElementById('cbd-mol-tags');
+  if(!wrap) return;
+  const mols = Object.entries(window._molCache)
+    .filter(([,m]) => m.visible !== false)
+    .sort((a,b) => a[1].nom.localeCompare(b[1].nom));
+  wrap.innerHTML = '';
+  mols.forEach(([k, m]) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    const sel = window._selectedMols.includes(k);
+    btn.className = 'mol-tag-admin';
+    btn.textContent = m.nom;
+    btn.style.color = m.couleur || '#c9a84c';
+    btn.style.borderColor = m.couleur || '#c9a84c';
+    btn.style.background = sel ? (m.couleur || '#c9a84c') + '22' : 'transparent';
+    btn.style.opacity = sel ? '1' : '0.55';
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('click', () => {
+      if(sel) window._selectedMols = window._selectedMols.filter(x=>x!==k);
+      else window._selectedMols.push(k);
+      renderMolTagsInForm();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+window.saveMolecule = async () => {
+  const nom = document.getElementById('mol-nom').value.trim();
+  const refVal = document.getElementById('mol-ref').value.trim();
+  const couleur = document.getElementById('mol-color').value;
+  const editKey = document.getElementById('mol-edit-key').value;
+  if(!nom){ showMsg('mol-msg','⚠ Le nom est obligatoire.','err'); return; }
+  const data = { nom, ref: refVal, couleur, visible: true };
+  try {
+    if(editKey) await update(ref(db, 'molecules/'+editKey), data);
+    else await push(ref(db, 'molecules'), data);
+    showMsg('mol-msg','✓ Molécule enregistrée.','ok');
+    resetMolForm();
+  } catch(e){ showMsg('mol-msg','⚠ Erreur : '+e.message,'err'); }
+};
+
+window.resetMolForm = () => {
+  document.getElementById('mol-nom').value='';
+  document.getElementById('mol-ref').value='';
+  document.getElementById('mol-color').value='#c9a84c';
+  document.getElementById('mol-color-hex').value='#c9a84c';
+  document.getElementById('mol-edit-key').value='';
+};
 
 // Listeners
 function initListeners() {
@@ -1306,6 +1454,13 @@ function initListeners() {
       wrap.appendChild(prods);
       list.appendChild(wrap);
     });
+  });
+
+  // Molécules
+  onValue(ref(db, 'molecules'), snap => {
+    window._molCache = snap.exists() ? snap.val() : {};
+    renderMolList();
+    renderMolTagsInForm();
   });
 
   // Cigarettes
