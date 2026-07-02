@@ -934,19 +934,47 @@ function populateMatSelect(){
   const cat = document.getElementById('cbd-cat')?.value || '';
   const sel = document.getElementById('cbd-mat');
   if(!sel) return;
+  const isIsolat = cat === 'Isolats';
   const type = matTypeForCat(cat);
-  const mats = window._matricesCache[type] || {};
   const isResine = type === 'resines';
   const labelEl = document.getElementById('cbd-mat-label');
-  if(labelEl) labelEl.textContent = isResine ? 'Matrice de prix (€/2g)' : 'Matrice de prix (€/10g)';
-  sel.innerHTML = '<option value="">-- Choisir une matrice --</option>';
-  Object.entries(mats).forEach(([k, m]) => {
-    const refGram = isResine ? 2 : 10;
-    const idx = (m.grams||[]).indexOf(refGram);
-    const pRef = idx>=0 && m.prices ? m.prices[idx] : (m.prices ? m.prices[0] : '');
-    sel.innerHTML += `<option value="${k}">${m.label || k}${pRef!==''&&pRef!==undefined&&pRef!==null ? ' ('+pRef+'€/'+refGram+'g)' : ''}</option>`;
-  });
-  renderPriceTable(getGramsForCat(cat), null);
+  if(labelEl) labelEl.textContent = isIsolat ? 'Matrice de prix' : isResine ? 'Matrice de prix (€/2g)' : 'Matrice de prix (€/10g)';
+  sel.innerHTML = '';
+  if(isIsolat){
+    sel.innerHTML += '<option value="__libre__">✏ Matrice libre (grammages personnalisés)</option>';
+    const resines = window._matricesCache['resines'] || {};
+    if(Object.keys(resines).length){
+      sel.innerHTML += '<optgroup label="— Matrices résines —">';
+      Object.entries(resines).forEach(([k, m]) => {
+        const idx = (m.grams||[]).indexOf(2);
+        const pRef = idx>=0 && m.prices ? m.prices[idx] : '';
+        sel.innerHTML += `<option value="r:${k}">${m.label || k}${pRef!==''&&pRef!=null ? ' ('+pRef+'€/2g)' : ''}</option>`;
+      });
+      sel.innerHTML += '</optgroup>';
+    }
+    const fleurs = window._matricesCache['fleurs'] || {};
+    if(Object.keys(fleurs).length){
+      sel.innerHTML += '<optgroup label="— Matrices fleurs —">';
+      Object.entries(fleurs).forEach(([k, m]) => {
+        const idx = (m.grams||[]).indexOf(10);
+        const pRef = idx>=0 && m.prices ? m.prices[idx] : '';
+        sel.innerHTML += `<option value="f:${k}">${m.label || k}${pRef!==''&&pRef!=null ? ' ('+pRef+'€/10g)' : ''}</option>`;
+      });
+      sel.innerHTML += '</optgroup>';
+    }
+    setTimeout(() => { sel.value = '__libre__'; window.applyMatrice(); }, 0);
+  } else {
+    sel.innerHTML = '<option value="">-- Choisir une matrice --</option>';
+    const mats = window._matricesCache[type] || {};
+    Object.entries(mats).forEach(([k, m]) => {
+      const refGram = isResine ? 2 : 10;
+      const idx = (m.grams||[]).indexOf(refGram);
+      const pRef = idx>=0 && m.prices ? m.prices[idx] : (m.prices ? m.prices[0] : '');
+      sel.innerHTML += `<option value="${k}">${m.label || k}${pRef!==''&&pRef!==undefined&&pRef!==null ? ' ('+pRef+'€/'+refGram+'g)' : ''}</option>`;
+    });
+    sel.innerHTML += '<option value="__libre__">✏ Matrice libre (grammages personnalisés)</option>';
+    renderPriceTable(getGramsForCat(cat), null);
+  }
 }
 
 
@@ -957,9 +985,13 @@ window.applyMatrice = () => {
     renderPriceTable([1,2,3,5,10,25,50,100], null, true);
     return;
   }
-  const type = matTypeForCat(cat);
+  // Clés préfixées pour isolats (r: résines, f: fleurs)
+  let type = matTypeForCat(cat);
+  let realKey = key;
+  if(key.startsWith('r:')){ type = 'resines'; realKey = key.slice(2); }
+  else if(key.startsWith('f:')){ type = 'fleurs'; realKey = key.slice(2); }
   const mats = window._matricesCache[type] || {};
-  const m = key && mats[key] ? mats[key] : null;
+  const m = realKey ? mats[realKey] : null;
   renderPriceTable(m ? m.grams : getGramsForCat(cat), m ? m.prices : null, false);
 };
 
