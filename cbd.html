@@ -357,20 +357,28 @@ function getFlatProductsForCat(cat){
     });
   }
 
+  // Helper: Firebase peut retourner des arrays comme objets {"0":v,"1":v...}
+  function toArr(v, fallback){ if(!v) return fallback||[]; if(Array.isArray(v)) return v; return Object.values(v); }
+
   // Produits Firebase de cette catégorie, filtrés par ville sélectionnée
   (window.firebaseCbdProducts||[]).forEach(p => {
     if((p.cat||'').toLowerCase() !== cat.toLowerCase()) return;
-    const villesProduit = p.villes || [];
-    // Si le produit n'a aucune ville assignée, on l'affiche partout (comportement rétro-compatible)
+    const villesProduit = toArr(p.villes, []);
     if(villesProduit.length && !villesProduit.includes(currentStore)) return;
-    const pGrams = Array.isArray(p.grams) && p.grams.length ? p.grams : getGramsForCat(cat);
-    const pPrices = Array.isArray(p.prices) ? p.prices : pGrams.map(() => null);
-    list.push({ nom: p.nom, prices: pPrices, grams: pGrams, molecules: p.molecules||[], _admin: true });
+    const pGrams = toArr(p.grams, []).map(Number).filter(Boolean);
+    const finalGrams = pGrams.length ? pGrams : getGramsForCat(cat);
+    const rawPrices = toArr(p.prices, []);
+    const pPrices = finalGrams.map((g, i) => {
+      const v = rawPrices[i];
+      return (v !== null && v !== undefined && v !== '') ? parseFloat(v) : null;
+    });
+    const pMols = toArr(p.molecules, []);
+    list.push({ nom: p.nom, prices: pPrices, grams: finalGrams, molecules: pMols, _admin: true });
   });
 
   // Grammages = union croissante de tous les grammages réellement utilisés
   const gramSet = new Set();
-  list.forEach(item => item.grams.forEach(g => gramSet.add(g)));
+  list.forEach(item => (item.grams||[]).forEach(g => gramSet.add(g)));
   const grams = Array.from(gramSet).sort((a,b) => a-b);
 
   // Tri par prix au 10g croissant (produits sans prix au 10g vont en fin de liste)
@@ -420,6 +428,15 @@ function buildSB(){
 
 /* ── Tableau prix ── */
 function renderCat(){
+  try {
+    _renderCatInner();
+  } catch(e) {
+    const content = document.getElementById('cbd-content');
+    if(content) content.innerHTML = `<p style="color:#ff6b6b;padding:20px;">⚠ Erreur d'affichage : ${e.message}</p>`;
+    console.error('renderCat error:', e);
+  }
+}
+function _renderCatInner(){
   const data = getData();
   const content = document.getElementById('cbd-content');
   if(currentCat === 'Pré-rolls'){
@@ -502,7 +519,7 @@ function renderCat(){
   html += `</tbody></table>`;
 
   content.innerHTML = html;
-}
+} // end _renderCatInner
 
 
 window.setMolFilter = (key) => {
