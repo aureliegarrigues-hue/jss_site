@@ -802,6 +802,10 @@ window.editProd = (section, key, p) => {
     document.getElementById('cbd-mat').value = '';
     window._selectedVilles = (p.villes || []).slice();
     renderVilleCheckboxes();
+    // Pré-remplir les molécules sélectionnées
+    const rawMols = p.molecules;
+    window._selectedMols = Array.isArray(rawMols) ? rawMols.slice() : (rawMols ? Object.values(rawMols) : []);
+    renderMolTagsInForm();
     {
       const grams = (p.grams && p.grams.length) ? p.grams : getGramsForCat(document.getElementById('cbd-cat').value);
       const pricesSrc = p.prices || {};

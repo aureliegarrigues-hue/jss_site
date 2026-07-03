@@ -607,13 +607,18 @@ onValue(ref(db, 'cbd'), (snap) => {
     });
   }
   window.firebaseCbdProducts = arr;
-  if (typeof renderCat === 'function') renderCat();
+  if (typeof window.renderCat === 'function') window.renderCat();
+});
+
+onValue(ref(db, 'molecules'), (snap) => {
+  window._molsCache = snap.exists() ? snap.val() : {};
+  if (typeof window.renderCat === 'function') window.renderCat();
 });
 
 onValue(ref(db, 'cbd_villes'), (snap) => {
   window.firebaseCbdVilles = snap.exists() ? snap.val() : {};
-  if (typeof buildStoreBar === 'function') buildStoreBar();
-  if (typeof renderCat === 'function') renderCat();
+  if (typeof window.buildStoreBar === 'function') window.buildStoreBar();
+  if (typeof window.renderCat === 'function') window.renderCat();
 });
 </script>
 <script src="standby.js"></script>
