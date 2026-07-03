@@ -158,13 +158,13 @@ nav {
 .cbd-page{display:flex;gap:26px;align-items:flex-start;min-height:calc(100vh - 68px);}
 
 /* Sidebar */
-.cbd-sb{width:238px;flex-shrink:0;background:transparent;border-right:none;padding:26px 4px 60px 22px;position:sticky;top:68px;height:calc(100vh - 68px);overflow-y:auto;}
+.cbd-sb{width:200px;flex-shrink:0;background:transparent;border-right:none;padding:20px 4px 60px 14px;position:sticky;top:68px;height:calc(100vh - 68px);overflow-y:auto;}
 .cbd-sb-title{display:block;font-size:0.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dimmer);padding:0 6px 14px;}
 
 /* ── Cartes de catégorie (rectangles horizontaux) ── */
 .cat-btn{
   display:flex;align-items:center;gap:12px;width:100%;text-align:left;
-  margin-bottom:10px;padding:12px 13px;position:relative;overflow:hidden;
+  margin-bottom:7px;padding:8px 10px;position:relative;overflow:hidden;
   background:var(--surface2);border:1px solid var(--border);border-radius:13px;
   cursor:pointer;line-height:1.2;
   box-shadow:0 2px 8px rgba(0,0,0,.25);
@@ -177,9 +177,9 @@ nav {
 .cat-btn.active::before{transform:scaleY(1);}
 .cat-btn.active .cat-ic{}
 .cat-btn.active .cat-nm{}
-.cat-ic{flex-shrink:0;width:38px;height:38px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.15rem;transition:background .2s,border-color .2s;}
+.cat-ic{flex-shrink:0;width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.95rem;transition:background .2s,border-color .2s;}
 .cat-tx{flex:1;min-width:0;}
-.cat-nm{font-family:'Syne',sans-serif;font-weight:700;font-size:0.92rem;color:var(--text);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s;}
+.cat-nm{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;color:var(--text);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s;}
 .cat-sub{font-size:0.62rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--text-dimmer);margin-top:3px;}
 .cat-ch{flex-shrink:0;color:var(--accent);font-size:1.15rem;line-height:1;opacity:0;transform:translateX(-5px);transition:opacity .2s,transform .2s;}
 
@@ -191,7 +191,7 @@ nav {
 .store-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
 .sdot{width:7px;height:7px;border-radius:50%;}
 .sdot-b{background:#4ade80;}.sdot-r{background:#60a5fa;}.sdot-g{background:#f0b429;}.sdot-p{background:#c084fc;}.sdot-o{background:#fb923c;}
-.cbd-wrap{padding:24px 28px 80px 34px;height:calc(100vh - 68px);overflow:auto;}
+.cbd-wrap{padding:20px 16px 80px 20px;height:calc(100vh - 68px);overflow:auto;}
 .cat-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#fff;margin:0 0 20px;display:flex;align-items:center;gap:10px;}
 .store-pill{font-size:0.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:3px 10px;border-radius:10px;}
 .pill-b{background:rgba(74,222,128,.12);color:#4ade80;border:1px solid rgba(74,222,128,.28);}
@@ -199,14 +199,14 @@ nav {
 
 /* Table — smooth, borderless */
 .price-table{width:100%;border-collapse:collapse;table-layout:fixed;margin-bottom:24px;}
-.price-table thead th{font-size:0.92rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(170,170,190,.9);padding:9px 6px 11px;text-align:center;border:none;border-bottom:1px solid rgba(255,255,255,.1);background:var(--bg);position:sticky;top:0;z-index:5;}
+.price-table thead th{font-size:0.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(170,170,190,.9);padding:7px 4px 9px;text-align:center;border:none;border-bottom:1px solid rgba(255,255,255,.1);background:#0a0a0f;position:sticky;top:0;z-index:5;box-shadow:0 4px 12px rgba(0,0,0,.6);}
 .price-table th.hl,.price-table td.hl{background:rgba(201,168,76,.07);box-shadow:inset 1px 0 rgba(201,168,76,.16),inset -1px 0 rgba(201,168,76,.16);}
 .price-table thead th.hl{background:rgba(201,168,76,.12);color:var(--accent);}
-.price-table thead th.cn{text-align:left;width:130px;}
-.price-table thead th.cg{width:76px;}
+.price-table thead th.cn{text-align:left;width:110px;}
+.price-table thead th.cg{width:62px;}
 .price-table tr.pr td{padding:11px 6px 4px;border:none;text-align:center;vertical-align:bottom;}
-.price-table tr.pr td.cn{text-align:left;font-weight:700;color:#f3f3f7;font-size:1.12rem;padding-left:0;}
-.price-table tr.pr td.pc{font-weight:800;color:var(--accent);font-size:1.2rem;letter-spacing:-.02em;}
+.price-table tr.pr td.cn{text-align:left;font-weight:700;color:#f3f3f7;font-size:0.98rem;padding-left:0;}
+.price-table tr.pr td.pc{font-weight:800;color:var(--accent);font-size:1.05rem;letter-spacing:-.02em;}
 .price-table tr.pr td.da{color:rgba(120,120,140,.45);}
 .price-table tr.pr:hover td{background:rgba(201,168,76,.04);}
 .price-table tr.ppg td{padding:2px 6px 12px;border:none;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;vertical-align:top;font-size:0.68rem;color:rgba(150,150,170,.45);font-style:italic;}
@@ -272,6 +272,11 @@ nav {
 .price-table tr.ppg td.cn{font-size:0.74rem;color:rgba(150,150,170,.55);}
 /* Category heading — bigger, centered */
 .cat-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:2.15rem;color:#fff;margin:0 0 24px;display:flex;align-items:center;justify-content:center;gap:12px;text-align:center;width:100%;}
+.mol-filter-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;}
+.mol-filter-tag{appearance:none;-webkit-appearance:none;padding:3px 12px;border-radius:6px;border:1px solid rgba(150,150,170,.35);background:transparent;color:rgba(150,150,170,.65);font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:border-color .15s,color .15s,background .15s;outline:none;}
+.mol-filter-tag:hover{border-color:rgba(150,150,170,.6);color:rgba(180,180,200,.85);}
+.mol-filter-tag.active{border-color:rgba(150,150,170,.7);color:rgba(200,200,215,1);background:rgba(150,150,170,.1);}
+
 </style>
 </head>
 <body data-page="cbd">
@@ -312,20 +317,20 @@ nav {
 <!-- Admin -->
 
 <script>
-const DEFAULT_BARBEREY = {"Small Buds": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "SB1", "prices": [null, null, 5.5, 10, 23, 42, 75], "products": ["GORILLA POP", "AMNESIA POP", "LEMON POP"]}, {"id": "SB2", "prices": [null, 5, 8, 15, 35, 60, 115], "products": ["ORANGE CALI", "HAWAIAN", "LEMON CITRUS", "PURPLE", "CRITICAL BERRY"]}, {"id": "SB3", "prices": [null, 7, 11, 20, 45, 82, 150], "products": ["LEMON HAZE POP"]}, {"id": "SB4", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": ["OG DIAMOND", "BLUEBERRY MUFFIN"]}, {"id": "SB5", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["AMNESIA POP (premium)"]}, {"id": "SB6", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": ["CRITICAL"]}]}, "Greenhouse": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "GH1", "prices": [null, 9, 14, 25, 56, 102, 180], "products": ["AK-47", "BUBBLE GUM", "PURPLE PUNCH", "WHITE WIDOW", "AMNESIA (GH)", "SKUNK", "RASPBERRY", "PINEAPPLE", "BLUEBERRY", "REMEDY", "HARLEQUIN", "WHITE DAWG"]}, {"id": "GH2", "prices": [null, 12, 18, 32.5, 75, 137, 245], "products": ["JACK HERRER"]}]}, "Hydro / Indoor": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "HI1", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": ["LIFTER"]}, {"id": "HI2", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["AMNESIA POP HYDRO (JSH)"]}, {"id": "HI3", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": ["CRITICAL"]}, {"id": "HI4", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": ["MIMOZA", "LA CONFIDENTIAL"]}, {"id": "HI5", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": ["WHITE CANDY"]}, {"id": "HI6", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["GELATO CREAM", "CARIBBEAN KUSH"]}, {"id": "HI7", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": ["AMNESIA INDOOR", "HQ x CT", "MIMOZA", "OG DIAMOND", "RED CHERRY", "PUNCH BERRY", "SUGAR DADDY", "WHITE WIDOW INDOOR"]}, {"id": "HI8", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": ["GELATO COOKIE", "ORANGE TONIC", "GELATO US", "GORILLA US", "WHITE CANDY"]}]}, "Résines naturelles": {"grams": [1, 2, 5, 10, 25, 50, 100], "matrices": [{"id": "RN0", "prices": [null, null, null, 30, null, null, null], "products": ["OLIVE 25%"]}, {"id": "RN1", "prices": [6, 12, 16, 30, 69, 125, 230], "products": ["POLLEN CBG"]}, {"id": "RN2", "prices": [null, 7.5, 16, 30, 60, 125, 230], "products": ["CHARAS"]}, {"id": "RN3", "prices": [null, 8, 18, 33, 75, 140, 250], "products": ["GREEN HASH", "MARBRÉ 15%", "LA MOUSSE"]}, {"id": "RN4", "prices": [null, null, null, 33, null, null, null], "products": ["OLIVETTE 30%"]}, {"id": "RN5", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": ["AYA", "BLUBBER HAZE 30%"]}, {"id": "RN6", "prices": [null, 16, 38, 69, 158, 295, 525], "products": ["SUPREME HASH 60%"]}, {"id": "RN7", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": ["STATIC 20%"]}, {"id": "RN8", "prices": [null, 12.6, 27.5, 50, 115, 210, 375], "products": ["BUBBLE 50%"]}]}, "Isolats": {"grams": [1, 2, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "IS1", "prices": [null, 8, null, 18, 33, null, null, null], "products": ["MOON ROCK 70%"]}, {"id": "IS2", "prices": [null, 6, null, 14, 25, 58, 105, 185], "products": ["ICE ROCK PEB 0.3"]}, {"id": "IS3", "prices": [null, null, 10, 15, 28, null, null, null], "products": ["ICE ROCK ALP 0.2"]}, {"id": "IS4", "prices": [null, null, 12, null, null, null, null, null], "products": ["POLLEN 50% CBG"]}, {"id": "IS5", "prices": [8.4, null, null, null, null, null, null, null], "products": ["ISOLAT CBD"]}, {"id": "IS6", "prices": [9, null, null, null, null, null, null, null], "products": ["ISOLAT CBN"]}]}, "Fleurs Molécule": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "FM1", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["MOON LEMON"]}, {"id": "FM2", "prices": [null, null, null, 50, null, null, null], "products": ["CANIBAL \"MYSTÈRE\""]}, {"id": "FM3", "prices": [7.5, 22.5, 35, 60, 140, 250, 450], "products": ["Z2 Sour Kush", "Z2 Gorilla", "Z2 Critical", "CANIBAL Soul", "NITRO Pocket", "SUNSET Blueberry", "SUNSET Amnesia", "SUNSET White Widow", "AURA Berry"]}, {"id": "FM4", "prices": [8, 23.5, 38, 65, 150, 275, 490], "products": ["AMNESIA X", "CANIBAL Gelato"]}, {"id": "FM5", "prices": [8.7, 26, 42, 70, 165, 300, 550], "products": ["CANIBAL Amésia", "NITRO Pop Nésia", "NITRO Spoon", "NITRO Green", "HYPNO KUSH"]}]}, "Résines Molécule": {"grams": [2, 5, 10, 25, 50, 100], "matrices": [{"id": "RM1", "prices": [11.4, 25, 45, 105, 190, 340], "products": ["GAMME NOVA 5%"]}, {"id": "RM2", "prices": [14, 32, 55, 125, 230, 420], "products": ["MYSTIC AMNESIA", "MYSTIC JUNGLE"]}, {"id": "RM3", "prices": [15, 35, 60, 140, 270, 490], "products": ["CANIBAL MOUSSE 10%"]}, {"id": "RM4", "prices": [16, 38, 65, 150, 275, 490], "products": ["NOX RIF MANGO 10%", "AFGHAN NOVA 10%"]}, {"id": "RM5", "prices": [17, 40, 70, 165, 300, 550], "products": ["CANIBAL MOUSSE 20%", "CANIBAL MAZE 20%", "NITRO GOLD", "NITRO POLM", "NITRO FROZEN", "NITRO TELLA"]}, {"id": "RM6", "prices": [17.5, 42, 72.5, 179, 326, 626], "products": ["SUPER Z2", "ICE Z2", "MANGO Z3"]}, {"id": "RM7", "prices": [22, 49.5, 80, 197, 359.5, 691], "products": ["CANIBAL MAZE 30%"]}]}};
-const DEFAULT_ROMILLY   = {"Small Buds": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "SB1", "prices": [null, null, 5.5, 10, 23, 42, 75], "products": ["AMNESIA POP", "GORILLA POP", "LEMON POP"]}, {"id": "SB2", "prices": [null, 5, 8, 15, 35, 60, 115], "products": ["ORANGE CALI", "HAWAIAN", "LEMON CITRUS", "LEMON CHERRY", "PURPLE", "CRITICAL BERRY"]}, {"id": "SB3", "prices": [null, 7, 11, 20, 45, 82, 150], "products": ["LEMON HAZE POP", "SUPER SKUNK"]}, {"id": "SB4", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": ["BLUEBERRY MUFFIN"]}, {"id": "SB5", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["V1"]}]}, "Greenhouse": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "GH1", "prices": [null, 9, 14, 25, 56, 102, 180], "products": ["GORILLA", "AK-47", "BUBBLE GUM", "PURPLE PUNCH", "WHITE WIDOW", "AMNESIA (GH)", "SKUNK", "RASPBERRY", "PINEAPPLE", "BLUEBERRY", "REMEDY", "HARLEQUIN", "WHITE DAWG"]}, {"id": "GH2", "prices": [null, 12, 18, 32.5, 75, 137, 245], "products": ["JACK HERRER"]}]}, "Hydro / Indoor": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "HI1", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": ["LIFTER"]}, {"id": "HI2", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["AMNESIA POP HYDRO (JSH)"]}, {"id": "HI3", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": ["CRITICAL"]}, {"id": "HI4", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": ["MIMOZA"]}, {"id": "HI5", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": ["WHITE CANDY"]}, {"id": "HI6", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": ["LIFTER"]}, {"id": "HI7", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["AMNESIA"]}, {"id": "HI8", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": ["CRITICAL"]}, {"id": "HI9", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": ["MIMOZA", "HQ x CT", "GELATO"]}, {"id": "HI10", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": ["WHITE CANDY"]}]}, "Résines naturelles": {"grams": [1, 2, 5, 10, 25, 50, 100], "matrices": [{"id": "RN1", "prices": [null, 7.5, 16, 30, 69, 125, 230], "products": ["OLIVE 25%", "CHARAS 30%"]}, {"id": "RN2", "prices": [null, 8, 18, 33, 75, 140, 250], "products": ["MARBRÉ 15%", "AMNESIA SKUFF"]}, {"id": "RN3", "prices": [null, 9, 20, 35, 80, 150, 260], "products": ["ORANGE FRITTER"]}, {"id": "RN4", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": ["AYA CBD", "BLUBBER HAZE 30%"]}, {"id": "RN5", "prices": [null, 11.5, 25, 45, 105, 190, 350], "products": ["ORANGE FRITTER (premium)", "CHERRY PIE"]}, {"id": "RN6", "prices": [null, 16, 38, 69, 158, 295, 525], "products": ["SUPREME HASH 60%"]}, {"id": "RN7", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": ["STATIC 20%", "KETAMA GOLD 30%"]}, {"id": "RN8", "prices": [null, 12.6, 27.5, 50, 115, 210, 375], "products": ["BUBBLE 50%"]}, {"id": "RN9", "prices": [null, 13.5, 32, 55, 125, 230, 420], "products": ["PIATELLA 60%", "3 X FILTRÉ 30%"]}]}, "Isolats": {"grams": [1, 2, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "IS1", "prices": [null, 8, null, 18, 33, null, null, null], "products": ["MOON ROCK 70%"]}, {"id": "IS2", "prices": [null, 6, null, 14, 25, 58, 105, 185], "products": ["ICE ROCK PEB 0.3"]}, {"id": "IS3", "prices": [null, null, 10, 15, 28, null, null, null], "products": ["ICE ROCK ALP 0.2"]}, {"id": "IS4", "prices": [8.4, null, null, null, null, null, null, null], "products": ["ISOLAT CBD"]}, {"id": "IS5", "prices": [9, null, null, null, null, null, null, null], "products": ["ISOLAT CBN"]}]}, "Fleurs Molécule": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "IT1", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": ["SWEET Berry"]}, {"id": "IT2", "prices": [null, 13, 20, 35, 80, 150, 260], "products": ["MOON Lemon"]}, {"id": "IT3", "prices": [null, null, null, 50, null, null, null], "products": ["CANIBAL \"Mystère\""]}, {"id": "IT4", "prices": [7.5, 22.5, 35, 60, 140, 250, 450], "products": ["Sour Kush Z2", "Critical Z2", "Gorilla Z2", "LUNA Lime", "NITRO Pocket", "CANIBAL Soul", "AURA Berry", "AURA Banana", "SUNSET Blueberry"]}, {"id": "IT5", "prices": [8, 23.5, 38, 65, 150, 275, 490], "products": ["Amnesia X"]}, {"id": "IT6", "prices": [8.7, 26, 42, 70, 165, 300, 550], "products": ["CANIBAL Amnesia", "NITRO Pop Nésia", "NITRO SPOON", "NITRO GREEN", "HYPNO KUSH"]}]}, "Résines Molécule": {"grams": [2, 5, 10, 25, 50, 100], "matrices": [{"id": "RM1", "prices": [11.4, 25, 45, 105, 190, 340], "products": ["GAMME NOVA 5%"]}, {"id": "RM2", "prices": [14, 32, 55, 125, 230, 420], "products": ["MYSTIC Amnésia", "MYSTIC Jungle"]}, {"id": "RM3", "prices": [15, 35, 60, 140, 270, 490], "products": ["CANIBAL Beldia 10%", "CANIBAL Mousse 10%"]}, {"id": "RM4", "prices": [16, 38, 65, 150, 275, 490], "products": ["NOX Rif Mango 10%", "NOVA Afghan 10%"]}, {"id": "RM5", "prices": [17, 40, 70, 165, 300, 550], "products": ["CANIBAL Mousse 20%", "CANIBAL Maze 20%", "NITRO Gold", "NITRO Polm", "NITRO Frozen", "NITRO Tella"]}, {"id": "RM6", "prices": [17.5, 42, 72.5, 179, 326, 626], "products": ["Super Z2", "Ice Z2", "MANGO Z3", "SUNSET Banana", "SUNSET Marocco"]}, {"id": "RM7", "prices": [22, 49.5, 80, 197, 359.5, 691], "products": ["CANIBAL Maze 30%"]}]}};
+const DEFAULT_BARBEREY = {"Small Buds": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "SB1", "prices": [null, null, 5.5, 10, 23, 42, 75], "products": []}, {"id": "SB2", "prices": [null, 5, 8, 15, 35, 60, 115], "products": []}, {"id": "SB3", "prices": [null, 7, 11, 20, 45, 82, 150], "products": []}, {"id": "SB4", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": []}, {"id": "SB5", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}, {"id": "SB6", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": []}]}, "Greenhouse": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "GH1", "prices": [null, 9, 14, 25, 56, 102, 180], "products": []}, {"id": "GH2", "prices": [null, 12, 18, 32.5, 75, 137, 245], "products": []}]}, "Hydro / Indoor": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "HI1", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": []}, {"id": "HI2", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}, {"id": "HI3", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": []}, {"id": "HI4", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": []}, {"id": "HI5", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": []}, {"id": "HI6", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}, {"id": "HI7", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": []}, {"id": "HI8", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": []}]}, "Résines Naturelles": {"grams": [1, 2, 5, 10, 25, 50, 100], "matrices": [{"id": "RN0", "prices": [null, null, null, 30, null, null, null], "products": []}, {"id": "RN1", "prices": [6, 12, 16, 30, 69, 125, 230], "products": []}, {"id": "RN2", "prices": [null, 7.5, 16, 30, 60, 125, 230], "products": []}, {"id": "RN3", "prices": [null, 8, 18, 33, 75, 140, 250], "products": []}, {"id": "RN4", "prices": [null, null, null, 33, null, null, null], "products": []}, {"id": "RN5", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": []}, {"id": "RN6", "prices": [null, 16, 38, 69, 158, 295, 525], "products": []}, {"id": "RN7", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": []}, {"id": "RN8", "prices": [null, 12.6, 27.5, 50, 115, 210, 375], "products": []}]}, "Isolats": {"grams": [1, 2, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "IS1", "prices": [null, 8, null, 18, 33, null, null, null], "products": []}, {"id": "IS2", "prices": [null, 6, null, 14, 25, 58, 105, 185], "products": []}, {"id": "IS3", "prices": [null, null, 10, 15, 28, null, null, null], "products": []}, {"id": "IS4", "prices": [null, null, 12, null, null, null, null, null], "products": []}, {"id": "IS5", "prices": [8.4, null, null, null, null, null, null, null], "products": []}, {"id": "IS6", "prices": [9, null, null, null, null, null, null, null], "products": []}]}, "Fleurs Molécule": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "FM1", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}, {"id": "FM2", "prices": [null, null, null, 50, null, null, null], "products": []}, {"id": "FM3", "prices": [7.5, 22.5, 35, 60, 140, 250, 450], "products": []}, {"id": "FM4", "prices": [8, 23.5, 38, 65, 150, 275, 490], "products": []}, {"id": "FM5", "prices": [8.7, 26, 42, 70, 165, 300, 550], "products": []}]}, "Résines Molécule": {"grams": [2, 5, 10, 25, 50, 100], "matrices": [{"id": "RM1", "prices": [11.4, 25, 45, 105, 190, 340], "products": []}, {"id": "RM2", "prices": [14, 32, 55, 125, 230, 420], "products": []}, {"id": "RM3", "prices": [15, 35, 60, 140, 270, 490], "products": []}, {"id": "RM4", "prices": [16, 38, 65, 150, 275, 490], "products": []}, {"id": "RM5", "prices": [17, 40, 70, 165, 300, 550], "products": []}, {"id": "RM6", "prices": [17.5, 42, 72.5, 179, 326, 626], "products": []}, {"id": "RM7", "prices": [22, 49.5, 80, 197, 359.5, 691], "products": []}]}};
+const DEFAULT_ROMILLY   = {"Small Buds": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "SB1", "prices": [null, null, 5.5, 10, 23, 42, 75], "products": []}, {"id": "SB2", "prices": [null, 5, 8, 15, 35, 60, 115], "products": []}, {"id": "SB3", "prices": [null, 7, 11, 20, 45, 82, 150], "products": []}, {"id": "SB4", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": []}, {"id": "SB5", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}]}, "Greenhouse": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "GH1", "prices": [null, 9, 14, 25, 56, 102, 180], "products": []}, {"id": "GH2", "prices": [null, 12, 18, 32.5, 75, 137, 245], "products": []}]}, "Hydro / Indoor": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "HI1", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": []}, {"id": "HI2", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}, {"id": "HI3", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": []}, {"id": "HI4", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": []}, {"id": "HI5", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": []}, {"id": "HI6", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": []}, {"id": "HI7", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}, {"id": "HI8", "prices": [5, 14.5, 22, 40, 92, 170, 310], "products": []}, {"id": "HI9", "prices": [5.7, 17, 25, 45, 105, 190, 340], "products": []}, {"id": "HI10", "prices": [6.3, 18, 27.5, 50, 115, 210, 375], "products": []}]}, "Résines Naturelles": {"grams": [1, 2, 5, 10, 25, 50, 100], "matrices": [{"id": "RN1", "prices": [null, 7.5, 16, 30, 69, 125, 230], "products": []}, {"id": "RN2", "prices": [null, 8, 18, 33, 75, 140, 250], "products": []}, {"id": "RN3", "prices": [null, 9, 20, 35, 80, 150, 260], "products": []}, {"id": "RN4", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": []}, {"id": "RN5", "prices": [null, 11.5, 25, 45, 105, 190, 350], "products": []}, {"id": "RN6", "prices": [null, 16, 38, 69, 158, 295, 525], "products": []}, {"id": "RN7", "prices": [null, 11, 25, 45.5, 108, 196, 375], "products": []}, {"id": "RN8", "prices": [null, 12.6, 27.5, 50, 115, 210, 375], "products": []}, {"id": "RN9", "prices": [null, 13.5, 32, 55, 125, 230, 420], "products": []}]}, "Isolats": {"grams": [1, 2, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "IS1", "prices": [null, 8, null, 18, 33, null, null, null], "products": []}, {"id": "IS2", "prices": [null, 6, null, 14, 25, 58, 105, 185], "products": []}, {"id": "IS3", "prices": [null, null, 10, 15, 28, null, null, null], "products": []}, {"id": "IS4", "prices": [8.4, null, null, null, null, null, null, null], "products": []}, {"id": "IS5", "prices": [9, null, null, null, null, null, null, null], "products": []}]}, "Fleurs Molécule": {"grams": [1, 3, 5, 10, 25, 50, 100], "matrices": [{"id": "IT1", "prices": [null, 10.5, 16, 30, 69, 125, 230], "products": []}, {"id": "IT2", "prices": [null, 13, 20, 35, 80, 150, 260], "products": []}, {"id": "IT3", "prices": [null, null, null, 50, null, null, null], "products": []}, {"id": "IT4", "prices": [7.5, 22.5, 35, 60, 140, 250, 450], "products": []}, {"id": "IT5", "prices": [8, 23.5, 38, 65, 150, 275, 490], "products": []}, {"id": "IT6", "prices": [8.7, 26, 42, 70, 165, 300, 550], "products": []}]}, "Résines Molécule": {"grams": [2, 5, 10, 25, 50, 100], "matrices": [{"id": "RM1", "prices": [11.4, 25, 45, 105, 190, 340], "products": []}, {"id": "RM2", "prices": [14, 32, 55, 125, 230, 420], "products": []}, {"id": "RM3", "prices": [15, 35, 60, 140, 270, 490], "products": []}, {"id": "RM4", "prices": [16, 38, 65, 150, 275, 490], "products": []}, {"id": "RM5", "prices": [17, 40, 70, 165, 300, 550], "products": []}, {"id": "RM6", "prices": [17.5, 42, 72.5, 179, 326, 626], "products": []}, {"id": "RM7", "prices": [22, 49.5, 80, 197, 359.5, 691], "products": []}]}};
 const FLEURS_MATRICES   = {"10": {"label": "Prix A (10€/10g)", "prices": [1.25, 3.6, 5.5, 10, 23, 42, 75]}, "12.5": {"label": "Prix B (12.5€/10g)", "prices": [1.5, 4.5, 7, 12.5, 28, 52, 95]}, "15": {"label": "Prix C (15€/10g)", "prices": [2, 5, 8, 15, 35, 60, 110]}, "17.5": {"label": "Prix D (17.5€/10g)", "prices": [2.25, 6.3, 10, 17.5, 40, 75, 130]}, "20": {"label": "Prix E (20€/10g)", "prices": [2.5, 7, 11, 20, 45, 82, 150]}, "22.5": {"label": "Prix F (22.5€/10g)", "prices": [2.75, 8, 12, 22.5, 50, 95, 170]}, "25": {"label": "Prix G (25€/10g)", "prices": [3, 9, 14, 25, 58, 105, 185]}, "27.5": {"label": "Prix H (27.5€/10g)", "prices": [3.5, 10, 15, 27.5, 63, 115, 200]}, "30": {"label": "Prix I (30€/10g)", "prices": [3.75, 10.5, 16, 30, 69, 125, 230]}, "32.5": {"label": "Prix J (32.5€/10g)", "prices": [4, 12, 18, 32.5, 75, 137, 245]}, "35": {"label": "Prix K (35€/10g)", "prices": [4.5, 13, 20, 35, 80, 150, 260]}, "37.5": {"label": "Prix L (37.5€/10g)", "prices": [4.75, 13.5, 21, 37.5, 87, 157, 280]}, "40": {"label": "Prix M (40€/10g)", "prices": [5, 14.5, 22, 40, 92, 170, 310]}, "42.5": {"label": "Prix N (42.5€/10g)", "prices": [5.5, 16, 24, 42.5, 100, 180, 320]}, "45": {"label": "Prix O (45€/10g)", "prices": [5.7, 17, 25, 45, 105, 190, 340]}, "47.5": {"label": "Prix P (47.5€/10g)", "prices": [6, 17.5, 26, 47.5, 110, 200, 350]}, "50": {"label": "Prix Q (50€/10g)", "prices": [6.3, 18, 27.5, 50, 115, 210, 375]}, "52.5": {"label": "Prix R (52.5€/10g)", "prices": [6.5, 19, 30, 52.5, 120, 220, 400]}, "55": {"label": "Prix S (55€/10g)", "prices": [6.7, 20, 32, 55, 125, 230, 420]}, "57.5": {"label": "Prix T (57.5€/10g)", "prices": [7, 22, 33, 57.5, 130, 240, 430]}, "60": {"label": "Prix U (60€/10g)", "prices": [7.5, 22.5, 35, 60, 140, 250, 450]}, "62.5": {"label": "Prix V (62.5€/10g)", "prices": [7.7, 23, 36, 62.5, 145, 260, 470]}, "65": {"label": "Prix W (65€/10g)", "prices": [8, 23.5, 38, 65, 150, 275, 490]}, "67.5": {"label": "Prix X (67.5€/10g)", "prices": [8.5, 25, 40, 67.5, 155, 285, 500]}, "70": {"label": "Prix Y (70€/10g)", "prices": [8.7, 26, 42, 70, 165, 300, 550]}, "72.5": {"label": "Prix Z (72.5€/10g)", "prices": [10, 28.5, 45, 72.5, 179, 326, 626]}, "75": {"label": "Prix A1 (75€/10g)", "prices": [10.5, 29.5, 46.5, 75, 185, 337, 647.5]}, "80": {"label": "Prix A2 (80€/10g)", "prices": [11, 31.5, 49.5, 80, 197, 359.5, 691]}};
 const RESINES_MATRICES  = {"33": {"label": "Prix A (33€/10g)", "prices": [8, 18, 33, 75, 140, 250]}, "45.5": {"label": "Prix B (45.5€/10g)", "prices": [11, 25, 45.5, 108, 196, 375]}, "55": {"label": "Prix C (55€/10g)", "prices": [14, 32, 55, 130, 250, 455]}, "60": {"label": "Prix D (60€/10g)", "prices": [15, 35, 60, 140, 270, 490]}, "65": {"label": "Prix E (65€/10g)", "prices": [16.5, 38, 65, 151.5, 292.5, 531]}, "70": {"label": "Prix F (70€/10g)", "prices": [17, 40, 70, 165, 300, 550]}, "72.5": {"label": "Prix G (72.5€/10g)", "prices": [17.5, 42, 72.5, 179, 326, 626]}, "75": {"label": "Prix H (75€/10g)", "prices": [18, 43, 75, 179, 326, 647]}};
 const FLEURS_GRAMS      = [1, 3, 5, 10, 25, 50, 100];
 const RESINES_GRAMS     = [2, 5, 10, 25, 50, 100];
 
-const RESINES_CATS = ['Résines naturelles','Résines Molécule','Résine molécule','Isolats'];
+const RESINES_CATS = ['Résines Naturelles','Résines Molécule','Résine molécule','Isolats'];
 
 /* ── Couleurs par catégorie ── */
 function catColor(cat){
   const m = {
     'Small Buds':'#C5A84C','Greenhouse':'#5C9068','Hydro / Indoor':'#4C7FB5',
-    'Résines naturelles':'#9C8260','Isolats':'#7090A8',
+    'Résines Naturelles':'#9C8260','Isolats':'#7090A8',
     'Fleurs Molécule':'#8A6BB5','Résines Molécule':'#6A4E94'
   };
   return m[cat]||'#c9a84c';
@@ -334,6 +339,8 @@ function catColor(cat){
 /* ── État ── */
 let currentStore = 'barberey';
 let currentCat   = null;
+let currentMolFilter = null;
+window._molsCache = {};
 const FLEURS_GRAMS_DEFAULT = [1,3,5,10,25,50,100];
 window.firebaseCbdProducts = [];
 window.firebaseCbdVilles = {};
@@ -357,18 +364,28 @@ function getFlatProductsForCat(cat){
     });
   }
 
+  // Helper: Firebase peut retourner des arrays comme objets {"0":v,"1":v...}
+  function toArr(v, fallback){ if(!v) return fallback||[]; if(Array.isArray(v)) return v; return Object.values(v); }
+
   // Produits Firebase de cette catégorie, filtrés par ville sélectionnée
   (window.firebaseCbdProducts||[]).forEach(p => {
-    if(p.cat !== cat) return;
-    const villesProduit = p.villes || [];
-    // Si le produit n'a aucune ville assignée, on l'affiche partout (comportement rétro-compatible)
+    if((p.cat||'').toLowerCase() !== cat.toLowerCase()) return;
+    const villesProduit = toArr(p.villes, []);
     if(villesProduit.length && !villesProduit.includes(currentStore)) return;
-    list.push({ nom: p.nom, prices: p.prices, grams: p.grams || getGramsForCat(cat), _admin: true });
+    const pGrams = toArr(p.grams, []).map(Number).filter(Boolean);
+    const finalGrams = pGrams.length ? pGrams : getGramsForCat(cat);
+    const rawPrices = toArr(p.prices, []);
+    const pPrices = finalGrams.map((g, i) => {
+      const v = rawPrices[i];
+      return (v !== null && v !== undefined && v !== '') ? parseFloat(v) : null;
+    });
+    const pMols = toArr(p.molecules, []);
+    list.push({ nom: p.nom, prices: pPrices, grams: finalGrams, molecules: pMols, _admin: true });
   });
 
   // Grammages = union croissante de tous les grammages réellement utilisés
   const gramSet = new Set();
-  list.forEach(item => item.grams.forEach(g => gramSet.add(g)));
+  list.forEach(item => (item.grams||[]).forEach(g => gramSet.add(g)));
   const grams = Array.from(gramSet).sort((a,b) => a-b);
 
   // Tri par prix au 10g croissant (produits sans prix au 10g vont en fin de liste)
@@ -401,10 +418,10 @@ function buildSB(){
     btn.style.setProperty('--cc', catColor(cat));
     const emoji = {
       'Small Buds':'🌿','Greenhouse':'🏡','Hydro / Indoor':'💧',
-      'Résines naturelles':'🍯','Isolats':'⭐','Fleurs Molécule':'🔬','Résines Molécule':'🧪'
+      'Résines Naturelles':'🍯','Isolats':'⭐','Fleurs Molécule':'🔬','Résines Molécule':'🧪'
     }[cat]||'🌱';
     btn.innerHTML = `<div class="cat-ic">${emoji}</div><div class="cat-nm">${cat}</div>`;
-    btn.onclick = () => { currentCat=cat; buildSB(); renderCat(); };
+    btn.onclick = () => { currentCat=cat; currentMolFilter=null; buildSB(); renderCat(); };
     sb.appendChild(btn);
   });
   // Onglet Pré-rolls (page en construction)
@@ -418,6 +435,15 @@ function buildSB(){
 
 /* ── Tableau prix ── */
 function renderCat(){
+  try {
+    _renderCatInner();
+  } catch(e) {
+    const content = document.getElementById('cbd-content');
+    if(content) content.innerHTML = `<p style="color:#ff6b6b;padding:20px;">⚠ Erreur d'affichage : ${e.message}</p>`;
+    console.error('renderCat error:', e);
+  }
+}
+function _renderCatInner(){
   const data = getData();
   const content = document.getElementById('cbd-content');
   if(currentCat === 'Pré-rolls'){
@@ -431,11 +457,36 @@ function renderCat(){
   const color = catColor(currentCat);
   const label = isIsolat ? 'Isolat' : (isResine ? 'Résine' : 'Fleur');
 
-  const { grams: usedGrams, list } = getFlatProductsForCat(currentCat);
+  const { grams: usedGrams, list: fullList } = getFlatProductsForCat(currentCat);
 
-  if(!list.length){ content.innerHTML = `<div class="cat-heading" style="color:${color}">${currentCat}</div><p style="color:var(--text-dimmer);padding:40px;text-align:center;">Aucun produit dans cette catégorie.</p>`; return; }
+  // Molécules présentes dans cette catégorie
+  const molsInCat = {};
+  fullList.forEach(item => {
+    (item.molecules||[]).forEach(mk => {
+      const m = (window._molsCache||{})[mk];
+      if(m && m.visible !== false) molsInCat[mk] = m;
+    });
+  });
+  const hasMols = Object.keys(molsInCat).length > 0;
+
+  // Filtrage
+  const list = currentMolFilter
+    ? fullList.filter(item => (item.molecules||[]).includes(currentMolFilter))
+    : fullList;
+
+  if(!fullList.length){ content.innerHTML = `<div class="cat-heading" style="color:${color}">${currentCat}</div><p style="color:var(--text-dimmer);padding:40px;text-align:center;">Aucun produit dans cette catégorie.</p>`; return; }
 
   let html = `<div class="cat-heading" style="color:${color}">${currentCat}</div>`;
+
+  if(hasMols){
+    html += `<div class="mol-filter-wrap">`;
+    html += `<button class="mol-filter-tag ${!currentMolFilter?'active':''}" onclick="setMolFilter(null)">Toutes</button>`;
+    Object.entries(molsInCat).sort((a,b)=>a[1].nom.localeCompare(b[1].nom)).forEach(([mk, m]) => {
+      const active = currentMolFilter === mk;
+      html += `<button class="mol-filter-tag ${active?'active':''}" onclick="setMolFilter('${mk}')">${m.nom}</button>`;
+    });
+    html += `</div>`;
+  }
 
   html += `<table class="price-table">
     <thead>
@@ -457,7 +508,7 @@ function renderCat(){
 
     // Ligne nom produit
     html += `<tr class="pr">
-      <td class="cn" style="color:${color};font-weight:700;">${item.nom}</td>
+      <td class="cn">${item.nom}</td>
       ${prices.map(p => p!==null&&p!==undefined ? `<td class="pc" style="color:${color}">${p}&nbsp;€</td>` : '<td></td>').join('')}
     </tr>`;
     // Ligne prix/g sous le nom
@@ -475,7 +526,19 @@ function renderCat(){
   html += `</tbody></table>`;
 
   content.innerHTML = html;
-}
+} // end _renderCatInner
+
+
+window.setMolFilter = (key) => {
+  currentMolFilter = key;
+  renderCat();
+};
+
+// Exposer au script Firebase (module séparé, scope isolé)
+window.renderCat = renderCat;
+window.buildStoreBar = buildStoreBar;
+window.buildSB = buildSB;
+window.switchStore = switchStore;
 
 /* ── Switch boutique ── */
 function switchStore(store, btn){
@@ -549,13 +612,18 @@ onValue(ref(db, 'cbd'), (snap) => {
     });
   }
   window.firebaseCbdProducts = arr;
-  if (typeof renderCat === 'function') renderCat();
+  if (typeof window.renderCat === 'function') window.renderCat();
+});
+
+onValue(ref(db, 'molecules'), (snap) => {
+  window._molsCache = snap.exists() ? snap.val() : {};
+  if (typeof window.renderCat === 'function') window.renderCat();
 });
 
 onValue(ref(db, 'cbd_villes'), (snap) => {
   window.firebaseCbdVilles = snap.exists() ? snap.val() : {};
-  if (typeof buildStoreBar === 'function') buildStoreBar();
-  if (typeof renderCat === 'function') renderCat();
+  if (typeof window.buildStoreBar === 'function') window.buildStoreBar();
+  if (typeof window.renderCat === 'function') window.renderCat();
 });
 </script>
 <script src="standby.js"></script>
