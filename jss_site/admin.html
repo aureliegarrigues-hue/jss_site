@@ -1378,7 +1378,7 @@ function renderPrMolTags(){
 function renderPrVilles(){
   const wrap = document.getElementById('pr-villes-check');
   if(!wrap) return;
-  const villes = window.firebaseCbdVilles || {};
+  const villes = window._villesCache || {};
   wrap.innerHTML = '';
   Object.entries(villes).forEach(([k, v]) => {
     const sel = window._prSelectedVilles.includes(k);
@@ -1589,6 +1589,7 @@ function initListeners() {
   onValue(ref(db, 'cbd_villes'), snap => {
     window._villesCache = snap.exists() ? snap.val() : {};
     renderVillesUI();
+    renderPrVilles();
   });
 
   // Aromes
