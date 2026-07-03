@@ -464,7 +464,7 @@ function _renderCatInner(){
         const vp = Array.isArray(p.villes) ? p.villes : Object.values(p.villes||{});
         return !vp.length || vp.includes(currentStore);
       })
-      .sort((a,b) => (a.nom||'').localeCompare(b.nom||''));
+      .sort((a,b) => (a.prix||0) - (b.prix||0));
     if(!prerolls.length){
       content.innerHTML = '<div class="cat-heading" style="color:#9a9aae">Pré-rolls</div><p style="color:var(--text-dimmer);padding:40px;text-align:center;">Aucun pré-roll disponible.</p>';
       return;
