@@ -705,15 +705,21 @@ window.addProd = async (section) => {
     if(!nom) { showMsg('cbd-msg','⚠ Nom requis.','err'); return; }
     const cat = document.getElementById('cbd-cat').value;
     const matKey = document.getElementById('cbd-mat')?.value || '';
-    // Si matrice libre, utiliser _libreGrams, sinon grammages standards
     const isLibre = matKey === '__libre__';
     const grams = isLibre ? (window._libreGrams || getGramsForCat(cat)) : getGramsForCat(cat);
     const prices = grams.map(g => {
       const v = document.getElementById('cbd-price-'+g)?.value;
       return v !== '' && v !== undefined ? parseFloat(v) : null;
     });
+    // En mode édition, si tous les prix sont null (form non pré-rempli),
+    // on preserve les grams/prices existants et on ne met à jour que les autres champs
+    const editKeyForCbd = window._editKey['cbd'];
+    const existingFb = editKeyForCbd ? (window._cbdAdminCache||{})[editKeyForCbd] : null;
+    const allNull = prices.every(p=>p===null);
+    const finalGrams = allNull && existingFb ? (existingFb.grams || grams) : grams;
+    const finalPrices = allNull && existingFb ? (existingFb.prices || prices) : prices;
     data = {
-      nom, cat, grams, prices,
+      nom, cat, grams: finalGrams, prices: finalPrices,
       villes: window._selectedVilles.slice(),
       molecules: window._selectedMols.slice(),
       img: document.getElementById('cbd-img-url')?.value || '',
@@ -1438,11 +1444,14 @@ function initListeners() {
   onValue(ref(db, 'cbd'), snap => {
     const list = document.getElementById('cbd-list');
     list.innerHTML = '';
+    // Cache local pour retrouver les données existantes lors d'une édition
+    window._cbdAdminCache = {};
     if(!snap.exists()) { list.innerHTML = '<p class="empty-state">Aucun produit ajouté.</p>'; return; }
     const CBD_CATS = ['Small Buds','Greenhouse','Hydro / Indoor','Fleurs Molécule','Résines Naturelles','Résines Molécule','Isolats'];
     const groups = {};
     snap.forEach(child => {
       const p = child.val(); const k = child.key;
+      window._cbdAdminCache[k] = p;
       const cat = p.cat || 'Autre';
       if(!groups[cat]) groups[cat] = [];
       groups[cat].push({p, k});

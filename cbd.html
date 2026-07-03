@@ -363,7 +363,9 @@ function getFlatProductsForCat(cat){
     const villesProduit = p.villes || [];
     // Si le produit n'a aucune ville assignée, on l'affiche partout (comportement rétro-compatible)
     if(villesProduit.length && !villesProduit.includes(currentStore)) return;
-    list.push({ nom: p.nom, prices: p.prices, grams: p.grams || getGramsForCat(cat), _admin: true });
+    const pGrams = Array.isArray(p.grams) && p.grams.length ? p.grams : getGramsForCat(cat);
+    const pPrices = Array.isArray(p.prices) ? p.prices : pGrams.map(() => null);
+    list.push({ nom: p.nom, prices: pPrices, grams: pGrams, molecules: p.molecules||[], _admin: true });
   });
 
   // Grammages = union croissante de tous les grammages réellement utilisés
