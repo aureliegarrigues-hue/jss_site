@@ -527,6 +527,12 @@ window.setMolFilter = (key) => {
   renderCat();
 };
 
+// Exposer au script Firebase (module séparé, scope isolé)
+window.renderCat = renderCat;
+window.buildStoreBar = buildStoreBar;
+window.buildSB = buildSB;
+window.switchStore = switchStore;
+
 /* ── Switch boutique ── */
 function switchStore(store, btn){
   currentStore = store;
