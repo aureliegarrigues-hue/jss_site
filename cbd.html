@@ -272,6 +272,11 @@ nav {
 .price-table tr.ppg td.cn{font-size:0.74rem;color:rgba(150,150,170,.55);}
 /* Category heading — bigger, centered */
 .cat-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:2.15rem;color:#fff;margin:0 0 24px;display:flex;align-items:center;justify-content:center;gap:12px;text-align:center;width:100%;}
+.mol-filter-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;}
+.mol-filter-tag{padding:3px 12px;border-radius:6px;border:1px solid rgba(150,150,170,.35);background:transparent;color:rgba(150,150,170,.65);font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:border-color .15s,color .15s,background .15s;}
+.mol-filter-tag:hover{border-color:rgba(150,150,170,.6);color:rgba(180,180,200,.85);}
+.mol-filter-tag.active{border-color:rgba(150,150,170,.7);color:rgba(200,200,215,1);background:rgba(150,150,170,.1);}
+
 </style>
 </head>
 <body data-page="cbd">
@@ -475,10 +480,10 @@ function _renderCatInner(){
 
   if(hasMols){
     html += `<div class="mol-filter-wrap">`;
-    html += `<button class="mol-filter-tag ${!currentMolFilter?'active':''}" style="color:#aaa;border-color:#aaa;" onclick="setMolFilter(null)">Toutes</button>`;
+    html += `<button class="mol-filter-tag ${!currentMolFilter?'active':''}" onclick="setMolFilter(null)">Toutes</button>`;
     Object.entries(molsInCat).sort((a,b)=>a[1].nom.localeCompare(b[1].nom)).forEach(([mk, m]) => {
       const active = currentMolFilter === mk;
-      html += `<button class="mol-filter-tag ${active?'active':''}" style="color:${m.couleur};border-color:${m.couleur};${active?'background:'+m.couleur+'22':''}" onclick="setMolFilter('${mk}')">${m.nom}</button>`;
+      html += `<button class="mol-filter-tag ${active?'active':''}" onclick="setMolFilter('${mk}')">${m.nom}</button>`;
     });
     html += `</div>`;
   }
