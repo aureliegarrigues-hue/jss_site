@@ -1379,21 +1379,17 @@ function renderPrVilles(){
   const wrap = document.getElementById('pr-villes-check');
   if(!wrap) return;
   const villes = window._villesCache || {};
-  wrap.innerHTML = '';
-  Object.entries(villes).forEach(([k, v]) => {
-    const sel = window._prSelectedVilles.includes(k);
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'tag-btn' + (sel ? ' sel' : '');
-    btn.textContent = v.nom;
-    btn.addEventListener('click', () => {
-      if(sel) window._prSelectedVilles = window._prSelectedVilles.filter(x=>x!==k);
-      else window._prSelectedVilles.push(k);
-      renderPrVilles();
-    });
-    wrap.appendChild(btn);
-  });
+  const sel = window._prSelectedVilles;
+  wrap.innerHTML = Object.entries(villes).map(([k, v]) =>
+    `<button type="button" class="tag-btn${sel.includes(k)?' sel':''}" onclick="togglePrVille('${k}')">${v.nom}</button>`
+  ).join('') || '<p style="color:var(--text-dimmer);font-size:0.82rem;">Ajoutez d\'abord une ville dans la section Boutiques.</p>';
 }
+window.togglePrVille = (key) => {
+  const idx = window._prSelectedVilles.indexOf(key);
+  if(idx >= 0) window._prSelectedVilles.splice(idx, 1);
+  else window._prSelectedVilles.push(key);
+  renderPrVilles();
+};
 
 function renderPrList(){
   const list = document.getElementById('pr-list');
@@ -1634,6 +1630,7 @@ function initListeners() {
     allCats.forEach(cat => {
       const items = groups[cat];
       if(!items || !items.length) return;
+      items.sort((a, b) => (a.p.nom||'').localeCompare(b.p.nom||''));
       const wrap = document.createElement('div');
       const btn = document.createElement('button');
       btn.type = 'button';
