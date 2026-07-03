@@ -130,6 +130,19 @@ main{flex:1;padding:32px;max-width:900px;}
 .cbd-price-hint{font-size:0.7rem;color:var(--text-dimmer);font-style:italic;margin-top:-2px;}
 .mat-preview strong{color:var(--accent);}
 
+/* ── Molécules ── */
+#mol-list{display:flex;flex-direction:column;gap:6px;}
+.mol-tag-admin{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1.5px solid;font-size:0.72rem;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.06em;text-transform:uppercase;background:transparent;white-space:nowrap;}
+.mol-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;}
+.mol-item .mol-tag-admin{min-width:64px;justify-content:center;}
+.mol-item .mol-info{flex:1;min-width:0;}
+.mol-item .mol-nom{font-weight:700;font-size:0.9rem;color:var(--text);}
+.mol-item .mol-ref{font-size:0.72rem;color:var(--text-dimmer);}
+.mol-item.hidden-mol{opacity:.42;}
+.cbd-mol-tag-btn{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1.5px solid;font-size:0.72rem;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,background .15s;background:transparent;}
+.cbd-mol-tag-btn.sel{opacity:1;font-weight:800;}
+.cbd-mol-tag-btn:not(.sel){opacity:.38;}
+
 </style>
 </head>
 <body>
@@ -1311,6 +1324,8 @@ function renderMolList(){
       document.getElementById('mol-color').value = m.couleur || '#c9a84c';
       document.getElementById('mol-color-hex').value = m.couleur || '#c9a84c';
       document.getElementById('mol-edit-key').value = k;
+      document.getElementById('mol-nom').closest('.card-form')?.scrollIntoView({behavior:'smooth', block:'start'});
+      document.getElementById('mol-nom').focus();
     });
     const visBtn = document.createElement('button');
     visBtn.className = 'btn-secondary'; visBtn.style.cssText='padding:5px 10px;font-size:0.75rem;';
@@ -1340,13 +1355,11 @@ function renderMolTagsInForm(){
     const btn = document.createElement('button');
     btn.type = 'button';
     const sel = window._selectedMols.includes(k);
-    btn.className = 'mol-tag-admin';
+    btn.className = 'cbd-mol-tag-btn' + (sel ? ' sel' : '');
     btn.textContent = m.nom;
     btn.style.color = m.couleur || '#c9a84c';
     btn.style.borderColor = m.couleur || '#c9a84c';
-    btn.style.background = sel ? (m.couleur || '#c9a84c') + '22' : 'transparent';
-    btn.style.opacity = sel ? '1' : '0.55';
-    btn.style.cursor = 'pointer';
+    if(sel) btn.style.background = (m.couleur || '#c9a84c') + '22';
     btn.addEventListener('click', () => {
       if(sel) window._selectedMols = window._selectedMols.filter(x=>x!==k);
       else window._selectedMols.push(k);
