@@ -191,6 +191,9 @@ main{flex:1;padding:32px;max-width:900px;}
       <div class="nav-item" onclick="showSection('molecules')" id="nav-molecules">
         <span class="ico">🧬</span> Molécules
       </div>
+      <div class="nav-item" onclick="showSection('prerolls')" id="nav-prerolls">
+        <span class="ico">🚬</span> Pré-Rolls
+      </div>
     </nav>
     <main>
 
@@ -525,6 +528,44 @@ main{flex:1;padding:32px;max-width:900px;}
         <div class="card-form" style="margin-top:16px;">
           <h3>Liste des molécules</h3>
           <div id="mol-list"><p class="empty-state">Aucune molécule ajoutée.</p></div>
+        </div>
+      </div>
+
+
+      <div class="section" id="sec-prerolls">
+        <div class="sec-title">Pré-Rolls</div>
+        <p class="sec-sub">Gérez la liste des pré-rolls (affichés dans l'onglet Pré-rolls du tableau des fleurs &amp; résines).</p>
+        <div class="card-form">
+          <h3>🚬 Créer / Modifier un pré-roll</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>Nom du pré-roll</label>
+              <input type="text" id="pr-nom" placeholder="ex: Pre-roll CBG Night">
+            </div>
+            <div class="field">
+              <label>Prix (€)</label>
+              <input type="number" step="0.01" min="0" id="pr-prix" placeholder="ex: 8.50">
+            </div>
+            <div class="field field-full">
+              <label>Boutiques disponibles</label>
+              <div id="pr-villes-check" class="tags-wrap"></div>
+            </div>
+            <div class="field field-full">
+              <label>Molécules associées <span style="font-size:0.75rem;color:var(--text-dimmer);font-weight:400;">(optionnel)</span></label>
+              <div id="pr-mol-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;min-height:30px;"></div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="savePrRoll()">✓ Valider et fermer</button>
+            <button class="btn-primary" onclick="savePrRollAndContinue()" style="background:#2a6049;">✓ Ajouter et continuer</button>
+            <button class="btn-secondary" onclick="resetPrForm()">↺ Vider</button>
+          </div>
+          <div class="msg" id="pr-msg"></div>
+          <input type="hidden" id="pr-edit-key">
+        </div>
+        <div class="card-form" style="margin-top:16px;">
+          <h3>Liste des pré-rolls</h3>
+          <div id="pr-list"><p class="empty-state">Aucun pré-roll ajouté.</p></div>
         </div>
       </div>
 
@@ -1292,6 +1333,7 @@ window.showSection = (name) => {
   if(name==='cbd'){ populateMatSelect(); window._selectedMols=[]; renderMolTagsInForm(); }
   if(name==='matrices'){ loadMatrixList(); }
   if(name==='boutiques'){ renderVillesUI(); }
+  if(name==='prerolls'){ renderPrList(); renderPrMolTags(); renderPrVilles(); }
 };
 
 // Init au chargement
@@ -1301,6 +1343,133 @@ function initAdminExtras(){
   populateMatSelect();
 }
 
+
+
+/* ── PRÉ-ROLLS ── */
+window._prEditKey = null;
+window._prSelectedMols = [];
+window._prSelectedVilles = [];
+
+function renderPrMolTags(){
+  const wrap = document.getElementById('pr-mol-tags');
+  if(!wrap) return;
+  const mols = Object.entries(window._molCache||{})
+    .filter(([,m]) => m.visible !== false)
+    .sort((a,b) => a[1].nom.localeCompare(b[1].nom));
+  wrap.innerHTML = '';
+  mols.forEach(([k, m]) => {
+    const sel = window._prSelectedMols.includes(k);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cbd-mol-tag-btn' + (sel ? ' sel' : '');
+    btn.textContent = m.nom;
+    btn.style.color = m.couleur || '#c9a84c';
+    btn.style.borderColor = m.couleur || '#c9a84c';
+    if(sel) btn.style.background = (m.couleur || '#c9a84c') + '22';
+    btn.addEventListener('click', () => {
+      if(sel) window._prSelectedMols = window._prSelectedMols.filter(x=>x!==k);
+      else window._prSelectedMols.push(k);
+      renderPrMolTags();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function renderPrVilles(){
+  const wrap = document.getElementById('pr-villes-check');
+  if(!wrap) return;
+  const villes = window.firebaseCbdVilles || {};
+  wrap.innerHTML = '';
+  Object.entries(villes).forEach(([k, v]) => {
+    const sel = window._prSelectedVilles.includes(k);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tag-btn' + (sel ? ' sel' : '');
+    btn.textContent = v.nom;
+    btn.addEventListener('click', () => {
+      if(sel) window._prSelectedVilles = window._prSelectedVilles.filter(x=>x!==k);
+      else window._prSelectedVilles.push(k);
+      renderPrVilles();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function renderPrList(){
+  const list = document.getElementById('pr-list');
+  if(!list) return;
+  const entries = Object.entries(window._prCache||{}).sort((a,b) => a[1].nom.localeCompare(b[1].nom));
+  if(!entries.length){ list.innerHTML='<p class="empty-state">Aucun pré-roll ajouté.</p>'; return; }
+  list.innerHTML = '';
+  entries.forEach(([k, p]) => {
+    const div = document.createElement('div');
+    div.className = 'mol-item';
+    const info = document.createElement('div');
+    info.className = 'mol-info';
+    const molNames = (p.molecules||[]).map(mk => (window._molCache||{})[mk]?.nom||mk).join(', ');
+    info.innerHTML = `<div class="mol-nom">${p.nom}</div><div class="mol-ref">${p.prix!=null?p.prix+'€':'—'}${molNames?' · '+molNames:''}</div>`;
+    div.appendChild(info);
+    const editBtn = document.createElement('button');
+    editBtn.className='btn-secondary'; editBtn.style.cssText='padding:5px 10px;font-size:0.75rem;';
+    editBtn.textContent='✎'; editBtn.title='Modifier';
+    editBtn.addEventListener('click', () => {
+      document.getElementById('pr-nom').value = p.nom||'';
+      document.getElementById('pr-prix').value = p.prix||'';
+      document.getElementById('pr-edit-key').value = k;
+      const rawMols = p.molecules;
+      window._prSelectedMols = Array.isArray(rawMols) ? rawMols.slice() : (rawMols ? Object.values(rawMols) : []);
+      const rawV = p.villes;
+      window._prSelectedVilles = Array.isArray(rawV) ? rawV.slice() : (rawV ? Object.values(rawV) : []);
+      renderPrMolTags(); renderPrVilles();
+      document.getElementById('pr-nom').closest('.card-form')?.scrollIntoView({behavior:'smooth', block:'start'});
+      document.getElementById('pr-nom').focus();
+    });
+    const delBtn = document.createElement('button');
+    delBtn.className='btn-del'; delBtn.textContent='Supprimer';
+    delBtn.addEventListener('click', async () => {
+      if(!confirm('Supprimer ce pré-roll ?')) return;
+      try { await remove(ref(db, 'prerolls/'+k)); }
+      catch(e){ alert('⚠ Erreur : '+e.message); }
+    });
+    div.appendChild(editBtn); div.appendChild(delBtn);
+    list.appendChild(div);
+  });
+}
+
+window.savePrRoll = async (andContinue=false) => {
+  const nom = document.getElementById('pr-nom').value.trim();
+  const prix = document.getElementById('pr-prix').value.trim();
+  const editKey = document.getElementById('pr-edit-key').value;
+  if(!nom){ showMsg('pr-msg','⚠ Nom requis.','err'); return; }
+  const data = {
+    nom, prix: prix ? parseFloat(prix) : null,
+    villes: window._prSelectedVilles.slice(),
+    molecules: window._prSelectedMols.slice(),
+    _admin: true, createdAt: Date.now()
+  };
+  try {
+    if(editKey) await update(ref(db,'prerolls/'+editKey), data);
+    else await push(ref(db,'prerolls'), data);
+    showMsg('pr-msg','✓ Pré-roll enregistré !','ok');
+    if(!andContinue) resetPrForm();
+    else {
+      document.getElementById('pr-nom').value='';
+      document.getElementById('pr-nom').focus();
+    }
+  } catch(e){ showMsg('pr-msg','⚠ Erreur : '+e.message,'err'); }
+};
+
+window.savePrRollAndContinue = () => window.savePrRoll(true);
+
+window.resetPrForm = () => {
+  document.getElementById('pr-nom').value='';
+  document.getElementById('pr-prix').value='';
+  document.getElementById('pr-edit-key').value='';
+  window._prSelectedMols=[];
+  window._prSelectedVilles=[];
+  renderPrMolTags();
+  renderPrVilles();
+};
 
 /* ── MOLÉCULES ── */
 window._molCache = {};        // key -> {nom, ref, couleur, visible}
@@ -1487,6 +1656,13 @@ function initListeners() {
     window._molCache = snap.exists() ? snap.val() : {};
     renderMolList();
     renderMolTagsInForm();
+  });
+
+  // Pré-rolls
+  window._prCache = {};
+  onValue(ref(db, 'prerolls'), snap => {
+    window._prCache = snap.exists() ? snap.val() : {};
+    renderPrList();
   });
 
   // Cigarettes

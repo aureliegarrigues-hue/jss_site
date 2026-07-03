@@ -277,6 +277,17 @@ nav {
 .mol-filter-tag:hover{border-color:rgba(150,150,170,.6);color:rgba(180,180,200,.85);}
 .mol-filter-tag.active{border-color:rgba(150,150,170,.7);color:rgba(200,200,215,1);background:rgba(150,150,170,.1);}
 
+/* ── Pré-rolls ── */
+.pr-list-wrap{max-width:680px;}
+.pr-item{display:flex;flex-direction:column;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.pr-item:last-child{border-bottom:none;}
+.pr-item-row{display:flex;align-items:baseline;gap:0;}
+.pr-item-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;color:#f3f3f7;white-space:nowrap;}
+.pr-item-dots{flex:1;border-bottom:2px dotted rgba(255,255,255,.15);margin:0 8px 3px;}
+.pr-item-price{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--accent);white-space:nowrap;}
+.pr-item-mols{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+.pr-mol-badge{padding:2px 9px;border-radius:20px;border:1px solid;font-size:0.68rem;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.05em;text-transform:uppercase;}
+
 </style>
 </head>
 <body data-page="cbd">
@@ -341,6 +352,7 @@ let currentStore = 'barberey';
 let currentCat   = null;
 let currentMolFilter = null;
 window._molsCache = {};
+window.firebasePrerolls = {};
 const FLEURS_GRAMS_DEFAULT = [1,3,5,10,25,50,100];
 window.firebaseCbdProducts = [];
 window.firebaseCbdVilles = {};
@@ -447,7 +459,36 @@ function _renderCatInner(){
   const data = getData();
   const content = document.getElementById('cbd-content');
   if(currentCat === 'Pré-rolls'){
-    content.innerHTML = '<p style="color:var(--text-dimmer);padding:60px;text-align:center;font-size:1.1rem;">Page en construction</p>';
+    const prerolls = Object.values(window.firebasePrerolls||{})
+      .filter(p => {
+        const vp = Array.isArray(p.villes) ? p.villes : Object.values(p.villes||{});
+        return !vp.length || vp.includes(currentStore);
+      })
+      .sort((a,b) => (a.nom||'').localeCompare(b.nom||''));
+    if(!prerolls.length){
+      content.innerHTML = '<div class="cat-heading" style="color:#9a9aae">Pré-rolls</div><p style="color:var(--text-dimmer);padding:40px;text-align:center;">Aucun pré-roll disponible.</p>';
+      return;
+    }
+    let html = '<div class="cat-heading" style="color:#9a9aae">Pré-rolls</div><div class="pr-list-wrap">';
+    prerolls.forEach(p => {
+      const prix = p.prix != null ? p.prix+'&nbsp;€' : '—';
+      const mols = (Array.isArray(p.molecules) ? p.molecules : Object.values(p.molecules||{}))
+        .map(mk => {
+          const m = (window._molsCache||{})[mk];
+          if(!m || m.visible===false) return '';
+          return `<span class="pr-mol-badge" style="color:${m.couleur||'#aaa'};border-color:${m.couleur||'#aaa'}">${m.nom}</span>`;
+        }).filter(Boolean).join('');
+      html += `<div class="pr-item">
+        <div class="pr-item-row">
+          <span class="pr-item-name">${p.nom}</span>
+          <span class="pr-item-dots"></span>
+          <span class="pr-item-price">${prix}</span>
+        </div>
+        ${mols ? `<div class="pr-item-mols">${mols}</div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+    content.innerHTML = html;
     return;
   }
   if(!currentCat){ content.innerHTML='<p style="color:var(--text-dimmer);padding:40px;text-align:center;">Sélectionnez une catégorie</p>'; return; }
@@ -617,6 +658,11 @@ onValue(ref(db, 'cbd'), (snap) => {
 
 onValue(ref(db, 'molecules'), (snap) => {
   window._molsCache = snap.exists() ? snap.val() : {};
+  if (typeof window.renderCat === 'function') window.renderCat();
+});
+
+onValue(ref(db, 'prerolls'), (snap) => {
+  window.firebasePrerolls = snap.exists() ? snap.val() : {};
   if (typeof window.renderCat === 'function') window.renderCat();
 });
 
