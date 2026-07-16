@@ -139,6 +139,8 @@ nav {
 .menu-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
 .btn-go{padding:14px 42px;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:.08em;text-transform:uppercase;border-radius:7px;border:none;cursor:pointer;transition:background .2s;}
 .btn-go:hover{background:#e2c97e;}
+.bar-liquides-banner{width:100%;margin-top:22px;padding:20px 24px;background:linear-gradient(135deg,rgba(201,168,76,.14),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.35);border-radius:12px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.bar-liquides-banner:hover{background:rgba(201,168,76,.2);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.35);}
 .btn-rst{padding:14px 24px;background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.82rem;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all .2s;}
 .btn-rst:hover{border-color:rgba(255,80,80,.4);color:#ff6b6b;}
 
@@ -273,12 +275,13 @@ nav {
         <button class="btn-rst" onclick="resetMenu()">✕ Reset</button>
         <button class="btn-go" onclick="showGallery()">🔍 Voir les produits</button>
       </div>
+      <button class="bar-liquides-banner" onclick="location.href='index.html'">🏠 Retour à l'accueil</button>
     </div>
   </div>
   <div id="vg" class="view">
     <div class="gal-hdr">
       <div class="gal-hdr-inner">
-        <button class="bk-btn" onclick="showMenu()">← Filtres</button>
+        <button class="bk-btn" onclick="showMenu()">← Retour au menu</button>
         <div class="act-filters" id="atf"></div>
         <div class="gs-wrap">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
