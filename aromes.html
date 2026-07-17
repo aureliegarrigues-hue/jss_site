@@ -111,36 +111,41 @@ nav {
 .view{display:none;}.view.active{display:block;}
 
 /* === MENU === */
-.menu-wrap{max-width:1000px;margin:0 auto;padding:36px 40px 64px;display:flex;flex-direction:column;align-items:center;text-align:center;}
-.menu-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:-.02em;color:#fff;margin-bottom:6px;}
+.menu-wrap{max-width:1000px;margin:0 auto;padding:10px 40px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.menu-heading{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.15rem,2.4vw,1.7rem);letter-spacing:-.02em;color:#fff;margin-bottom:3px;}
 .menu-heading span{color:var(--accent);}
-.menu-sub{font-size:0.9rem;color:var(--text-dim);margin-bottom:18px;}
+.menu-sub{font-size:0.8rem;color:var(--text-dim);margin-bottom:8px;}
 .ms-wrap{position:relative;margin-bottom:16px;width:100%;max-width:440px;display:none;}
 .ms-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-dimmer);pointer-events:none;}
 .ms-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px 12px 42px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;transition:border-color .2s;box-sizing:border-box;}
 .ms-input:focus{border-color:rgba(201,168,76,.4);}
 .ms-input::placeholder{color:var(--text-dimmer);}
-.frais-sel{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap;justify-content:center;}
-.f-btn{padding:8px 20px;border-radius:20px;font-size:0.82rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);transition:all .2s;font-family:'DM Sans',sans-serif;}
+.frais-sel{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;justify-content:center;}
+.f-btn{padding:5px 16px;border-radius:20px;font-size:0.76rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);transition:all .2s;font-family:'DM Sans',sans-serif;}
 .f-btn:hover{border-color:rgba(201,168,76,.35);color:var(--text);}
 .f-btn.active{background:var(--accent);border-color:var(--accent);color:#0a0a0f;}
-/* Pill grid — exactly 4 cols */
-.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;margin-bottom:28px;}
-.m-pill{padding:13px 15px;border-radius:11px;font-size:1.08rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);transition:all .2s;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;}
+/* Pill grid — exactly 4 cols, hauteur bornee + scroll interne pour garder le bouton "Voir les produits" toujours visible */
+.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;width:100%;margin-bottom:9px;max-height:26vh;overflow-y:auto;padding:2px 6px 2px 2px;scrollbar-width:thin;scrollbar-color:var(--accent) transparent;}
+.pill-grid::-webkit-scrollbar{width:6px;}
+.pill-grid::-webkit-scrollbar-track{background:transparent;}
+.pill-grid::-webkit-scrollbar-thumb{background:rgba(201,168,76,.4);border-radius:6px;}
+.pill-grid::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.65);}
+.m-pill{padding:7px 11px;border-radius:9px;font-size:0.88rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);transition:all .2s;user-select:none;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;}
 .m-pill:hover{border-color:rgba(201,168,76,.4);color:var(--text);background:rgba(201,168,76,.06);}
 .m-pill.sel{background:var(--accent);border-color:var(--accent);color:#0a0a0f;font-weight:700;}
-.p-left{display:flex;align-items:center;gap:9px;}
-.p-ico{width:36px;height:36px;object-fit:contain;flex-shrink:0;}
-.p-name{font-size:0.95rem;line-height:1;letter-spacing:0;}
-.p-cnt{font-size:0.75rem;opacity:.55;white-space:nowrap;flex-shrink:0;}
-.m-pill.sel .p-cnt{font-size:0.75rem;opacity:.55;white-space:nowrap;flex-shrink:0;}
-.sel-summary{font-size:0.85rem;color:var(--text-dim);margin-bottom:20px;min-height:20px;}
+.p-left{display:flex;align-items:center;gap:8px;}
+.p-ico{width:26px;height:26px;object-fit:contain;flex-shrink:0;}
+.p-name{font-size:0.85rem;line-height:1;letter-spacing:0;}
+.p-cnt{font-size:0.7rem;opacity:.55;white-space:nowrap;flex-shrink:0;}
+.m-pill.sel .p-cnt{font-size:0.7rem;opacity:.55;white-space:nowrap;flex-shrink:0;}
+.sel-summary{font-size:0.78rem;color:var(--text-dim);margin-bottom:6px;min-height:14px;}
 .sel-summary span{color:var(--accent);font-weight:600;}
-.menu-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-.btn-go{padding:14px 42px;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:.08em;text-transform:uppercase;border-radius:7px;border:none;cursor:pointer;transition:background .2s;}
+.menu-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.btn-go{padding:9px 30px;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:.08em;text-transform:uppercase;border-radius:7px;border:none;cursor:pointer;transition:background .2s;}
 .btn-go:hover{background:#e2c97e;}
-.btn-rst{padding:14px 24px;background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.82rem;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all .2s;}
-.bar-liquides-banner{width:100%;margin-top:22px;padding:20px 24px;background:linear-gradient(135deg,rgba(201,168,76,.14),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.35);border-radius:12px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-rst{padding:9px 18px;background:transparent;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.78rem;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all .2s;}
+.banner-row{display:flex;gap:8px;width:100%;margin-top:10px;}
+.bar-liquides-banner{flex:1;min-width:0;padding:8px 10px;background:linear-gradient(135deg,rgba(201,168,76,.14),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.35);border-radius:10px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:800;font-size:0.7rem;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bar-liquides-banner:hover{background:rgba(201,168,76,.2);border-color:var(--accent);transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.35);}
 .btn-rst:hover{border-color:rgba(255,80,80,.4);color:#ff6b6b;}
 
@@ -227,9 +232,9 @@ nav {
 .kbd-k.w4{max-width:320px;flex:4;}
 
 @media(max-width:1100px){#grid{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:900px){.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;margin-bottom:28px;}}
+@media(max-width:900px){.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;width:100%;margin-bottom:9px;max-height:26vh;}}
 @media(max-width:768px){.gal-hdr{padding:10px 16px;}.grid-wrap{padding:14px 16px 48px;}#grid{grid-template-columns:repeat(2,1fr);gap:10px;}.gs-input{width:130px;}}
-@media(max-width:600px){.menu-wrap{padding:20px 16px 48px;}.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;margin-bottom:28px;}}
+@media(max-width:600px){.menu-wrap{padding:10px 16px 14px;}.pill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;width:100%;margin-bottom:9px;max-height:24vh;}}
 
 @media(max-width:640px){.admin-grid{grid-template-columns:1fr;}.admin-box{padding:22px 18px;}}
 
@@ -275,8 +280,10 @@ nav {
         <button class="btn-rst" onclick="resetMenu()">✕ Reset</button>
         <button class="btn-go" onclick="showGallery()">🔍 Voir les produits</button>
       </div>
-      <button class="bar-liquides-banner" onclick="location.href='bar-a-liquides.html'">🥤 Bar à Liquides</button>
-      <button class="bar-liquides-banner" onclick="location.href='index.html'">🏠 Retour à l'accueil</button>
+      <div class="banner-row">
+        <button class="bar-liquides-banner" onclick="location.href='bar-a-liquides.html'">🥤 Bar à Liquides</button>
+        <button class="bar-liquides-banner" onclick="location.href='index.html'">🏠 Accueil</button>
+      </div>
     </div>
   </div>
   <!-- Gallery -->
